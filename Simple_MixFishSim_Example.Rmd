@@ -255,6 +255,8 @@ res <- run_sim(sim_init = sim,
 
 ## Summary plots
 
+
+
 There are a series of input plotting functions to visualise the results of the
 simulation. For example, we can explore:
 
