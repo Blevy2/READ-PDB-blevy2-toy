@@ -228,6 +228,11 @@ Its also possible to define a survey design using the init_survey function, but
 we do not do so for this demonstration. Please refer to the function help file
 if this is required.
 
+```{r survey}
+surv <- init_survey(sim_init = sim,design = 'fixed_station', n_stations = 50, start_day = 1, stations_per_day = 5, Qs = c("spp1" = 0.1, "spp2"= 0.2))
+
+```
+
 ## Run simulation
 
 Finally we run the simulation. The output is a list of objects containing all
@@ -242,7 +247,7 @@ res <- run_sim(sim_init = sim,
 	       fleets_init = fleets,
 	       hab_init = hab,
 	       save_pop_bio = TRUE,
-	       survey = NULL,
+	       survey = surv,
 	       closure = closure)
 
 
@@ -284,6 +289,16 @@ p3
 p4 <- plot_realised_stepF(logs = logs, fleet_no = 1, vessel_no = 1)
 p4      
 
+
+
+#try some new ones
+
+p5 <- plot_habitat()
+
+
+
+p6 <- plot_spatiotemp_hab(hab = hab, moveCov = moveCov, plot.file = NULL, spwn_wk = list("spp1" = 4:8, "spp2" = 4:8))
+p6
 ```
 
 Note in our example how the fishing mortality rate for species 2 changes
