@@ -250,7 +250,8 @@ res <- run_sim(sim_init = sim,
 	       hab_init = hab,
 	       save_pop_bio = TRUE,
 	       survey = surv,
-	       closure = closure)
+	       closure = closure,
+	       InParallel = TRUE)
 
 
 ```
@@ -275,8 +276,11 @@ and all the results are saved in the output from the run_sim function.
 ## Biological
 p1 <- plot_pop_summary(results = res,
 		 timestep = "annual",
-		 save = FALSE
+		 save = TRUE, 
+		 save.location = "C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/testfolder"
 		 )
+
+plot_pop_summary(results = res, timestep = "daily", save = TRUE, save.location = "C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/testfolder")
 p1
 
 p2 <- plot_daily_fdyn(res)
