@@ -66,5 +66,45 @@ plot_pop_summary <- function(results = res, timestep = 'daily', save = FALSE, sa
 	if(save == TRUE) {
 	ggsave(file = file.path(paste(save.location, '/Population_Summary', timestep, '.png', sep = "")))
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	#creating a plot similar to plot_spatiotemp_hab
+	
+	nrows <- nrow(res$pop_bios[[1]]$spp1) 
+	ncols <- ncol(res$pop_bios[[1]]$spp1)
+	
+	
+	for(s in seq_len(length(results[["pop_summary"]]))) {  #number of species
+	  
+	  nt <- length(results[["pop_bios"]])  #number of weeks to plot
+	  if(!is.null(plot.file)) {
+	    png(filename = paste0(plot.file,'/','Population_spatiotemp_spp_',s,'.png'), width = 800, height = 800)
+	  }
+	  par(mfrow = c(ceiling(sqrt(nt)), ceiling(nt/ceiling(sqrt(nt)))), mar = c(1, 1, 1, 1))
+	  
+	  for(i in seq_len(nt)) {
+	    
+	    pop_wk <- results[["pop_bios"]][[i]][s]   
+	    
+	   
+	    
+	   image(results[["pop_bios"]][[i]][[paste0('spp',s)]], cex.axis = 1.5, cex.main = 2, col = grey(seq(1,0,l = 51)), axes = F)
+	    
+	    
+
+	    axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
+	    axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
+	    text(0.5, 0.98, labels = paste('week', i), cex = 1)
+	    
+	  }
+	  dev.off()
+	}
 }
 
