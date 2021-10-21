@@ -75,7 +75,8 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 
 	if(design == "random_station") {
 	  
-  # Create a grid of stations
+  ##Produce correct number of random x and y locations to sample from
+	#is replace = TRUE correct? Could lead to sampling same station in same year (or subsequent years)
 	x <- sample(seq(1,idx[["ncols"]]), size = n_stations*sim_init[["idx"]][["ny"]], replace = TRUE) #need n_stations for each year
   y <- sample(seq(1,idx[["nrows"]]), size = n_stations*sim_init[["idx"]][["ny"]], replace = TRUE) #need n_stations for each year
 	
