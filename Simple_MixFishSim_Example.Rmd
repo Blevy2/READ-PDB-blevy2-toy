@@ -33,6 +33,8 @@ library(MixFishSim)
 library(knitr)
 opts_chunk$set(tidy = TRUE)
 
+library(reshape2)
+
 #set.seed(123)
 
 ```
@@ -309,12 +311,15 @@ p4
 
 #try some new ones
 
-p5 <- plot_habitat()
+#plot survey 2 ways
+p5 <- plot_survey(survey = res$survey, type = "spatial")
+p5
 
-
-
-p6 <- plot_spatiotemp_hab(hab = hab, moveCov = moveCov, plot.file = NULL, spwn_wk = list("spp1" = 4:8, "spp2" = 4:8))
+p6 <- plot_survey(survey = res$survey, type = "index")
 p6
+
+
+
 ```
 
 Note in our example how the fishing mortality rate for species 2 changes
