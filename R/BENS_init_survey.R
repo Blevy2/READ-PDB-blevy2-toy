@@ -31,6 +31,8 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 	n_fleets  <- idx[["nf"]]
 	n_vessels <- idx[["nv"]]
 	brk.idx   <- sim_init[["brk.idx"]]
+	
+
 
 	### Checks
 	if(!start_day %in% sim_init[["brk.idx"]][["day.seq"]]) stop("We don't fish this day, choose another start_day!")
@@ -76,15 +78,82 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 	if(design == "random_station") {
 	  
   ##Produce correct number of random x and y locations to sample from
+	  
+	  
 	#is replace = TRUE correct? Could lead to sampling same station in same year (or subsequent years)
-	x <- sample(seq(1,idx[["ncols"]]), size = n_stations*sim_init[["idx"]][["ny"]], replace = TRUE) #need n_stations for each year
-  y <- sample(seq(1,idx[["nrows"]]), size = n_stations*sim_init[["idx"]][["ny"]], replace = TRUE) #need n_stations for each year
+	  #Below could sample same location so need to adjust
+	  
+#	x <- sample(seq(1,idx[["ncols"]]), size = n_stations*sim_init[["idx"]][["ny"]], replace = TRUE) #need n_stations for each year
+#  y <- sample(seq(1,idx[["nrows"]]), size = n_stations*sim_init[["idx"]][["ny"]], replace = TRUE) #need n_stations for each year
 	
   #FOLLOWING 3 LINES NOT NEEDED HERE SINCE WE HAVE ALL OUR STATIONS CREATED IN LINES 79-80
   #grid <- cbind(x = x, y = rep(y, each = length(x)))
 	  
 	# update no stations 
 	#n_stations <- nrow(grid)
+	  
+	  
+	  #larger example adapted from website https://stackoverflow.com/questions/29688556/generating-random-pairs-of-integers-without-replacement-in-r
+	  
+	  #setting up x values
+	 # size_x <- idx[["ncols"]]   #x dimensions to select from. 
+	 # samples <- n_stations*sim_init[["idx"]][["ny"]]  #total number of stations (need n_stations for each year)
+	 # vals_x <- sample.int(size_x, samples)
+	  
+	  #setting up y values
+	 # size_y <- idx[["nrows"]]   #y dimensions to select from. 
+	 # samples <- n_stations*sim_init[["idx"]][["ny"]]  #total number of stations (need n_stations for each year)
+	 # vals_y <- sample.int(size_y, samples)
+	  
+	  
+	 # All_Samples <- cbind(vals_x %/% size_x + 1, vals_y %% size_y)
+	  
+	  #if(anyDuplicated(All_Samples)!=0){"There are duplicated sampling stations"}
+	  
+	  
+	  
+	  
+	  
+	  #pick random locations given the size of the area
+	  
+	  #when change to matrix strata, replace first argument of sample with length(matrixstrata)
+	  
+	 # my_sample <- sample(length(hab$hab$spp1),5,replace=FALSE)
+	  
+
+	  
+	  my_sample <- sample(idx[["ncols"]]*idx[["nrows"]],n_stations*sim_init[["idx"]][["ny"]],replace = FALSE)
+	  
+
+	  
+	  dim.mat = c(idx[["nrows"]],idx[["ncols"]]) #dimension of given strata
+	  
+	  x <- vector()
+	  y <- vector()
+	  coord <- matrix( NA,nrow=1,ncol=2)
+	  
+	  for(i in my_sample){
+	    source("TestScripts/pos2coord.R")
+	    
+
+        pos <- i	    
+
+	      
+	      coord[1,1] <- ((pos-1) %% dim.mat[1]) +1  #xcoordinate
+	      coord[1,2] <- ((pos-1) %/% dim.mat[1]) +1 #y coordinate
+	   #  show(pos)
+	    
+	    
+#	    coords <- pos2coord(pos=i,dim.mat = dim.mat)   #I extracted the above code from this function file
+	   
+	    
+	    x <- c(x,coord[1,1])
+	    
+	    y <- c(y,coord[1,2])
+	    
+	    
+	  }
+	  
 
 	##########################
 	## set up RANDOM survey log matrix
@@ -109,6 +178,10 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 	return(list(survey_settings = c("design" = design, "n_stations" =
 	                                  n_stations, "days_fished" = round(n_stations / stations_per_day, 0),
 	                                "Qs" = Qs), log.mat = log.mat))
+	
+	#check for duplicate stations
+	
+	if(anyDuplicated(log.mat[,2:3])!=0){"There are duplicated sampling stations"}
 
 }
 
