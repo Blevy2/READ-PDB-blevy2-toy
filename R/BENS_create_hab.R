@@ -163,7 +163,7 @@ spwn <- matrix(rep(0.5, nrows * ncols), nc = ncols)
 	dev.off()
 	}
 
-	habitat_lst <- list(hab = hab, spwn_hab = spwn_hab, spwn_loc = spwn_loc, spawn_areas = spawn_areas, stratas = stratas)
+	habitat_lst <- list(hab = hab, spwn_hab = spwn_hab, spwn_loc = spwn_loc, spawn_areas = spawn_areas, strata = strata, stratas = stratas)
 	# Return the list invisibly
 	return(habitat_lst)
 		
