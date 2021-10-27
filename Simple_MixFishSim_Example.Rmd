@@ -115,11 +115,11 @@ hab <- BENS_create_hab(sim_init = sim,
 				    plot.file = "testfolder" ),
 		  
 		  strata = list(                              #Form: upper left, upper right, lower left, lower right
-				     "strata1" = c(0,sim$idx[["nrows"]]/2,0,sim$idx[["ncols"]]/2),   #of the form  c(x1, x2, y1, y2) THESE ARE BOUNDARIES OF MATRIX VALUES
+				     "strata1" = c(1,sim$idx[["nrows"]]/2,1,sim$idx[["ncols"]]/2),   #of the form  c(x1, x2, y1, y2) THESE ARE BOUNDARIES OF MATRIX VALUES
 				      
-				      "strata2" = c(0,sim$idx[["nrows"]]/2,sim$idx[["ncols"]]/2+1,sim$idx[["ncols"]]),
+				      "strata2" = c(1,sim$idx[["nrows"]]/2,sim$idx[["ncols"]]/2+1,sim$idx[["ncols"]]),
 				     
-				     	"strata3" = c(sim$idx[["nrows"]]/2 + 1,sim$idx[["nrows"]], 0 ,sim$idx[["ncols"]]/2),
+				     	"strata3" = c(sim$idx[["nrows"]]/2 + 1,sim$idx[["nrows"]], 1 ,sim$idx[["ncols"]]/2),
 				     
               "strata4" = c(sim$idx[["nrows"]]/2 + 1,sim$idx[["nrows"]],sim$idx[["ncols"]]/2 +1 , sim$idx[["ncols"]])
 				       )
@@ -266,7 +266,7 @@ source("R/BENS_init_survey.R")
 
 surv_fixed <- BENS_init_survey(sim_init = sim,design = 'fixed_station', n_stations = 50, start_day = 1, stations_per_day = 5, Qs = c("spp1" = 0.1, "spp2"= 0.2))
 
-surv_random <- BENS_init_survey(sim_init = sim,design = 'random_station', n_stations = 50, start_day = 1, stations_per_day = 5, Qs = c("spp1" = 0.1, "spp2"= 0.2))
+surv_random <- BENS_init_survey(sim_init = sim,design = 'random_station', n_stations = 50, start_day = 1, stations_per_day = 5, Qs = c("spp1" = 0.1, "spp2"= 0.2), strata_coords = hab$strata )
 
 ```
 
