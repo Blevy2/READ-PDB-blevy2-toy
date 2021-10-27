@@ -37,7 +37,7 @@
 
 #' @export
 
-BENS_create_hab <- function (sim_init = sim, seed = 123, spp.ctrl = NULL, spawn_areas = NULL, spwn_mult = 10, plot.dist = FALSE, plot.file = getwd()) {
+BENS_create_hab <- function (sim_init = sim, stratas = NULL, strata = NULL, seed = 123, spp.ctrl = NULL, spawn_areas = NULL, spwn_mult = 10, plot.dist = FALSE, plot.file = getwd()) {
 
 
   
@@ -81,10 +81,10 @@ hab <- 	lapply(seq_len(n.spp), function(i) {
 	names(hab) <- paste0("spp", seq_len(n.spp))
 
 	# Plot
-	if(plot.dist == TRUE) {
-	  print("plottingggggg")
+	if(spp.ctrl$plot.dist == TRUE ) {
+	  print("plottingggggg hab")
 	png(filename = paste0(plot.file,'/','habitat','.png'), width = 800, height = 800)
-	plot_habitat(hab$hab)
+	plot_habitat(hab)
 	dev.off()
 	}
 
@@ -113,6 +113,42 @@ spwn <- matrix(rep(0.5, nrows * ncols), nc = ncols)
 	names(spwn_loc) <- paste0("spp", seq_len(n.spp))
 
 	}
+	
+	
+	
+	# Now the strata (altered above spawning habitat)
+	
+	#spawn version of above, incase it is needed. I dont think it is at the moment
+	#  spwn_hab <- lapply(paste0("strata",1:length(hab$strata)), function(x) {
+	
+
+	
+	if(!is.null(strata)) {
+	 
+	  # create a matrix of 0s with right dims
+	  stratas <- matrix(rep(0, nrows * ncols), nc = ncols)
+	  
+    for(k in seq(length(strata))){
+
+        #define coordinate boundaries
+      
+      
+      x1 <- strata[[k]][1]; x2 <- strata[[k]][2]
+      y1 <- strata[[k]][3]; y2 <- strata[[k]][4]
+
+      
+      stratas[x1:x2, y1:y2] <- k
+	  
+
+	  
+	 # names(stratas) <- paste0("Strata", k)
+	  
+	}
+	  
+	}
+	
+	
+	
 
 	if(is.null(spawn_areas)) {
 	spwn_hab <- NULL
@@ -120,13 +156,14 @@ spwn <- matrix(rep(0.5, nrows * ncols), nc = ncols)
 	}
 
 	# Plot
-	if(plot.dist == TRUE & !is.null(hab$spawn_areas)) {
+	if(spawn_areas$plot.dist == TRUE & !is.null(spawn_areas)) {
+	  print("plottingggggg spawn hab")
 	png(filename = paste0(plot.file,'/','habitat_spwn','.png'), width = 800, height = 800)
-	plot_habitat(hab$spwn_hab)
+	plot_habitat(spwn_hab)
 	dev.off()
 	}
 
-	habitat_lst <- list(hab = hab, spwn_hab = spwn_hab, spwn_loc = spwn_loc, spawn_areas = spawn_areas)
+	habitat_lst <- list(hab = hab, spwn_hab = spwn_hab, spwn_loc = spwn_loc, spawn_areas = spawn_areas, stratas = stratas)
 	# Return the list invisibly
 	return(habitat_lst)
 		
