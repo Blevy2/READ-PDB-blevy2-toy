@@ -60,7 +60,7 @@ The object returned is used internally by MixFishSim a list with two levels:
 
 ```{r basic}
 
-sim <- init_sim(nrows = 10, ncols = 10, n_years = 2, n_tows_day = 4,
+sim <- init_sim(nrows = 90, ncols = 110, n_years = 2, n_tows_day = 4,
 		n_days_wk_fished = 5, n_fleets = 2, n_vessels = 20, n_species =
 			2, move_freq = 2)
 
@@ -112,10 +112,10 @@ hab <- BENS_create_hab(sim_init = sim,
 						   ),
 				     spwn_mult = 10, 
 				    plot.dist = TRUE, 
-				    plot.file =  "testfolder" )
+				    plot.file = "testfolder" )
 		  )
 
-print(hab)
+#print(hab)
 
 ## Plot the unadjusted habitat fields
 plot_habitat(hab$hab)
@@ -223,8 +223,22 @@ this, but we simply define a static fixed site closure for demonstration
 purposes. 
 
 ```{r close}
+#practice creating a larger data.frame than just single points
+library(tidyr)
 
-closure <- init_closure(input_coords = data.frame(x = c(9,10), y = c(6,10)),
+#set x and y min/max which are coordinates on the grid
+xmin <- 6
+xmax <- 10
+ymin <- 26
+ymax <- 40
+
+
+x <- xmin:xmax
+y<- ymin:ymax
+
+#View(crossing(x,y))
+
+closure <- init_closure(input_coords = data.frame(x = x, y = y),
 			spp1 = "spp1", year_start = 2) 
 
 ```
@@ -259,10 +273,9 @@ res <- run_sim(sim_init = sim,
 	       fleets_init = fleets,
 	       hab_init = hab,
 	       save_pop_bio = TRUE,
-	       survey = surv_random,
+	       survey = surv_fixed,
 	       closure = closure,
 	       InParallel = TRUE)
-
 
 ```
 
@@ -318,6 +331,14 @@ p5
 p6 <- plot_survey(survey = res$survey, type = "index")
 p6
 
+
+#spatio temporal population plots
+source("R/Bens_plot_pop_spatiotemp.R")
+p7 <- Bens_plot_pop_spatiotemp(results = res,
+		 save = TRUE, 
+		 save.location = "C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/testfolder"
+		 )
+p7
 
 
 ```
