@@ -119,7 +119,7 @@ spwn <- matrix(rep(0.5, nrows * ncols), nc = ncols)
 	}
 
 	# Plot
-	if(plot.dist == TRUE & !is.null(hab$spawn_areas)) {
+	if(plot.dist == TRUE & !is.null(spawn_areas)) {
 	png(filename = paste0(plot.file,'/','habitat_spwn','.png'), width = 800, height = 800)
 	plot_habitat(hab$spwn_hab)
 	dev.off()

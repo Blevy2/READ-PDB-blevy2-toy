@@ -23,9 +23,9 @@ plot_habitat <- function(hab = hab) {
 
 	
 	print(nrows)
-	print(ncols)
+	show(ncols)
 	
-	print("plotting inside plot_habitat")
+	show("plotting inside plot_habitat")
 	
 	par(mfrow = c(ceiling(sqrt(n.spp)), ceiling(n.spp/ceiling(sqrt(n.spp)))), mar = c(2, 2, 2, 2))
 	for(i in seq(n.spp)) {

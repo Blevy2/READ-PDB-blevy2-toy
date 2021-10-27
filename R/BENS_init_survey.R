@@ -24,7 +24,7 @@
 #' @export
 
 BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stations = 50, 
-			     start_day = 90, stations_per_day = 5, Qs = NULL) {
+			     start_day = 90, stations_per_day = 5, Qs = NULL, strata = NULL) {
 
 	# useful indexes
 	idx       <- sim_init[["idx"]]
@@ -78,49 +78,8 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 	if(design == "random_station") {
 	  
   ##Produce correct number of random x and y locations to sample from
-	  
-	  
-	#is replace = TRUE correct? Could lead to sampling same station in same year (or subsequent years)
-	  #Below could sample same location so need to adjust
-	  
-#	x <- sample(seq(1,idx[["ncols"]]), size = n_stations*sim_init[["idx"]][["ny"]], replace = TRUE) #need n_stations for each year
-#  y <- sample(seq(1,idx[["nrows"]]), size = n_stations*sim_init[["idx"]][["ny"]], replace = TRUE) #need n_stations for each year
-	
-  #FOLLOWING 3 LINES NOT NEEDED HERE SINCE WE HAVE ALL OUR STATIONS CREATED IN LINES 79-80
-  #grid <- cbind(x = x, y = rep(y, each = length(x)))
-	  
-	# update no stations 
-	#n_stations <- nrow(grid)
-	  
-	  
-	  #larger example adapted from website https://stackoverflow.com/questions/29688556/generating-random-pairs-of-integers-without-replacement-in-r
-	  
-	  #setting up x values
-	 # size_x <- idx[["ncols"]]   #x dimensions to select from. 
-	 # samples <- n_stations*sim_init[["idx"]][["ny"]]  #total number of stations (need n_stations for each year)
-	 # vals_x <- sample.int(size_x, samples)
-	  
-	  #setting up y values
-	 # size_y <- idx[["nrows"]]   #y dimensions to select from. 
-	 # samples <- n_stations*sim_init[["idx"]][["ny"]]  #total number of stations (need n_stations for each year)
-	 # vals_y <- sample.int(size_y, samples)
-	  
-	  
-	 # All_Samples <- cbind(vals_x %/% size_x + 1, vals_y %% size_y)
-	  
-	  #if(anyDuplicated(All_Samples)!=0){"There are duplicated sampling stations"}
-	  
-	  
-	  
-	  
-	  
-	  #pick random locations given the size of the area
-	  
-	  #when change to matrix strata, replace first argument of sample with length(matrixstrata)
-	  
-	 # my_sample <- sample(length(hab$hab$spp1),5,replace=FALSE)
-	  
 
+	  
 	  
 	  my_sample <- sample(idx[["ncols"]]*idx[["nrows"]],n_stations*sim_init[["idx"]][["ny"]],replace = FALSE)
 	  
