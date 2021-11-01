@@ -267,7 +267,7 @@ source("R/BENS_init_survey.R")
 
 surv_fixed <- BENS_init_survey(sim_init = sim,design = 'fixed_station', n_stations = 50, start_day = 1, stations_per_day = 5, Qs = c("spp1" = 0.1, "spp2"= 0.2))
 
-surv_random <- BENS_init_survey(sim_init = sim,design = 'random_station', n_stations = 50, start_day = 1, stations_per_day = 5, Qs = c("spp1" = 0.1, "spp2"= 0.2), strata_coords = hab$strata )
+surv_random <- BENS_init_survey(sim_init = sim,design = 'random_station', n_stations = 50, start_day = 1, stations_per_day = 5, Qs = c("spp1" = 0.1, "spp2"= 0.2), strata_coords = hab$strata, strata_num = hab$stratas )
 
 ```
 
@@ -278,6 +278,8 @@ the information on fisheries catches, the population dynamics and population
 distributions. These can be examined with some inbuilt plotting functions. 
 
 ```{r sim}
+
+source("R/run_sim.R")
 
 res <- run_sim(sim_init = sim,
 	       pop_init = Pop,
