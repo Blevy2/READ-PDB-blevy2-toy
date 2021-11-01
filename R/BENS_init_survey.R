@@ -75,6 +75,10 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 	                                "Qs" = Qs), log.mat = log.mat))
 	}
 
+	
+	
+	
+	
 	if(design == "random_station") {
 	  	#initialize x and y coordinate vectors
 	      x <- vector()
@@ -91,10 +95,10 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
       row_dist <- length(strata_coords[[j]][1]:strata_coords[[j]][2]) #specifies size of given strata
       col_dist <- length(strata_coords[[j]][3]:strata_coords[[j]][4])
       
-      x1 <- strata_coords[[j]][1]; x2 <- strata_coords[[j]][2]
+      x1 <- strata_coords[[j]][1]; x2 <- strata_coords[[j]][2]  #specific coordinates from each strata
       y1 <- strata_coords[[j]][3]; y2 <- strata_coords[[j]][4]
       
-      show(y1)
+
       #currently dividing total number of samples evening among each strata
       my_sample <- sample(row_dist*col_dist,n_stations*sim_init[["idx"]][["ny"]]/length(strata_coords),replace = FALSE)
       
@@ -122,7 +126,7 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 	      
 
 	    
-	      #tack onto existing coordinates after SHIFT COORDINATES OVER INTO CORRECT STRATA
+#tack onto existing coordinates after SHIFT COORDINATES OVER INTO CORRECT STRATA
 	    x <- c(x,coord[1,1]+(x1-1))
 	    
 	    y <- c(y,coord[1,2]+(y1-1)) #subtract 1 because index starts at 1

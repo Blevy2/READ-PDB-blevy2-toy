@@ -83,7 +83,7 @@ hab <- 	lapply(seq_len(n.spp), function(i) {
 	# Plot
 	if(spp.ctrl$plot.dist == TRUE ) {
 	  print("plottingggggg hab")
-	png(filename = paste0(plot.file,'/','habitat','.png'), width = 800, height = 800)
+	png(filename = paste0(spp.ctrl$plot.file,'/','habitat','.png'), width = 800, height = 800)
 	plot_habitat(hab)
 	dev.off()
 	}
@@ -158,7 +158,7 @@ spwn <- matrix(rep(0.5, nrows * ncols), nc = ncols)
 	# Plot
 	if(spawn_areas$plot.dist == TRUE & !is.null(spawn_areas)) {
 	  print("plottingggggg spawn hab")
-	png(filename = paste0(plot.file,'/','habitat_spwn','.png'), width = 800, height = 800)
+	png(filename = paste0(spawn_areas$plot.file,'/','habitat_spwn','.png'), width = 800, height = 800)
 	plot_habitat(spwn_hab)
 	dev.off()
 	}

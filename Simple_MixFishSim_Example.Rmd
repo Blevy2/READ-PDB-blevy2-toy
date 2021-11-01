@@ -115,7 +115,7 @@ hab <- BENS_create_hab(sim_init = sim,
 				    plot.file = "testfolder" ),
 		  
 		  strata = list(                              #Form: upper left, upper right, lower left, lower right
-				     "strata1" = c(1,sim$idx[["nrows"]]/2,1,sim$idx[["ncols"]]/2),   #of the form  c(x1, x2, y1, y2) THESE ARE BOUNDARIES OF MATRIX VALUES
+				     "strata1" = c(1,sim$idx[["nrows"]]/2,1,sim$idx[["ncols"]]/2),   #of the form  c(x1, x2, y1, y2) THESE ARE BOUNDARIES OF STRATA VALUES
 				      
 				      "strata2" = c(1,sim$idx[["nrows"]]/2,sim$idx[["ncols"]]/2+1,sim$idx[["ncols"]]),
 				     
@@ -263,6 +263,7 @@ if this is required.
 ```{r survey}
 
 source("R/BENS_init_survey.R")
+
 
 surv_fixed <- BENS_init_survey(sim_init = sim,design = 'fixed_station', n_stations = 50, start_day = 1, stations_per_day = 5, Qs = c("spp1" = 0.1, "spp2"= 0.2))
 
