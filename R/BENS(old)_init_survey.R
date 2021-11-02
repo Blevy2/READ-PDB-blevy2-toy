@@ -14,10 +14,6 @@
 #' day
 #' @param Qs is a named Numeric Vector containing any survey catchabilities, assumed to be time invariant.
 #'
-#' @param strata_coords is created by init_hab and contains the corner coordinates of each strata (if rectangular)
-#'
-#' @param strata_num is created by init_hab. It contains the entire domain with each of the n strata labeled 1 to n 
-#'
 #' @return is a list consisting of the survey setting and a a matrix for
 #' storing the log of catches from the survey, to be used as an input to
 #' \link{run_sim}.
@@ -28,7 +24,7 @@
 #' @export
 
 BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stations = 50, 
-			     start_day = 90, stations_per_day = 5, Qs = NULL, strata_coords = NULL, strata_num = NULL) {
+			     start_day = 90, stations_per_day = 5, Qs = NULL, strata_coords = NULL) {
 
 	# useful indexes
 	idx       <- sim_init[["idx"]]
@@ -84,77 +80,28 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 	
 	
 	if(design == "random_station") {
+	  	#initialize x and y coordinate vectors
+	      x <- vector()
+	      y <- vector()
+    for(j in seq(length(strata_coords))){
+	  
+	  ##Produce correct number of random x and y locations to sample from
 
-	  #figure out how many strata there are by finding unique values in each each row and then taking the unique values found in all rows
-	  new_strat <- vector()
-	  	  for(i in seq(1:length(strata_num[,1]))){
-	    new_strat <- c(new_strat,unique(strata_num[i,]))
-	     }
-	  unique_numbers <- unique(new_strat)
+	  #sample as many stations as you need. Output is the matrix positions
 	  
-#setup list that 1 entry for each strata
-	  strata_index_list <- vector(mode = "list", length = max(unique_numbers))
+      #old version before multiple stations
+      #my_sample <- sample(idx[["ncols"]]*idx[["nrows"]],n_stations*sim_init[["idx"]][["ny"]],replace = FALSE)
+      
+      row_dist <- length(strata_coords[[j]][1]:strata_coords[[j]][2]) #specifies size of given strata
+      col_dist <- length(strata_coords[[j]][3]:strata_coords[[j]][4])
+      
+      x1 <- strata_coords[[j]][1]; x2 <- strata_coords[[j]][2]  #specific coordinates from each strata
+      y1 <- strata_coords[[j]][3]; y2 <- strata_coords[[j]][4]
+      
 
-
-	  
-	  #prepare indices for each strata 
-	  index <- matrix(0,1,100)  #large vector of zeros
-	  for(j in unique_numbers){
-	    index[j]<-1
-
-	
-	  #go through entire strata and number each strata 1 to n where n is the total elements in the strata
-	  strata_index <- matrix(0,nrow=idx[["nrows"]],idx[["ncols"]])
-	  
-	  for(i in seq(1:length(strata_num))){
-	    
-	    if(strata_num[i] == unique_numbers[j]){
-	      strata_index[i]<-index[strata_num[i]] 
-	      index[strata_num[i]]<-index[strata_num[i]]+1
-	      
-	      
-	      }
-	      else{strata_index[i]<-0}
-
-	    
-	  }	  
-	  #have created matirx with 1 to n in correct strata and 0 elsewhere
-	  #store each in list
-	  strata_index_list[[j]]<-strata_index
-	  }
-	  
-	  
-	  
-	  
-	  #go through each strata_index_list, choose correct number of random stations
-	  #translate back to index for given strata
-	  coords<-vector()
-	  
-	  #while you do keep track of strata number
-	  str_num <-vector()
-	  
-	  for(j in unique_numbers){
-	    
-	    #index[j] is how many total stations there are in each strata
-	    #currently dividing total number of samples evening among each strata
-	    my_sample <- sample(index[j],n_stations*sim_init[["idx"]][["ny"]]/length(strata_index_list),replace = FALSE)
-	    
-	    #find index for each sample
-	    for(i in seq(1:length(my_sample))){
-	    coords <- c(coords,which(strata_index_list[[j]]==my_sample[i]))
-	    
-	    #record strata number
-	    str_num <-c(str_num,unique_numbers[j])
-	    }
-	    
-	    
-	  }
-	  
-	
-	  #translate matrix index into x,y coordinate  
-	
-      row_dist <- length(strata_num[,1]) #specifies size of given strata
-      col_dist <- length(strata_num[1,])
+      #currently dividing total number of samples evening among each strata
+      my_sample <- sample(row_dist*col_dist,n_stations*sim_init[["idx"]][["ny"]]/length(strata_coords),replace = FALSE)
+      
 
 	  
 	  dim.mat = c(row_dist,col_dist) #dimension of given strata
@@ -162,12 +109,8 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 
 	  coord <- matrix( NA,nrow=1,ncol=2)
 	  
-	  
-	  x<-vector()
-	  y<-vector()
-	  
 	  #translate each matrix position into an (x,y) index for given strata
-	  for(i in coords){
+	  for(i in my_sample){
 	 
 	    
 
@@ -183,15 +126,15 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 	      
 
 	    
-#tack onto existing coordinates 
-	    x <- c(x,coord[1,1])
+#tack onto existing coordinates after SHIFT COORDINATES OVER INTO CORRECT STRATA
+	    x <- c(x,coord[1,1]+(x1-1))
 	    
-	    y <- c(y,coord[1,2]) 
+	    y <- c(y,coord[1,2]+(y1-1)) #subtract 1 because index starts at 1
 	    
-
+	    
 	  }
-    
-
+    }
+	  
 
 	##########################
 	## set up RANDOM survey log matrix
@@ -202,13 +145,12 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 	
 	
 	log.mat 	       <- matrix(NA, nrow = n_stations * sim_init[["idx"]][["ny"]], 
-	                          ncol = 7 + idx[["n.spp"]])
-	colnames(log.mat)      <- c("station_no", "x","y","strata","day","tow","year",
+	                          ncol = 6 + idx[["n.spp"]])
+	colnames(log.mat)      <- c("station_no", "x","y","day","tow","year",
 	                            paste0("spp",seq(idx[["n.spp"]])))
 	log.mat[,'station_no'] <- rep(seq_len(n_stations), sim_init[["idx"]][["ny"]])
 	log.mat[,'x']          <- x  #different than fixed station section
 	log.mat[,'y']          <- y  #different than fixed station section
-	log.mat[,'strata']     <- str_num #new
 	log.mat[,'day']        <- rep(station_days, times = sim_init[["idx"]][["ny"]])
 	log.mat[,'tow']        <- rep(seq_len(n_stations), sim_init[["idx"]][["ny"]]) 
 	log.mat[,'year']       <- rep(seq_len(sim_init[["idx"]][["ny"]]), each = n_stations)
