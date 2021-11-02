@@ -5,6 +5,8 @@ library(tidyverse)
 library(readxl)
 library(here)
 
+#Below assumes surv_random in in environment, created by BENS_init_survey
+
 #change into a data frame to be used by ggplot
 new_random_survey <-do.call(rbind.data.frame,surv_random) #surv_random comes out of BENS_init_survey
 
