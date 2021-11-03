@@ -349,7 +349,7 @@ lines(norm_fun(x = 0:25, mu = 15, va = 7)/ max(norm_fun(0:25, 15, 7)),
       type = "l", col = "blue", lwd = 2)
 legend(x = 2, y = 0.9, legend = c("spp1", "spp2"), lwd = 2, col = c("black", "blue"))
 
-plot_spatiotemp_hab(hab = hab, moveCov = moveCov, spwn_wk = list("spp1" = 4:8, "spp2" = 4:8), plot.file =  "C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/testfolder")
+plot_spatiotemp_hab(hab = hab, moveCov = moveCov, spwn_wk = list("spp1" = 4:8, "spp2" = 4:8), plot.file =  "testfolder")
 
 ```
 
