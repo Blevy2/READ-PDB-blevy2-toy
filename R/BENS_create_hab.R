@@ -88,7 +88,7 @@ hab <- 	lapply(seq_len(n.spp), function(i) {
 	dev.off()
 	}
 
-	#change line 87 to plot_habitat(hab[["hab"]])
+	#change line 87 to plot_habitat(hab[["hab"]])?
 
 # Now the spawning habitat
 # Define the spawning habitat preferences
@@ -136,7 +136,7 @@ spwn <- matrix(rep(0.5, nrows * ncols), nc = ncols)
       x1 <- strata[[k]][1]; x2 <- strata[[k]][2]
       y1 <- strata[[k]][3]; y2 <- strata[[k]][4]
 
-      
+  
       stratas[x1:x2, y1:y2] <- k
 	  
 
