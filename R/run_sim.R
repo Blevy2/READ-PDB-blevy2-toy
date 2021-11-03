@@ -457,7 +457,7 @@ if(Pop_move) {
 	
 	Reduce("+", newPop)
 		
-	})
+	}) #end lapply()
 	
 	
 	## Also need to move the previous month biomass, so the f calcs match
@@ -485,7 +485,7 @@ if(Pop_move) {
 	
 	})
 
-	}
+	}  #end  if(!is.null(move_cov))
 
 
 	### No covariates ###
@@ -551,7 +551,7 @@ pop_bios <- NULL
 
 
 
-	} # end if statement
+	} # end if(Pop_Move) statement
 
 
 
