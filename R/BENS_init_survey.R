@@ -187,11 +187,11 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 	    x <- c(x,coord[1,1])
 	    
 	    y <- c(y,coord[1,2]) 
-	    
+
 
 	  }
     
-
+#View(x)
 
 	##########################
 	## set up RANDOM survey log matrix
@@ -201,11 +201,13 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 	station_days <- rep(sim_init[["brk.idx"]][["day.seq"]][which(sim_init[["brk.idx"]][["day.seq"]] == 92, arr.ind = T):c(which(sim_init[["brk.idx"]][["day.seq"]] == 92, arr.ind = T) + round(n_stations / stations_per_day, 0) - 1)], each = stations_per_day)[seq_len(n_stations)]
 	
 	
-	log.mat 	       <- matrix(NA, nrow = n_stations * sim_init[["idx"]][["ny"]], 
+	log.mat 	       <- matrix(NA, nrow = length(x), 
 	                          ncol = 7 + idx[["n.spp"]])
+#	View(log.mat)
+	
 	colnames(log.mat)      <- c("station_no", "x","y","strata","day","tow","year",
 	                            paste0("spp",seq(idx[["n.spp"]])))
-	log.mat[,'station_no'] <- rep(seq_len(n_stations), sim_init[["idx"]][["ny"]])
+	log.mat[,'station_no'] <- coords #different (matrix number from total domain)
 	log.mat[,'x']          <- x  #different than fixed station section
 	log.mat[,'y']          <- y  #different than fixed station section
 	log.mat[,'strata']     <- str_num #new
