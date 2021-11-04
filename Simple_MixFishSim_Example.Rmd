@@ -60,9 +60,9 @@ The object returned is used internally by MixFishSim a list with two levels:
 
 ```{r basic}
 
-sim <- init_sim(nrows = 90, ncols = 110, n_years = 2, n_tows_day = 4,
+sim <- init_sim(nrows = 90, ncols = 110, n_years = 3, n_tows_day = 4,
 		n_days_wk_fished = 5, n_fleets = 2, n_vessels = 20, n_species =
-			6, move_freq = 2)
+			2, move_freq = 2)
 
 class(sim)
 sim$idx
@@ -93,147 +93,20 @@ source("R/BENS_plot_habitat.R")
 #setup controls outside to use in muiltiple places
 
 
-# #original from example script
-# 		  spp.ctrl = list(
-# 				  "spp.1" = list('nu' = 1/0.015,
-# 						'var' = 1,
-# 						'scale' = 1,
-# 						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
-# 				  "spp.2" = list('nu' = 1/0.05,
-# 						'var'  = 2,
-# 						'scale' = 12,
-# 						'Aniso' = matrix(nc = 2, c(1, 2, -1, 2))),
-# 				 plot.dist = TRUE,
-# 				 plot.file = "C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/testfolder"
-# 				 )
-
-#vary nu
+#original from example script
 		  spp.ctrl = list(
-				  "spp.1" = list('nu' = .5,
+				  "spp.1" = list('nu' = 1/0.015,
 						'var' = 1,
-						'scale' = 12,
+						'scale' = 1,
 						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
-				 "spp.2" = list('nu' = 2,
-						'var' = 1,
-						'scale' = 12,
-						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
-				 "spp.3" = list('nu' = 20,
-						'var' = 1,
-						'scale' = 12,
-						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
-				 "spp.4" = list('nu' = 45,
-						'var' = 1,
-						'scale' = 12,
-						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
-				 
-				  "spp.5" = list('nu' = 1/0.015, #66
-						'var' = 1,
-						'scale' = 12,
-						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
-				 "spp.6" = list('nu' = 100,
-						'var' = 1,
-						'scale' = 12,
-						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
-				 		 plot.dist = TRUE, 
-				 plot.file = "testfolder"
-				 )
-
-#vary var
-		  spp.ctrl = list(
-				  "spp.1" = list('nu' = 66,
-						'var' = .5,
-						'scale' = 12,
-						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
-				 "spp.2" = list('nu' = 66,
-						'var' = 1,
-						'scale' = 12,
-						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
-				 "spp.3" = list('nu' = 66,
-						'var' = 3,
-						'scale' = 12,
-						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
-				 "spp.4" = list('nu' = 66,
-						'var' = 10,
-						'scale' = 12,
-						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
-				 
-				  "spp.5" = list('nu' = 66, 
-						'var' = 30,
-						'scale' = 12,
-						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
-				 "spp.6" = list('nu' = 66,
-						'var' = 100,
-						'scale' = 12,
-						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
-				 		 plot.dist = TRUE, 
-				 plot.file = "testfolder"
-				 )
-		  
-		  
-		  
-#vary scale
-		  spp.ctrl = list(
-				  "spp.1" = list('nu' = 66,
-						'var' = 1,
-						'scale' = .5,
-						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
-				 "spp.2" = list('nu' = 66,
-						'var' = 1,
-						'scale' = 2,
-						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
-				 "spp.3" = list('nu' = 66,
-						'var' = 1,
-						'scale' = 6,
-						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
-				 "spp.4" = list('nu' = 66,
-						'var' = 1,
-						'scale' = 10,
-						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
-				 
-				  "spp.5" = list('nu' = 66, 
-						'var' = 1,
-						'scale' = 20,
-						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
-				 "spp.6" = list('nu' = 66,
-						'var' = 1,
-						'scale' = 50,
-						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
-				 		 plot.dist = TRUE, 
-				 plot.file = "testfolder"
-				 )
-		  
-		  		  
-#vary Aniso
-		  spp.ctrl = list(
-				  "spp.1" = list('nu' = 66,
-						'var' = 1,
-						'scale' = 12,
-						'Aniso' = matrix(nc = 2, c(1,1,1,1))),
-				 "spp.2" = list('nu' = 66,
-						'var' = 1,
-						'scale' = 12,
-						'Aniso' = matrix(nc = 2, c(1,-1,1,-1))),
-				 "spp.3" = list('nu' = 66,
-						'var' = 1,
+				  "spp.2" = list('nu' = 1/0.05,
+						'var'  = 2,
 						'scale' = 12,
 						'Aniso' = matrix(nc = 2, c(1, 2, -1, 2))),
-				 "spp.4" = list('nu' = 66,
-						'var' = 1,
-						'scale' = 12,
-						'Aniso' = matrix(nc = 2, c(-1,-1,-1,-1))),
-				 
-				  "spp.5" = list('nu' = 66, 
-						'var' = 1,
-						'scale' = 12,
-						'Aniso' = matrix(nc = 2, c(10,10,10,10))),
-				 "spp.6" = list('nu' = 66,
-						'var' = 1,
-						'scale' = 12,
-						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
-				 		 plot.dist = TRUE, 
+				 plot.dist = TRUE,
 				 plot.file = "testfolder"
 				 )
-		  
+
 		  
 hab <- BENS_create_hab(sim_init = sim, 
 		  spp.ctrl = spp.ctrl,
@@ -246,24 +119,9 @@ hab <- BENS_create_hab(sim_init = sim,
 				     "spp2" = list(
 						   'area1' = c(5,6,6,6)
 						   ),
-				     	 "spp3" = list(
-						   'area1' = c(2,5,2,5),   #of the form  c(x1, x2, y1, y2) THESE ARE BOUNDARIES OF MATRIX VALUES
-						   'area2' = c(6,8,6,8)    #of the form  c(x1, x2, y1, y2) IE, X FROM 2 TO 5 AND Y FROM 2 TO 5
-						   ),
-				     "spp4" = list(
-						   'area1' = c(5,6,6,6)
-						   ),
-				      "spp5" = list(
-						   'area1' = c(2,5,2,5),   #of the form  c(x1, x2, y1, y2) THESE ARE BOUNDARIES OF MATRIX VALUES
-						   'area2' = c(6,8,6,8)    #of the form  c(x1, x2, y1, y2) IE, X FROM 2 TO 5 AND Y FROM 2 TO 5
-						   ),
-				     "spp6" = list(
-						   'area1' = c(5,6,6,6)
-						   ),
 				     spwn_mult = 10, 
 				    plot.dist = TRUE, 
 				    plot.file = "testfolder" ),
-		  
 		  
 		  #created this new part defining strata
 		  
