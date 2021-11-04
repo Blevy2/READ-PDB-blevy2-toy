@@ -20,8 +20,8 @@ First, load the packages and set a seed for reproducibility.
 #install.packages('devtools')
 #install.packages('githubinstall')
 
-library(devtools)
-library(githubinstall)
+#library(devtools)
+#library(githubinstall)
 
 #githubinstall("MixFishSim")
 #install_github("pdolder/MixFishSim")
@@ -33,7 +33,7 @@ library(MixFishSim)
 library(knitr)
 opts_chunk$set(tidy = TRUE)
 
-library(reshape2)
+#library(reshape2)
 
 #set.seed(123)
 
@@ -60,7 +60,7 @@ The object returned is used internally by MixFishSim a list with two levels:
 
 ```{r basic}
 
-sim <- init_sim(nrows = 90, ncols = 110, n_years = 3, n_tows_day = 4,
+sim <- init_sim(nrows = 90, ncols = 110, n_years = 2, n_tows_day = 4,
 		n_days_wk_fished = 5, n_fleets = 2, n_vessels = 20, n_species =
 			2, move_freq = 2)
 
@@ -283,6 +283,15 @@ source("R/BENS_init_survey.R")
 
 surv_fixed <- BENS_init_survey(sim_init = sim,design = 'fixed_station', n_stations = 50, start_day = 1, stations_per_day = 5, Qs = c("spp1" = 0.1, "spp2"= 0.2))
 
+#CURRENTLY NEED TO MAKE SURE THAT N_STATIONS*#YEARS / #STRATA IS A WHOLE NUMBER OTHERWISE DAY, TOW, YEAR WONT LINEUP WITH NUMBER OF STATIONS
+#ALSO NEED N_STATION TO BE DIVISIBLE BY STATIONS_PER_DAY
+
+# #use below for n_years = 3 
+# surv_random <- BENS_init_survey(sim_init = sim,design = 'random_station', n_stations = 60, start_day = 1, stations_per_day = 5, Qs = c("spp1" = 0.1, "spp2"= 0.2), strata_coords = hab$strata, strata_num = hab$stratas )
+
+#use below for n_years = 2
+
+#use below for 3 years
 surv_random <- BENS_init_survey(sim_init = sim,design = 'random_station', n_stations = 50, start_day = 1, stations_per_day = 5, Qs = c("spp1" = 0.1, "spp2"= 0.2), strata_coords = hab$strata, strata_num = hab$stratas )
 
 ```
@@ -303,7 +312,7 @@ res <- run_sim(sim_init = sim,
 	       fleets_init = fleets,
 	       hab_init = hab,
 	       save_pop_bio = TRUE,
-	       survey = surv_fixed,
+	       survey = surv_random,
 	       closure = closure,
 	       InParallel = TRUE)
 
@@ -366,7 +375,7 @@ p6
 source("R/Bens_plot_pop_spatiotemp.R")
 p7 <- Bens_plot_pop_spatiotemp(results = res,
 		 save = TRUE, 
-		 save.location = "C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/testfolder"
+		 save.location = "testfolder"
 		 )
 p7
 
