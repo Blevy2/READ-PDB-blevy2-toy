@@ -11,7 +11,7 @@ library(here)
 new_random_survey <-do.call(rbind.data.frame,surv_random) #surv_random comes out of BENS_init_survey
 
 
-gg_base <- ggplot(data = new_random_survey, aes(x = y, y = rev(x),col = as.factor(strata)))
+gg_base <- ggplot(data = new_random_survey, aes(x = as.numeric(y), y = as.numeric(x),col = as.factor(strata)))
 
 #plot each strata a different color
 gg_base + geom_point()

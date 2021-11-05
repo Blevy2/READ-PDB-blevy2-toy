@@ -42,9 +42,10 @@ Bens_plot_pop_spatiotemp <- function(results = res, timestep = 'daily', save = F
       
       pop_wk <- results[["pop_bios"]][[i]][s]   
       
-#old color option grey(seq(.5,0,l = 51))
-      
-      image(results[["pop_bios"]][[i]][[paste0('spp',s)]], cex.axis = 1.5, cex.main = 2,   col = hcl.colors(12, "YlOrRd"), axes = F)
+#original color option col = grey(seq(.5,0,l = 51))
+#Other options that ive tried
+# col = hcl.colors(12, "YlOrRd")  makes very red picture
+      image(results[["pop_bios"]][[i]][[paste0('spp',s)]], cex.axis = 1.5, cex.main = 2,  col = grey(seq(1,0,l = 51)) , axes = F)
       
       
       
