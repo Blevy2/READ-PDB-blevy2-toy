@@ -166,7 +166,7 @@ CalcClosures <- ifelse(week.breaks[t] != week.breaks[t-1], TRUE, FALSE)
 
 	      		}
 }
-	      }
+	      } #end line 142 BL
 
 #######################
 ##### Recruitment #####
