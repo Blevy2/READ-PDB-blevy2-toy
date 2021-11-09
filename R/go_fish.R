@@ -49,7 +49,7 @@ coords <- c(round(runif(1,1,idx[["nrows"]])),round(runif(1,1,idx[["ncols"]]))) #
 	
 
 # For t > 1
-if(t > 1) {
+if(t > 1) {   #THIS IS CLOSED ALL THE WAY DOWN ON LINE 383
 
 coords <- c(catch[t-1, "x"], catch[t-1,"y"]) # Previous coordinates
 
@@ -86,7 +86,7 @@ coords <- c(catch[t-1, "x"], catch[t-1,"y"]) # Previous coordinates
 
 	## lowers threshold
 	if(dim(goodhauls)[1] == 0) {
-	
+	10
 	q <- quantile(dplyr::filter(loc_choice,month==brk.idx[["month.breaks"]][t])$expec_prof,prob=c(0.05),na.rm=T) # Threshold for good hauls
 
 	goodhauls  <- dplyr::filter(loc_choice,month==brk.idx[["month.breaks"]][t] & expec_prof>=q)
@@ -376,11 +376,11 @@ coords <- c(catch[t-1, "x"], catch[t-1,"y"]) # Previous coordinates
 
 	}
 
-	}
+	} #ENDS IF STATEMENT ON LINE 318
 
 coords <- new.point # assign new fishing position
 
-	}
+	} #THIS IS END OF IF t>1 STATEMENT ON LINE 52!!
 
 # save coords fished
 	catch[t,"x"] <- coords[1]

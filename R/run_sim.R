@@ -109,7 +109,7 @@ closeArea <- FALSE
 
 ##################
 ### loop control #
-for (t in seq_len(ntow)) {
+for (t in seq_len(ntow)) {  #THIS DEFINES THE LOOP. NTOW = n_tows_day * n_days_wk_fished * 52 * n_years
 ##################
 
 ## Loop messages
@@ -269,7 +269,7 @@ AreaClosures <- closure[["input_coords"]][[week.breaks[[t]]]]
 }
 
 #######################
-###### Fishing ########
+###### Fishing ########    HAPPENS EVERY STEP SO NO NEED FOR SWITCH
 #######################
 
 # every t
@@ -296,7 +296,8 @@ if(t > 1) {
 if(day.breaks[t] == day.breaks[t-1]) {
 catches <- lapply(seq_len(n_fleets), function(fl) {  
 
-	go_fish_fleet(FUN = go_fish, 	sim_init = sim_init, 
+	go_fish_fleet(FUN = go_fish, 	
+	    sim_init = sim_init, 
 			fleets_params = fleets_init[["fleet_params"]][[fl]],
 		   fleets_catches =     catches[[fl]][["fleets_catches"]], 
 		   sp_fleets_catches =  catches[[fl]][["sp_fleets_catches"]],
@@ -333,7 +334,7 @@ catches <- lapply(seq_len(n_fleets), function(fl) {
 # Apply the delay_diff()
 # Need B-1 and B to calc B+1
 
-if(Pop_dyn) {
+if(Pop_dyn) { #POP_DYN IS SET ON LINE 143
 
 ##print("Delay-difference model")
 
@@ -581,7 +582,7 @@ pop_init[["Pop_record"]][[s]][["Rec.mat"]][1, year.breaks[t]] <- sum(Rec[[s]], p
 
 }
 
-} # end loop control
+} # end loop control on line 112
 
 
 
