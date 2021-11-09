@@ -20,8 +20,8 @@ First, load the packages and set a seed for reproducibility.
 #install.packages('devtools')
 #install.packages('githubinstall')
 
-library(devtools)
-library(githubinstall)
+#library(devtools)
+#library(githubinstall)
 
 #githubinstall("MixFishSim")
 #install_github("pdolder/MixFishSim")
@@ -110,21 +110,21 @@ source("R/BENS_plot_habitat.R")
 
 #values from the MixFishSim publication (two are those given above in the example)
 		  spp.ctrl = list(
-				  "spp.1" = list('nu' = 1/0.015,
+				  "spp.1" = list('nu' = 1/0.015, #inconsistent btwn paper and moveCovTest
 						'var' = 1,
-						'scale' = 1,
+						'scale' = 10, #given as 10 in FullTest.R
 						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
-				  "spp.2" = list('nu' = 1/0.05,
+				  "spp.2" = list('nu' = 1/0.05, #inconsistent btwn paper and moveCovTest
 						'var'  = 2,
-						'scale' = 12,
+						'scale' = 20, #given as 20 in FullTest.R
 						'Aniso' = matrix(nc = 2, c(1, 2, -1, 2))),
-				 "spp.3" = list('nu' = 1/0.01,
+				 "spp.3" = list('nu' = 1/0.01, #inconsistent btwn paper and moveCovTest
 						'var' = 1,
-						'scale' = 10, #NOT SURE. NOT IN PAPER
+						'scale' = 5, #given as 5 in moveCovTest.R
 						'Aniso' = matrix(nc = 2, c(2.5, 1, -1, 2))),
-				 "spp.4" = list('nu' = 1/.005,
+				 "spp.4" = list('nu' = 1/.005, #inconsistent btwn paper and moveCovTest
 						'var' = 1,
-						'scale' = 14, #NOT SURE. NOT IN PAPER
+						'scale' = 30, #given as 30 in moveCovTest.R
 						'Aniso' = matrix(nc = 2, c(0.1, 2, -1, 0.2))),
 				
 				 		 plot.dist = TRUE, 
@@ -199,16 +199,18 @@ We can plot the starting distributions for each population as a check.
 
 ```{r pop_init}
 
-Pop <- init_pop(sim_init = sim, Bio = c("spp1" = 1e5, "spp2" = 1e5),
-		hab = hab[["hab"]], start_cell = c(5,5),
-		lambda = c("spp1" = 0.1, "spp2" = 0.1),
+Pop <- init_pop(sim_init = sim, Bio = c("spp1" = 1e5, "spp2" = 2e5,"spp3" = 1e5, "spp4" = 1e4),
+		hab = hab[["hab"]], start_cell = c(5,5), #single start cell for all species?
+		lambda = c("spp1" = 0.1, "spp2" = 0.1,"spp3" = 0.1, "spp4" = 0.1), #same lambda for all?
 		init_move_steps = 20,
-		rec_params = list("spp1" = c("model" = "BH", "a" = 54, "b" = 2, "cv" = 0.7),
-				  "spp2" = c("model" = "BH", "a" = 27, "b" = 4,"cv" = 0.3)),
-		rec_wk = list("spp1" = 3:6, "spp2" = 4:8),
-		spwn_wk = list("spp1" = 4:8, "spp2" = 4:8),
-		M = c("spp1" = 0.2, "spp2" = 0.2),
-		K = c("spp1" = 0.3, "spp2" = 0.3)
+		rec_params = list("spp1" = c("model" = "BH", "a" = 6, "b" = 4, "cv" = 0.7),
+				  "spp2" = c("model" = "BH", "a" = 27, "b" = 4,"cv" = 0.6),
+				  "spp3" = c("model" = "BH", "a" = 18, "b" = 11,"cv" = 0.7),
+				  "spp4" = c("model" = "BH", "a" = 0.3, "b" = 0.5,"cv" = 0.6)),
+		rec_wk = list("spp1" = 13:16, "spp2" = 12:16,"spp3" = 14:16, "spp4" = 16:20),
+		spwn_wk = list("spp1" = 16:18, "spp2" = 16:19,"spp3" = 16:18, "spp4" = 18:20),
+		M = c("spp1" = 0.2, "spp2" = 0.1,"spp3" = 0.2, "spp4" = 0.1),
+		K = c("spp1" = 0.3, "spp2" = 0.3,"spp3" = 0.3, "spp4" = 0.3) #all the same for now
 		)
 
 names(Pop)
@@ -217,6 +219,8 @@ Pop$dem_params
 
 image(Pop$Start_pop[[1]], main = "spp1 starting biomass")
 image(Pop$Start_pop[[2]], main = "spp2 starting biomass")
+image(Pop$Start_pop[[3]], main = "spp3 starting biomass")
+image(Pop$Start_pop[[4]], main = "spp4 starting biomass")
 					   
 ```
 
@@ -237,11 +241,15 @@ moveCov <- init_moveCov(sim_init = sim, steps = 52,
 				       )
 			)
 
-# plot(norm_fun(x = 0:25, mu = 12, va = 8)/max(norm_fun(0:25, 12, 8)), 
-#      type = "l", xlab = "Temperature", ylab = "Tolerance", lwd = 2)
-# lines(norm_fun(x = 0:25, mu = 15, va = 7)/ max(norm_fun(0:25, 15, 7)),
-#       type = "l", col = "blue", lwd = 2)
-# legend(x = 2, y = 0.9, legend = c("spp1", "spp2"), lwd = 2, col = c("black", "blue"))
+plot(norm_fun(x = 0:25, mu = 12, va = 8)/max(norm_fun(0:25, 12, 8)),
+     type = "l", xlab = "Temperature", ylab = "Tolerance", lwd = 2)
+lines(norm_fun(x = 0:25, mu = 15, va = 9)/ max(norm_fun(0:25, 15, 9)),
+      type = "l", col = "blue", lwd = 2)
+lines(norm_fun(x = 0:25, mu = 17, va = 7)/ max(norm_fun(0:25, 17, 7)),
+      type = "l", col = "green", lwd = 2)
+lines(norm_fun(x = 0:25, mu = 14, va = 10)/ max(norm_fun(0:25, 14, 10)),
+      type = "l", col = "red", lwd = 2)
+legend(x = 2, y = 0.9, legend = c("spp1", "spp2"), lwd = 2, col = c("black", "blue","green","red"))
 
 plot_spatiotemp_hab(hab = hab, moveCov = moveCov, spwn_wk = list("spp1" = 16:18, "spp2" = 16:19,"spp3" = 16:18, "spp4" = 18:20), plot.file =  "testfolder")
 
@@ -317,9 +325,13 @@ if this is required.
 source("R/BENS_init_survey.R")
 
 
-surv_fixed <- BENS_init_survey(sim_init = sim,design = 'fixed_station', n_stations = 50, start_day = 1, stations_per_day = 5, Qs = c("spp1" = 0.1, "spp2"= 0.2))
+surv_fixed <- BENS_init_survey(sim_init = sim,design = 'fixed_station', n_stations = 48, start_day = 1, stations_per_day = 7, Qs = c("spp1" = 0.1, "spp2"= 0.2))
 
-surv_random <- BENS_init_survey(sim_init = sim,design = 'random_station', n_stations = 50, start_day = 1, stations_per_day = 5, Qs = c("spp1" = 0.1, "spp2"= 0.2), strata_coords = hab$strata, strata_num = hab$stratas )
+#CURRENTLY NEED TO MAKE SURE THAT N_STATIONS*#YEARS / #STRATA IS A WHOLE NUMBER OTHERWISE DAY, TOW, YEAR WONT LINEUP WITH NUMBER OF STATIONS
+#ALSO NEED N_STATION TO BE DIVISIBLE BY STATIONS_PER_DAY
+
+
+surv_random <- BENS_init_survey(sim_init = sim,design = 'random_station', n_stations = 48, start_day = 1, stations_per_day = 7, Qs = c("spp1" = 0.1, "spp2"= 0.2), strata_coords = hab$strata, strata_num = hab$stratas )
 
 ```
 

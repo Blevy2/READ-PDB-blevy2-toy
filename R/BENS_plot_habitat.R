@@ -29,6 +29,7 @@ BENS_plot_habitat <- function(hab = hab, spp.ctrl = spp.ctl) {
 	
 	par(mfrow = c(ceiling(sqrt(n.spp)), ceiling(n.spp/ceiling(sqrt(n.spp)))), mar = c(2, 2, 2, 2))
 	for(i in seq(n.spp)) {
+	  par(pty="s") #this makes the plots square to compare to publication
 	image(hab[[paste0("spp", i)]], cex.axis = 1.5, cex.main = 2, col = grey(seq(1,0, l = 51)), axes = F)
 	axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
 	axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
