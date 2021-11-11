@@ -23,7 +23,7 @@ hab <- create_hab(sim_init = sim,
 		  spawn_areas = list("spp1" = list(area1 = c(40, 50, 40, 50), area2 =
 				   c(80, 90, 60, 70)), 
 		 "spp2" = list(area1 = c(50, 60, 30, 40), area2 = c(80, 90, 90, 90))),
-		spwn_mult = 10, plot.dist = TRUE, plot.file = ".")
+		spwn_mult = 10, plot.dist = TRUE, plot.file = "testfolder")
 
 ## Initialise the populations
 
@@ -35,22 +35,26 @@ hab <- create_hab(sim_init = sim,
 # so I'm unsure of scale as yet
 
 #Recr(model = "BH", params = list("a" = 1000, "b" = 450), 
-#     B = max(Pop[["Start_pop"]][["spp1"]]), cv = 0)
+#    B = max(Pop[["Start_pop"]][["spp1"]]), cv = 0)
 #Recr(model = "BH", params = list("a" = 2000, "b" = 900), 
 #     B = max(Pop[["Start_pop"]][["spp2"]]), cv = 0)
 
-Pop <- init_pop(sim_init = sim, Bio = c(spp1 = 1e5, spp2 = 2e5), 
+Pop <- init_pop(sim_init = sim, Bio = c("spp1" = 1e5, "spp2" = 2e5), 
 		hab = hab[["hab"]], start_cell = c(25,25), lambda = c("spp1" = 0.1, "spp2" = 0.1), 
 		init_move_steps = 20, 
 		rec_params =  list("spp1" = c("model" = "BH", "a" = 600, "b" = 1500, "cv" = 0.2), 
 				   "spp2" = c("model" = "BH", "a" = 800, "b" = 3000, "cv" = 0.1)),
 				   rec_wk = list("spp1" = 13:16, "spp2" = 12:16),
 				   spwn_wk = list("spp1" = 16:18, "spp2" = 16:19),
-				   M  = c("spp1" = 0.2, "spp2" = 0.1))
+				   M  = c("spp1" = 0.2, "spp2" = 0.1),
+	         K = c("spp1" = 0.3, "spp2" = 0.3))
 
 ## Initialise the fleets
 
 ## maximum possible revenue
+
+#I THINK BELOW IS INDICATING THAT FLEET 1 IS BETTER AT CATCHING SPP1 AND 
+#FLEET 2 IS BETTER AT CATCHING SPP2
 
 # fleet 1
 max1 <- max(sapply(1:1000, function(x) { 0.01 * Pop[["Start_pop"]][[1]][[x]] * 100 +
@@ -65,6 +69,7 @@ max2 <- max(sapply(1:1000, function(x) { 0.02 * Pop[["Start_pop"]][[1]][[x]] * 1
 fleets <- init_fleet(sim_init = sim, VPT = c("spp1" = 100, "spp2" = 200),
 	   Qs = list("fleet 1" = c("spp1" = 0.01, "spp2" = 0.02), 
 		     "fleet 2" = c("spp1" = 0.02, "spp2" = 0.01)),
+	   fuelC = list("fleet1" = 3, "fleet 2" = 8),
 	   step_params = list("fleet 1" = c("rate" = 10, "B1" = 0.1, "B2" = 15, "B3" = max1),
 			      "fleet 2" = c("rate" = 10, "B1" = 0.5, "B2" = 17, "B3" = max2)
 			      ),
@@ -75,20 +80,49 @@ fleets <- init_fleet(sim_init = sim, VPT = c("spp1" = 100, "spp2" = 200),
 
 ## Setup survey
 survey <- init_survey(sim_init = sim, design = "fixed_station", 
-		n_stations = 50, start_day = 92, Qs = c("spp1" = 1, "spp2" = 1, "spp3" = 1, "spp4" = 1)) 
+		n_stations = 50, start_day = 92, Qs = c("spp1" = 1, "spp2" = 1)) 
+
+
+##ADDED movecov THIS TO SEE IF IT HELPS
+moveCov <- init_moveCov(sim_init = sim, steps = 52,
+                        spp_tol = list("spp1" = list("mu" = 12, "va" = 8),
+                                       "spp2" = list("mu" = 15, "va" = 7)
+                        )
+)
+
+#THIS TOO (ADDED CLOSURE)
+
+#practice creating a larger data.frame than just single points
+library(tidyr)
+
+#set x and y min/max which are coordinates on the grid
+xmin <- 6
+xmax <- 10
+ymin <- 26
+ymax <- 40
+
+
+x <- xmin:xmax
+y<- ymin:ymax
+
+#View(crossing(x,y))
+
+closure <- init_closure(input_coords = data.frame(x = x, y = y),
+                        spp1 = "spp1", year_start = 2) 
+
 
 ## run_sim function for overall control
 
 #Rprof()
 
-res <- run_sim(sim_init = sim, pop_init = Pop, fleets_init = fleets, hab_init = hab, InParallel = TRUE, cores = 1, 
-	       save_pop_bio = TRUE, survey = survey)
+res <- run_sim(sim_init = sim, pop_init = Pop, fleets_init = fleets, hab_init = hab, InParallel = TRUE, 
+	       move_cov = moveCov, closure = closure, save_pop_bio = TRUE, survey = survey)
 
 #Rprof(NULL)
 
 #summaryRprof()
 
-plot_survey(survey = res[["survey"]], type = "spatial")
+plot_survey(survey = res[["survey"]], type = "spatial") 
 plot_survey(survey = res[["survey"]], type = "index")
 
 
@@ -98,8 +132,14 @@ image(res[["pop_bios"]][[1,2]][[1]])
 image(res[["pop_bios"]][[2,1]][[1]])
 image(res[["pop_bios"]][[1,17]][[1]])
 
+par(mfrow=c(1,3)) 
+image(res[["pop_bios"]][[4]][[1]])
+image(res[["pop_bios"]][[44]][[1]])
 image(res[["pop_bios"]][[4]][[1]]-res[["pop_bios"]][[44]][[1]])
 
+
+
+dev.off()  #undoes the multi plot specification par(mfrow=c(1,3)) 
 
 res$pop_summary
 
@@ -116,7 +156,7 @@ plot(as.vector(t(res[["pop_summary"]][["spp1"]][["Catch.mat"]])), col = "red")
 plot(as.vector(t(res[["pop_summary"]][["spp2"]][["Catch.mat"]])), col = "red")
 
 # Fishing mortality, spp 1
-plot(as.vector(t(res[["pop_summary"]][["spp1"]][["F.mat"]])), type = "b")
+plot(as.vector(t(res[["pop_summary"]][["spp1"]][["F.mat"]])))
 
 # Fishing mortality, spp 2
 plot(as.vector(t(res[["pop_summary"]][["spp2"]][["F.mat"]])), type = "b")
@@ -142,7 +182,7 @@ image(1:100, 1:100, 0.01 * 100 * Pop[["Start_pop"]][[1]] +
                 0.02 * 200 * Pop[["Start_pop"]][[2]])
 
 # For a vessel, the locations fished
-v <- 1
+v <- 3
 
 # All points
 points(res[["fleets_catches"]][[1]][[1]][[v]][, "x"], 
@@ -151,18 +191,18 @@ points(res[["fleets_catches"]][[1]][[1]][[v]][, "x"],
 # Only last year
 image(1:100, 1:100, 0.01 * 100 * Pop[["Start_pop"]][[1]] + 
                 0.02 * 200 * Pop[["Start_pop"]][[2]])
-points(res[["fleets_catches"]][[1]][[1]][[v]][4159:5200, "x"], 
-     res[["fleets_catches"]][[1]][[1]][[v]][4159:5200, "y"], pch = "x")
+points(res[["fleets_catches"]][[1]][[1]][[v]][1041:2080, "x"],     #last year are tow #s 1041:2080
+     res[["fleets_catches"]][[1]][[1]][[v]][1041:2080, "y"], pch = "x")
 
 
 ## The step function
-plot(res[["fleets_catches"]][[1]][[1]][[v]][1:5000, "val"], 
-     res[["fleets_catches"]][[1]][[1]][[v]][2:5001, "stepD"])
+plot(res[["fleets_catches"]][[1]][[1]][[v]][1:2079, "val"],   #2080 total tows
+     res[["fleets_catches"]][[1]][[1]][[v]][2:2080, "stepD"])
 
 ## The change in bearing
-plot(res[["fleets_catches"]][[1]][[1]][[v]][1:5000, "val"],
-     res[["fleets_catches"]][[1]][[1]][[v]][1:5000, "angles"] - 
-     res[["fleets_catches"]][[1]][[1]][[v]][2:5001, "angles"])
+plot(res[["fleets_catches"]][[1]][[1]][[v]][1:2079, "val"],
+     res[["fleets_catches"]][[1]][[1]][[v]][1:2079, "angles"] - 
+     res[["fleets_catches"]][[1]][[1]][[v]][2:2080, "angles"])
 
 ## Fleet 2
 
@@ -178,8 +218,8 @@ points(res[["fleets_catches"]][[2]][[1]][[v]][, "x"],
 image(1:100, 1:100, 0.02 * 100 * Pop[["Start_pop"]][[1]] + 
                 0.01 * 200 * Pop[["Start_pop"]][[2]])
 
-points(res[["fleets_catches"]][[2]][[1]][[v]][4159:5200, "x"], 
-     res[["fleets_catches"]][[2]][[1]][[v]][4159:5200, "y"], pch = "x")
+points(res[["fleets_catches"]][[2]][[1]][[v]][1041:2080, "x"], 
+     res[["fleets_catches"]][[2]][[1]][[v]][1041:2080, "y"], pch = "x")
 
 
 ## Considerations:
