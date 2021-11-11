@@ -339,10 +339,10 @@ and all the results are saved in the output from the run_sim function.
 p1 <- plot_pop_summary(results = res,
 		 timestep = "annual",
 		 save = TRUE, 
-		 save.location = "C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/testfolder"
+		 save.location = "testfolder"
 		 )
 
-plot_pop_summary(results = res, timestep = "daily", save = TRUE, save.location = "C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/testfolder")
+plot_pop_summary(results = res, timestep = "daily", save = TRUE, save.location = "testfolder")
 p1
 
 p2 <- plot_daily_fdyn(res)
@@ -353,7 +353,7 @@ p2
 logs <- combine_logs(res[["fleets_catches"]])
 
 p3 <- plot_vessel_move(sim_init = sim, logs = logs, fleet_no = 1, vessel_no = 5,
-		 year_trip = 5, trip_no = 10)
+		 year_trip = 2, trip_no = 6)
 p3
 
 p4 <- plot_realised_stepF(logs = logs, fleet_no = 1, vessel_no = 1)
@@ -378,6 +378,19 @@ p7 <- Bens_plot_pop_spatiotemp(results = res,
 		 save.location = "testfolder"
 		 )
 View(p7)
+
+p8 <- plot_spatiotemp_hab(hab = hab, moveCov = moveCov, spwn_wk = list("spp1" = 4:8, "spp2" = 4:8), plot.file =  "testfolder")
+
+
+
+#plotting habitat and spawning habitat
+
+
+#old version
+plot_habitat(hab$hab)
+
+## Plot the adjusted habitat fields
+plot_habitat(hab$spwn_hab)
 
 
 
