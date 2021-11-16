@@ -33,7 +33,7 @@ init_moveCov <- function (sim_init = NULL, steps = 52, spp_tol = NULL) {
 		}
 
 		if(i > 1) {
-			covariate.trend <- ifelse(row(temp) + col(temp) < ((nx + ny) / 2), 
+			covariate.trend <- ifelse(row(temp) + col(temp) < ((nx + ny) / 2), #this creates a matrix where the upper half is true and the lower half is false going along the antidiagonal
 						  covariate.trend_base + (10 * (i/steps)), 
 						  covariate.trend_base - (10 * (i/steps)))
 			cov.matrix[[i]] <- covariate.trend
