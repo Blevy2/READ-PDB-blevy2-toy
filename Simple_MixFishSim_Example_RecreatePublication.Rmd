@@ -20,11 +20,13 @@ First, load the packages and set a seed for reproducibility.
 #install.packages('devtools')
 #install.packages('githubinstall')
 
-#library(devtools)
-#library(githubinstall)
+# library(devtools)
+# library(githubinstall)
+# install_github("pdolder/MixFishSim")
+# 
+# 
+# githubinstall("MixFishSim")
 
-#githubinstall("MixFishSim")
-#install_github("pdolder/MixFishSim")
 
 #install.packages('Rcpp')
 #install.packages('Rtools')
@@ -60,9 +62,9 @@ The object returned is used internally by MixFishSim a list with two levels:
 
 ```{r basic}
 
-sim <- init_sim(nrows = 100, ncols = 100, n_years = 1, n_tows_day = 4,
+sim <- init_sim(nrows = 100, ncols = 100, n_years = 20, n_tows_day = 4,
 		n_days_wk_fished = 5, n_fleets = 2, n_vessels = 20, n_species = 4,
-	  move_freq = 2)
+	  move_freq = 1)
 
 class(sim)
 sim$idx
@@ -202,7 +204,7 @@ We can plot the starting distributions for each population as a check.
 Pop <- init_pop(sim_init = sim, Bio = c("spp1" = 1e5, "spp2" = 2e5,"spp3" = 1e5, "spp4" = 1e4),
 		hab = hab[["hab"]], start_cell = c(5,5), #single start cell for all species?
 		lambda = c("spp1" = 0.1, "spp2" = 0.1,"spp3" = 0.1, "spp4" = 0.1), #same lambda for all?
-		init_move_steps = 20,
+		init_move_steps = 40,
 		rec_params = list("spp1" = c("model" = "BH", "a" = 6, "b" = 4, "cv" = 0.7),
 				  "spp2" = c("model" = "BH", "a" = 27, "b" = 4,"cv" = 0.6),
 				  "spp3" = c("model" = "BH", "a" = 18, "b" = 11,"cv" = 0.7),
@@ -216,6 +218,8 @@ Pop <- init_pop(sim_init = sim, Bio = c("spp1" = 1e5, "spp2" = 2e5,"spp3" = 1e5,
 names(Pop)
 
 Pop$dem_params
+
+par(mfrow = c(2,2))
 
 image(Pop$Start_pop[[1]], main = "spp1 starting biomass")
 image(Pop$Start_pop[[2]], main = "spp2 starting biomass")
