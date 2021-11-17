@@ -5,6 +5,8 @@ vignette: >
   %\VignetteIndexEntry{Simple MixFishSim Example}
     %\VignetteEngine{knitr::rmarkdown}
       \usepackage[utf8]{inputenc}
+editor_options: 
+  chunk_output_type: console
 ---
 
 This is a simple example of how to use \textbf{'MixFishSim'} to generate
@@ -237,6 +239,9 @@ interact.
 
 ```{r temp}
 
+
+
+
 moveCov <- init_moveCov(sim_init = sim, steps = 52,
 			spp_tol = list("spp1" = list("mu" = 12, "va" = 8),
 				       "spp2" = list("mu" = 15, "va" = 9), #given as 7 in code but 9 in paper
@@ -256,6 +261,14 @@ lines(norm_fun(x = 0:25, mu = 14, va = 10)/ max(norm_fun(0:25, 14, 10)),
 legend(x = 2, y = 0.9, legend = c("spp1", "spp2"), lwd = 2, col = c("black", "blue","green","red"))
 
 plot_spatiotemp_hab(hab = hab, moveCov = moveCov, spwn_wk = list("spp1" = 16:18, "spp2" = 16:19,"spp3" = 16:18, "spp4" = 18:20), plot.file =  "testfolder")
+
+
+
+#to plot just the temp preferences over time
+source("R/BENS_plot_spatiotemp_hab_justtemp.R")
+
+BENS_plot_spatiotemp_hab_justtemp(hab = hab, moveCov = moveCov, spwn_wk = list("spp1" = 16:18, "spp2" = 16:19,"spp3" = 16:18, "spp4" = 18:20), plot.file =  "testfolder")
+
 
 ```
 
@@ -418,7 +431,7 @@ p6
 source("R/Bens_plot_pop_spatiotemp.R")
 p7 <- Bens_plot_pop_spatiotemp(results = res,
 		 save = TRUE, 
-		 save.location = "C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/testfolder"
+		 save.location = "testfolder/spatialplots"
 		 )
 p7
 
