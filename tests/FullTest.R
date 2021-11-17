@@ -6,7 +6,7 @@ set.seed(123, kind = "L'Ecuyer-CMRG")
 
 ## initialise the simulation
 
-sim <- init_sim(nrows = 100, ncols = 100, n_years = 2, n_tows_day = 4, n_days_wk_fished = 5,
+sim <- init_sim(nrows = 100, ncols = 100, n_years = 20, n_tows_day = 4, n_days_wk_fished = 5,
      n_fleets = 2, n_vessels = 10, n_species = 2, move_freq = 2)
 
 # Here's what is produced...
@@ -219,7 +219,7 @@ image(1:100, 1:100, 0.02 * 100 * Pop[["Start_pop"]][[1]] +
                 0.01 * 200 * Pop[["Start_pop"]][[2]])
 
 points(res[["fleets_catches"]][[2]][[1]][[v]][1041:2080, "x"], 
-     res[["fleets_catches"]][[2]][[1]][[v]][1041:2080, "y"], pch = "x")
+     res[["fleets_catches"]][[2]][[1]][[v]][1041:2080, "y"], pch = "X" )
 
 
 ## Considerations:
