@@ -45,17 +45,27 @@ coord_equal()
 #from https://www.r-graph-gallery.com/27-levelplot-with-lattice.html
 
 #install.packages("lattice")
+#install.packages("RColorBrewer")
 library(lattice)
 
-x<-res[["fleets_catches"]][[2]][[1]][[v]][1041:2080, "x"]
-y<-res[["fleets_catches"]][[2]][[1]][[v]][1041:2080, "y"]
 
-x<-seq(1,sim$idx[["ncols"]])
-y<-seq(1,sim$idx[["ncows"]])
-data<-res[["pop_bios"]][[44]][[1]]
+#convert list into matrix
+Pop<-matrix(unlist(res$pop_bios[[1]][[1]]),ncol = 100,nrow=100)
+
+levelplot(Pop,col.regions = terrain.colors(20)) #number in terrain.colors tells how many colors to use
+
+levelplot(Pop,col.regions = heat.colors(15)) #number in terrain.colors tells how many colors to use
+
+library(RColorBrewer)
+coul <- colorRampPalette(brewer.pal(8, "PiYG"))(25)
+levelplot(Pop, col.regions = coul) # try cm.colors() or terrain.colors()
 
 
-levelplot()
+
+
+
+
+
 
 
 #assumes results are in res
