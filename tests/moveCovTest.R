@@ -64,7 +64,7 @@ Pop <- init_pop(sim_init = sim, Bio = c(spp1 = 1e5, spp2 = 2e5, spp3 = 1e5, spp4
 
 #### Spatiotemporal movement covariates
 
-moveCov <- init_moveCov(sim_init = sim, steps = 52, spp_assoc = list("spp1" = 1, "spp2" = -1, "spp3" = -1, "spp4" = 1))
+moveCov <- init_moveCov(sim_init = sim, steps = 52)
 
 sapply(moveCov[["cov.matrix"]], range)
 

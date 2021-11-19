@@ -42,6 +42,12 @@ coord_equal()
 
 
 
+
+
+
+
+
+
 #from https://www.r-graph-gallery.com/27-levelplot-with-lattice.html
 
 #install.packages("lattice")
@@ -91,3 +97,23 @@ for(i in timespan){
 points(res[["fleets_catches"]][[2]][[1]][[v]][i, "x"], 
        res[["fleets_catches"]][[2]][[1]][[v]][i, "y"], pch = "x",cex=sqrt(i) )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#to plot just the temp preferences over time
+source("R/BENS_plot_spatiotemp_hab_justtemp.R")
+
+BENS_plot_spatiotemp_hab_justtemp(hab = hab, moveCov = moveCov, 
+spwn_wk = list("spp1" = 16:18, "spp2" = 16:19,"spp3" = 16:18, "spp4" = 18:20), 
+plot.file =  "testfolder")
