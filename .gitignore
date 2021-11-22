@@ -4,5 +4,8 @@
 .Ruserdata
 MixFishSim-master.zip
 .Rproj.user
+/testfolder/**
+/testfolder/
 /testfolder
 .png
+*.png
