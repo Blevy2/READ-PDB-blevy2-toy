@@ -9,3 +9,4 @@ MixFishSim-master.zip
 /testfolder
 .png
 *.png
+/testfolder/*.png
