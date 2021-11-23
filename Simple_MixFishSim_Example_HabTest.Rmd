@@ -33,7 +33,7 @@ library(MixFishSim)
 library(knitr)
 opts_chunk$set(tidy = TRUE)
 
-library(reshape2)
+#library(reshape2)
 
 set.seed(123)
 
@@ -60,7 +60,7 @@ The object returned is used internally by MixFishSim a list with two levels:
 
 ```{r basic}
 
-sim <- init_sim(nrows = 100, ncols = 100, n_years = 2, n_tows_day = 4,
+sim <- init_sim(nrows = 1000, ncols = 1000, n_years = 2, n_tows_day = 4,
 		n_days_wk_fished = 5, n_fleets = 2, n_vessels = 20, n_species =
 			6, move_freq = 2)
 
@@ -208,7 +208,7 @@ source("R/BENS_plot_habitat.R")
 				  "spp.1" = list('nu' = 66,
 						'var' = 1,
 						'scale' = 12,
-						'Aniso' = matrix(nc = 2, c(1,1,1,1))),
+						'Aniso' = matrix(nc = 2, c(1,0,0,1))),
 				 "spp.2" = list('nu' = 66,
 						'var' = 1,
 						'scale' = 12,
@@ -225,7 +225,7 @@ source("R/BENS_plot_habitat.R")
 				  "spp.5" = list('nu' = 66, 
 						'var' = 1,
 						'scale' = 12,
-						'Aniso' = matrix(nc = 2, c(10,10,10,10))),
+						'Aniso' = matrix(nc = 2, c(1, -1.5, 1.5, 2))),
 				 "spp.6" = list('nu' = 66,
 						'var' = 1,
 						'scale' = 12,
