@@ -34,10 +34,10 @@ First, load the packages and set a seed for reproducibility.
 #install.packages('Rtools')
 #install.packages('MixFishSim')
 library(MixFishSim)
-library(knitr)
-opts_chunk$set(tidy = TRUE)
+#library(knitr)
+#opts_chunk$set(tidy = TRUE)
 
-library(reshape2)
+#library(reshape2)
 
 #set.seed(123)
 
@@ -259,6 +259,7 @@ lines(norm_fun(x = 0:25, mu = 17, va = 7)/ max(norm_fun(0:25, 17, 7)),
 lines(norm_fun(x = 0:25, mu = 14, va = 10)/ max(norm_fun(0:25, 14, 10)),
       type = "l", col = "red", lwd = 2)
 legend(x = 2, y = 0.9, legend = c("spp1", "spp2"), lwd = 2, col = c("black", "blue","green","red"))
+
 
 plot_spatiotemp_hab(hab = hab, moveCov = moveCov, spwn_wk = list("spp1" = 16:18, "spp2" = 16:19,"spp3" = 16:18, "spp4" = 18:20), plot.file =  "testfolder")
 

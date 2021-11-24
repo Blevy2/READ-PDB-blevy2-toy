@@ -60,7 +60,7 @@ The object returned is used internally by MixFishSim a list with two levels:
 
 ```{r basic}
 
-sim <- init_sim(nrows = 1000, ncols = 1000, n_years = 2, n_tows_day = 4,
+sim <- init_sim(nrows = 100, ncols = 100, n_years = 2, n_tows_day = 4,
 		n_days_wk_fished = 5, n_fleets = 2, n_vessels = 20, n_species =
 			6, move_freq = 2)
 
@@ -176,63 +176,33 @@ source("R/BENS_plot_habitat.R")
 				  "spp.1" = list('nu' = 66,
 						'var' = 1,
 						'scale' = .5,
-						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
+						'Aniso' = matrix(nc = 2, c(0.1, -2, 1, 0.2))),
 				 "spp.2" = list('nu' = 66,
 						'var' = 1,
 						'scale' = 2,
-						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
+						'Aniso' = matrix(nc = 2, c(0.1, -2, 1, 0.2))),
 				 "spp.3" = list('nu' = 66,
 						'var' = 1,
 						'scale' = 6,
-						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
+						'Aniso' = matrix(nc = 2, c(0.1, -2, 1, 0.2))),
 				 "spp.4" = list('nu' = 66,
 						'var' = 1,
 						'scale' = 10,
-						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
+						'Aniso' = matrix(nc = 2, c(0.1, -2, 1, 0.2))),
 				 
 				  "spp.5" = list('nu' = 66, 
 						'var' = 1,
 						'scale' = 20,
-						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
+						'Aniso' = matrix(nc = 2, c(0.1, -2, 1, 0.2))),
 				 "spp.6" = list('nu' = 66,
 						'var' = 1,
 						'scale' = 50,
-						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
+						'Aniso' = matrix(nc = 2, c(0.1, -2, 1, 0.2))),
 				 		 plot.dist = TRUE, 
 				 plot.file = "testfolder"
 				 )
 		  
-		  		  
-#vary Aniso
-		  spp.ctrl = list(
-				  "spp.1" = list('nu' = 66,
-						'var' = 1,
-						'scale' = 12,
-						'Aniso' = matrix(nc = 2, c(1,0,0,1))),
-				 "spp.2" = list('nu' = 66,
-						'var' = 1,
-						'scale' = 12,
-						'Aniso' = matrix(nc = 2, c(1,-1,1,-1))),
-				 "spp.3" = list('nu' = 66,
-						'var' = 1,
-						'scale' = 12,
-						'Aniso' = matrix(nc = 2, c(1, 2, -1, 2))),
-				 "spp.4" = list('nu' = 66,
-						'var' = 1,
-						'scale' = 12,
-						'Aniso' = matrix(nc = 2, c(-1,-1,-1,-1))),
-				 
-				  "spp.5" = list('nu' = 66, 
-						'var' = 1,
-						'scale' = 12,
-						'Aniso' = matrix(nc = 2, c(1, -1.5, 1.5, 2))),
-				 "spp.6" = list('nu' = 66,
-						'var' = 1,
-						'scale' = 12,
-						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
-				 		 plot.dist = TRUE, 
-				 plot.file = "testfolder"
-				 )
+	
 		  
 		  set.seed(123)
 		  #vary scale to recreate out population 1 supplemental images from publication			
@@ -294,6 +264,71 @@ source("R/BENS_plot_habitat.R")
 						'var' = 2,
 						'scale' = 13,
 						'Aniso' = matrix(nc = 2, c(1, 2, -1, 2))),
+		  				 		 plot.dist = TRUE, 
+				 plot.file = "testfolder"
+				 )
+		  
+		  	  		  
+#vary Aniso
+		  spp.ctrl = list(
+				  "spp.1" = list('nu' = 66,
+						'var' = 1,
+						'scale' = 12,
+						'Aniso' = matrix(nc = 2, c(1,0,0,1))),
+				 "spp.2" = list('nu' = 66,
+						'var' = 1,
+						'scale' = 12,
+						'Aniso' = matrix(nc = 2, c(1,-1,1,-1))),
+				 "spp.3" = list('nu' = 66,
+						'var' = 1,
+						'scale' = 12,
+						'Aniso' = matrix(nc = 2, c(1, 2, -1, 2))),
+				 "spp.4" = list('nu' = 66,
+						'var' = 1,
+						'scale' = 12,
+						'Aniso' = matrix(nc = 2, c(-1,-1,-1,-1))),
+				 
+				  "spp.5" = list('nu' = 66, 
+						'var' = 1,
+						'scale' = 12,
+						'Aniso' = matrix(nc = 2, c(1, -1.5, 1.5, 2))),
+				 "spp.6" = list('nu' = 66,
+						'var' = 1,
+						'scale' = 12,
+						'Aniso' = matrix(nc = 2, c(1.5, 3, -3, 4))),
+				 		 plot.dist = TRUE, 
+				 plot.file = "testfolder"
+				 )
+		  
+		  
+		  
+		  
+		  #vary Aniso with SW-NE similarity (opposite antidiag sign)
+		  spp.ctrl = list(
+		  "spp.1" = list('nu' = 1/0.05,
+						'var' = 1,
+						'scale' = 10,
+						'Aniso' = matrix(nc = 2, c(1, -1, 1, 1))),
+		  "spp.2" = list('nu' = 1/0.05,
+						'var' = 1,
+						'scale' = 10,
+						'Aniso' = matrix(nc = 2, c(1, -2, 1, 2))),
+		  "spp.3" = list('nu' = 1/0.05,
+						'var' = 1,
+						'scale' = 10,
+						'Aniso' = matrix(nc = 2, c(1, -2, 1, 2))),
+		  "spp.4" = list('nu' = 1/0.05,
+						'var' = 1,
+						'scale' = 10,
+						'Aniso' = matrix(nc = 2, c(1, -2, 1, 2))),
+		  "spp.5" = list('nu' = 1/0.05,
+						'var' = 1,
+						'scale' = 10,
+						'Aniso' = matrix(nc = 2, c(1, -2, 1, 2))),
+		  "spp.6" = list('nu' = 1/0.05,
+						'var' = 1,
+						'scale' = 10,
+						'Aniso' = matrix(nc = 2, c(1, -2, 1, 2))),
 		  				 		 plot.dist = TRUE, 
 				 plot.file = "testfolder"
 				 )
