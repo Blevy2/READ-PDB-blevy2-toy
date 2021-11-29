@@ -334,6 +334,68 @@ source("R/BENS_plot_habitat.R")
 				 )
 		  
 		  
+		  
+		  #vary Aniso with SW-NE similarity (opposite antidiag sign)
+		  spp.ctrl = list(
+		  "spp.1" = list('nu' = 1/0.05,
+						'var' = 1,
+						'scale' = 10,
+						'Aniso' = matrix(nc = 2, c(1, -1, 1, 1))),
+		  "spp.2" = list('nu' = 1/0.05,
+						'var' = 1,
+						'scale' = 10,
+						'Aniso' = matrix(nc = 2, c(1, -2, 1, 2))),
+		  "spp.3" = list('nu' = 1/0.05,
+						'var' = 1,
+						'scale' = 10,
+						'Aniso' = matrix(nc = 2, c(1, -2, 1, 2))),
+		  "spp.4" = list('nu' = 1/0.05,
+						'var' = 1,
+						'scale' = 10,
+						'Aniso' = matrix(nc = 2, c(1, -2, 1, 2))),
+		  "spp.5" = list('nu' = 1/0.05,
+						'var' = 1,
+						'scale' = 10,
+						'Aniso' = matrix(nc = 2, c(1, -2, 1, 2))),
+		  "spp.6" = list('nu' = 1/0.05,
+						'var' = 1,
+						'scale' = 10,
+						'Aniso' = matrix(nc = 2, c(1, -2, 1, 2))),
+		  				 		 plot.dist = TRUE, 
+				 plot.file = "testfolder"
+				 )
+		  
+		  
+#tests of generic setups to hone in on appropriate scale value
+		  spp.ctrl = list(
+		  "spp.1" = list('nu' = 1/0.05,
+						'var' = 1,
+						'scale' = 2,
+						'Aniso' = matrix(nc = 2, c(1, -2, 1, 2))),
+		  "spp.2" = list('nu' = 1/0.05,
+						'var' = 1,
+						'scale' = 12,
+						'Aniso' = matrix(nc = 2, c(1, -2, 1, 2))),
+		  "spp.3" = list('nu' = 1/0.05,
+						'var' = 1,
+						'scale' = 20,
+						'Aniso' = matrix(nc = 2, c(1, -2, 1, 2))),
+		  "spp.4" = list('nu' = 1/0.015,
+						'var' = 1,
+						'scale' = 40,
+						'Aniso' = matrix(nc = 2, c(1.5, -3, 3, 4))),
+		  "spp.5" = list('nu' = 1/0.015,
+						'var' = 1,
+						'scale' = 50,
+						'Aniso' = matrix(nc = 2, c(1.5, -3, 3, 4))),
+		  "spp.6" = list('nu' = 1/0.015,
+						'var' = 1,
+						'scale' = 60,
+						'Aniso' = matrix(nc = 2, c(1.5, -3, 3, 4))),
+		  				 		 plot.dist = TRUE, 
+				 plot.file = "testfolder"
+				 )
+		  
 source("R/BENS_create_hab.R")
 
 source("R/BENS_plot_habitat.R")
