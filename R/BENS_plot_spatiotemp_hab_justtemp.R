@@ -12,7 +12,7 @@
 
 #' @export
 
-BENS_plot_spatiotemp_hab_justtemp <- function(hab = NULL, moveCov = NULL, plot.file = NULL, spwn_wk = NULL) {
+BENS_plot_spatiotemp_hab_justtemp <- function(hab = NULL, moveCov = NULL, plot.file = NULL, spwn_wk = NULL, plot_wk = NULL) {
 
 	nrows <- nrow(hab[["hab"]][[1]]) 
 	ncols <- ncol(hab[["hab"]][[1]])
@@ -24,9 +24,9 @@ for(s in seq_len(length(hab[["hab"]]))) {
 	if(!is.null(plot.file)) {
 	png(filename = paste0(plot.file,'/','justtemp_spatiotemp_spp_',s,'.png'), width = 800, height = 800)
 	}
-	par(mfrow = c(ceiling(sqrt(nt)), ceiling(nt/ceiling(sqrt(nt)))), mar = c(1, 1, 1, 1))
+	par(mfrow = c(ceiling(sqrt(length(plot_wk))), ceiling(length(plot_wk)/ceiling(sqrt(length(plot_wk))))), mar = c(1, 1, 1, 1))
 
-	for(i in seq_len(nt)) {
+	for(i in plot_wk) {
 
 	move_cov_wk <- moveCov[["cov.matrix"]][[i]]
 
