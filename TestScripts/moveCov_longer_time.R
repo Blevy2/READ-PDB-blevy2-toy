@@ -94,12 +94,18 @@ plot_spatiotemp_hab(hab = hab, moveCov = moveCov, spwn_wk = list("spp1" = 16:18,
 
 
 
+
+
+
+
+
+
 #to plot just the temp preferences over time
 source("R/BENS_plot_spatiotemp_hab_justtemp.R")
 
-BENS_plot_spatiotemp_hab_justtemp(plot_wk = seq(1,20*52,20),hab = hab, moveCov = moveCov, spwn_wk = list("spp1" = 16:18, "spp2" = 16:19), plot.file =  "testfolder")
+BENS_plot_spatiotemp_hab_justtemp(plot_wk = c(1,10,20,30,40,50),hab = hab, moveCov = moveCov, spwn_wk = list("spp1" = 16:18, "spp2" = 16:19), plot.file =  "testfolder")
 
-
+dev.off()
 
 
 
@@ -145,6 +151,19 @@ moveCov <- init_moveCov_Bens3(sim_init = sim, steps = steps,
 
 
 
+#fourth try- try to get initial setup to not get so cold/hot on first
+source("R/init_moveCov_Bens4.R")
+
+steps <- 52 #must be multiple of 52
+moveCov <- init_moveCov_Bens4(sim_init = sim, steps = steps,
+                              spp_tol = list("spp1" = list("mu" = 12, "va" = 8),
+                                             "spp2" = list("mu" = 15, "va" = 7)
+                              )
+)
+
+#the above creates a gradient that gets too cold on one side and too hot on the other. 
+#below adjusts it here
+moveCov$cov.matrix[[1]]<-ifelse(moveCov$cov.matrix[[1]]<10,moveCov$cov.matrix[[1]]+.75,moveCov$cov.matrix[[1]]-2.5)
 
 
 #############################################################################################
@@ -183,7 +202,7 @@ for(i in seq(pi/2,2*pi+pi/2,2*pi/51)){
 
 pdf(file="testfolder/moveCov_plots.pdf")
 
-for(j in seq(52)){
+for(j in seq(1)){  #seq(1) plots the first one. to plot them all do seq(52)
 #plot each weekly mean
 wk_meantemp <- vector()
 yr_meantemp <- vector()
@@ -335,7 +354,7 @@ for(i in seq(steps)){
 
 
 #############################################################################################
-###manipulate single temp for re-use  VERSION #3
+###manipulate single yearly temp gradient for re-use  VERSION #3
 #############################################################################################
 #############################################################################################
 ###this version tries to lift up the first copy the correct amount and then copy away the rest
@@ -352,23 +371,32 @@ for(i in seq(steps)){
   
   #create first stretched sequence
   if(i<=52){
-    
+   # print(i)
     #first half the year keep the same while they are decreasing
     # second half of the year stretch the values by inc
     
+    
+    #to achieve correct temp relationship
+    #apply(matrix,1,rev) flips the matrix horizontally 
+    #apply(matrix,2,rev) flips the matrix vertically 
+    #vertical flip not working
+    
+    #have also tried simply t(), but not a matrix
+    
     #decrease
     if((i %% 52 < 27) & (i %% 52 !=0)){
-      moveCov[["cov.matrix"]][[i]] <- Good_moveCov[[i %% 52]]
+      new_moveCov[["cov.matrix"]][[i]] <- Good_moveCov[[i %% 52]]
+
     }
     
     #increase/stretch
     if((i %% 52 >= 27)  & (i %% 52 !=0)){
-      moveCov[["cov.matrix"]][[i]] <- inc*Good_moveCov[[i %% 52]]
+      new_moveCov[["cov.matrix"]][[i]] <- inc*Good_moveCov[[i %% 52]]
     }
     
     #increase/stretch
     if(i %% 52 == 0){
-      moveCov[["cov.matrix"]][[i]] <- inc*Good_moveCov[[52]]
+      new_moveCov[["cov.matrix"]][[i]] <- inc*Good_moveCov[[52]]
     }
   }
   
@@ -376,7 +404,7 @@ for(i in seq(steps)){
   if(i==52){
 
     #rasie up by this amount
-    diff <- mean(as.vector(as.matrix(moveCov[["cov.matrix"]][[52]])))-mean(as.vector(as.matrix(moveCov[["cov.matrix"]][[1]])))
+    diff <- mean(as.vector(as.matrix(new_moveCov[["cov.matrix"]][[52]])))-mean(as.vector(as.matrix(new_moveCov[["cov.matrix"]][[1]])))
        
   }
   
@@ -384,14 +412,31 @@ for(i in seq(steps)){
   #after creating first stretched sequence, use previous one as basis for next one
   if(i>52){
 
-    moveCov[["cov.matrix"]][[i]] <- diff+moveCov[["cov.matrix"]][[i-52]]
+    new_moveCov[["cov.matrix"]][[i]] <- diff+new_moveCov[["cov.matrix"]][[i-52]]
     
     
   }
   
 }
 
+#transpose matrix to create final form
 
+for(i in seq(52)){    #52 weeks = 52 moveCov
+  for(j in seq(100)){ #100 rows and columns
+    print(i)
+    print(j)
+    moveCov[["cov.matrix"]][[i]][,j] <- new_moveCov[["cov.matrix"]][[i]][j,]
+    
+  }
+  }
+
+
+#to plot just the temp preferences over time
+source("R/BENS_plot_spatiotemp_hab_justtemp.R")
+
+BENS_plot_spatiotemp_hab_justtemp(plot_wk = c(1,10,20,30,40,50),hab = hab, moveCov = moveCov, spwn_wk = list("spp1" = 16:18, "spp2" = 16:19), plot.file = NULL)
+
+dev.off()
 
 
 
@@ -401,8 +446,9 @@ for(i in seq(steps)){
 #############################################################################################
 ##PLots
 #############################################################################################
+
 #plot mean in covariate values 
-nyears <- round(steps/52,0)
+
 
 
 #plot each weekly mean
@@ -419,14 +465,14 @@ for(i in seq(steps)){
   wk_maxtemp <- c(wk_maxtemp,max(as.vector(as.matrix(moveCov[["cov.matrix"]][[i]]))))
   
   #record yearly temp
-  if(i %% 51 == 0){    
-    p <- i - 50
+  if(i %% 52 == 0){    
+    p <- i - 51
     yr_meantemp <- c(yr_meantemp,mean(as.vector(wk_meantemp[p:i])))
   }
   
 }
 plot(wk_meantemp)
-plot(wk_meantemp[1:51])
+plot(wk_meantemp[1:60])
 plot(wk_mintemp)
 plot(wk_maxtemp)
 plot(yr_meantemp)
@@ -439,21 +485,106 @@ max(yr_meantemp)-min(yr_meantemp)
 
 
 
+##################################################################
+# PLOTTING THE ABOVE BY QUADRANT
+##################################################################
 
+#first break into strata
+Strata1 <- list()  #matrix(0,nrow=50,ncol=100)
+Strata2 <- list() #matrix(0,nrow=50,ncol=100)
+Strata3 <- list()  #matrix(0,nrow=50,ncol=100)
+Strata4 <- list()
 
-# FINISH BELOW
-
-#compare mean for given week
-nt <- 52  #number of weeks to plot
-par(mfrow = c(ceiling(sqrt(nt)), ceiling(nt/ceiling(sqrt(nt)))), mar = c(1, 1, 1, 1))
-
-
-#seq(1,steps,52) = 1 to steps by size 51
-for(i in seq(52)){
+for(i in seq(52*20)){
   
-  meantemp_jan[i] <- c(meantemp,mean(as.matrix(moveCov[["cov.matrix"]][[i]])))
+#Strata1
+Strata1[[i]]<-moveCov$cov.matrix[[i]][1:50,1:50]
+#Strata2
+Strata2[[i]]<-moveCov$cov.matrix[[i]][1:50,51:100]
+#Strata3
+Strata3[[i]]<-moveCov$cov.matrix[[i]][51:100,1:50]
+#Strata4
+Strata4[[i]]<-moveCov$cov.matrix[[i]][51:100,51:100]
+
+}
+
+#copied above for each strata
+wk_meantemps1 <- vector()
+yr_meantemps1 <- vector()
+wk_mintemps1 <- vector()
+wk_maxtemps1 <- vector()
+
+wk_meantemps2 <- vector()
+yr_meantemps2 <- vector()
+wk_mintemps2 <- vector()
+wk_maxtemps2 <- vector()
+
+wk_meantemps3 <- vector()
+yr_meantemps3 <- vector()
+wk_mintemps3 <- vector()
+wk_maxtemps3 <- vector()
+
+wk_meantemps4 <- vector()
+yr_meantemps4 <- vector()
+wk_mintemps4 <- vector()
+wk_maxtemps4 <- vector()
+
+for(i in seq(steps)){
+  wk_meantemps1 <- c(wk_meantemps1,mean(as.vector(as.matrix(Strata1[[i]]))))
+  wk_mintemps1 <- c(wk_mintemps1,min(as.vector(as.matrix(Strata1[[i]]))))
+  wk_maxtemps1 <- c(wk_maxtemps1,max(as.vector(as.matrix(Strata1[[i]]))))
+  
+  wk_meantemps2 <- c(wk_meantemps2,mean(as.vector(as.matrix(Strata2[[i]]))))
+  wk_mintemps2 <- c(wk_mintemps2,min(as.vector(as.matrix(Strata2[[i]]))))
+  wk_maxtemps2 <- c(wk_maxtemps2,max(as.vector(as.matrix(Strata2[[i]]))))
+  
+  wk_meantemps3 <- c(wk_meantemps3,mean(as.vector(as.matrix(Strata3[[i]]))))
+  wk_mintemps3 <- c(wk_mintemps3,min(as.vector(as.matrix(Strata3[[i]]))))
+  wk_maxtemps3 <- c(wk_maxtemps3,max(as.vector(as.matrix(Strata3[[i]]))))
+  
+  wk_meantemps4 <- c(wk_meantemps4,mean(as.vector(as.matrix(Strata4[[i]]))))
+  wk_mintemps4 <- c(wk_mintemps4,min(as.vector(as.matrix(Strata4[[i]]))))
+  wk_maxtemps4 <- c(wk_maxtemps4,max(as.vector(as.matrix(Strata4[[i]]))))
+  
+  #record yearly temp
+  if(i %% 52 == 0){    
+    p <- i - 51
+    yr_meantemps1 <- c(yr_meantemps1,mean(as.vector(wk_meantemps1[p:i])))
+    yr_meantemps2 <- c(yr_meantemps2,mean(as.vector(wk_meantemps2[p:i])))
+    yr_meantemps3 <- c(yr_meantemps3,mean(as.vector(wk_meantemps3[p:i])))
+    yr_meantemps4 <- c(yr_meantemps4,mean(as.vector(wk_meantemps4[p:i])))
+  }
   
 }
+
+par(mfrow = c(2,2),mar = c(4, 4, 4, 4))
+plot(wk_meantemps1)
+plot(wk_mintemps1)
+plot(wk_maxtemps1)
+plot(yr_meantemps1)
+mtext("Strata 1- NW", side = 3, line = -1, outer = TRUE)
+
+par(mfrow = c(2,2),mar = c(4,4,4,4))
+plot(wk_meantemps2)
+plot(wk_mintemps2)
+plot(wk_maxtemps2)
+plot(yr_meantemps2)
+mtext("Strata 2- NE", side = 3, line = -1, outer = TRUE)
+
+par(mfrow = c(2,2),mar = c(4,4,4,4))
+plot(wk_meantemps3)
+plot(wk_mintemps3)
+plot(wk_maxtemps3)
+plot(yr_meantemps3)
+mtext("Strata 3- SW", side = 3, line = -1, outer = TRUE)
+
+par(mfrow = c(2,2),mar = c(4,4,4,4))
+plot(wk_meantemps4)
+plot(wk_mintemps4)
+plot(wk_maxtemps4)
+plot(yr_meantemps4)
+mtext("Strata 4- SE", side = 3, line = -1, outer = TRUE)
+
 
 
 
