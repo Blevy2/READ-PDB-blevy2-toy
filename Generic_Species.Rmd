@@ -99,12 +99,12 @@ source("R/BENS_plot_habitat.R")
 		  spp.ctrl = list(
 				  "spp.1" = list('nu' = 1/0.05, 
 						'var' = 1,
-						'scale' = 2, 
-						'Aniso' = matrix(nc = 2, c(1, -2, 1, 2))),
+						'scale' = 5, 
+						'Aniso' = matrix(nc = 2,  c(1.5, -3, 3, 4) )),
 				  "spp.2" = list('nu' = 1/0.015, 
 						'var'  = 1,
-						'scale' = 40, 
-						'Aniso' = matrix(nc = 2, c(1.5, -3, 3, 4))),
+						'scale' = 25, 
+						'Aniso' = matrix(nc = 2,c(1, -2, 1, 2))),
 						 plot.dist = TRUE, 
 				 plot.file = "testfolder"
 				 )
