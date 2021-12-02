@@ -17,7 +17,38 @@ BENS_plot_spatiotemp_hab_justtemp <- function(hab = NULL, moveCov = NULL, plot.f
 	nrows <- nrow(hab[["hab"]][[1]]) 
 	ncols <- ncol(hab[["hab"]][[1]])
 
+	library(fields)
 
+	#plot just the temperature gradient
+	
+	  nt <- length(moveCov[["cov.matrix"]])
+	  if(!is.null(plot.file)) {
+	    png(filename = paste0(plot.file,'/','justtemp_spatiotemp','.png'), width = 800, height = 800)
+	  }
+	  par(mfrow = c(ceiling(sqrt(length(plot_wk))), ceiling(length(plot_wk)/ceiling(sqrt(length(plot_wk))))), mar = c(1, 1, 1, 1))
+	  
+	  for(i in plot_wk) {
+	    
+	    move_cov_wk <- moveCov[["cov.matrix"]][[i]]
+
+	    
+      image.plot(move_cov_wk, cex.axis = 1.5, cex.main = 2, col = heat.colors(12), axes = F)
+	    
+	   
+	    axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
+	    axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
+	    text(0.5, 0.98, labels = paste('week', i), cex = 1)
+	    
+	  }
+	  dev.off()
+	
+	
+	
+	
+	
+	
+	#plot species-specific temp preferences
+	
 for(s in seq_len(length(hab[["hab"]]))) {
 
 	nt <- length(moveCov[["cov.matrix"]])
@@ -37,7 +68,7 @@ for(s in seq_len(length(hab[["hab"]]))) {
 		  	  va = moveCov[["spp_tol"]][[s]][["va"]]))
 
 		if(!i %in% spwn_wk[[s]]) {
-		image(move_cov_wk_spp, cex.axis = 1.5, cex.main = 2, col = grey(seq(1,0,l = 51)), axes = F)
+		image.plot(move_cov_wk_spp, cex.axis = 1.5, cex.main = 2, col = heat.colors(12), axes = F)
 		}
 	
 		if(i %in% spwn_wk[[s]]) {
