@@ -22,6 +22,7 @@ problem with this trend is that it just increases temp over the course of a year
 
 init_movCov_Bens3 is an attempt at an oscillating relationship rather than just increasing over the course of a year and then jumping back to a lower value
 
+init_movCov_Bens4 is same as init_moveCov except only creates first matrix. Then this matrix is adjusted, sine is applied, second half stretched, and finally copied 52 times
 
 
 init_sim_Bens creates different week.breaks (called week.breaks.all) that will run from week 1 to week n where n is total week in simulation
