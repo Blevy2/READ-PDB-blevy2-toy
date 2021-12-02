@@ -5,6 +5,12 @@ library(tidyverse)
 library(readxl)
 library(here)
 
+
+
+
+############################################################################
+## Plotting survey by strata
+############################################################################
 #Below assumes surv_random in in environment, created by BENS_init_survey
 
 #change into a data frame to be used by ggplot
@@ -44,7 +50,9 @@ coord_equal()
 
 
 
-
+############################################################################
+## Plotting spatial population plots
+############################################################################
 
 
 
@@ -81,8 +89,9 @@ data<-as.numeric(res[["pop_bios"]][[44]][[1]]) #change to numeric
 
 
 
-
+############################################################################
 #plotting vessel numbers on top of value map
+############################################################################
 library(ggplot2)
 
 timespan <- 100:200
@@ -110,8 +119,9 @@ points(res[["fleets_catches"]][[2]][[1]][[v]][i, "x"],
 
 
 
-
+############################################################################
 #to plot just the temp preferences over time
+############################################################################
 source("R/BENS_plot_spatiotemp_hab_justtemp.R")
 
 BENS_plot_spatiotemp_hab_justtemp(hab = hab, moveCov = moveCov, 
