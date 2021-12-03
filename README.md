@@ -27,3 +27,8 @@ init_movCov_Bens4 is same as init_moveCov except only creates first matrix. Then
 
 init_sim_Bens creates different week.breaks (called week.breaks.all) that will run from week 1 to week n where n is total week in simulation
 week.breaks.all will be used to call the temperature covariate matrix for each week in the simulation (rather than looping back each year)
+
+
+Bens_plot_spatiotemp_hab takes plot_spatiotemp_hab and allows only certain weeks to be plotted, as specified by plot_wk
+
+ens_plot_spatiotemp_hab_justtemp takes plot_spatiotemp_hab and plots only the temperature gradient (no habitat preferences). Also allows only certain weeks to be plotted, as specified by plot_wk
