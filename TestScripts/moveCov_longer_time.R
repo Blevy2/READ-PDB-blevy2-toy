@@ -431,6 +431,28 @@ for(i in seq(52)){    #52 weeks = 52 moveCov
   }
 
 
+#transpose matrix one element at a time to create final form
+
+for(i in seq(52)){    #52 weeks = 52 moveCov
+#  print(i)
+  for(j in seq(100)){ #100 rows and columns
+    
+#    print(j)
+    #pull out row
+    row <- vector()
+    row <- new_moveCov[["cov.matrix"]][[i]][j,]
+    
+    for(k in seq(100)){
+
+ #      print(k)
+       moveCov[["cov.matrix"]][[i]][k,j] <-row[k]
+    }
+    
+  }
+}
+
+
+
 #to plot just the temp preferences over time
 source("R/BENS_plot_spatiotemp_hab_justtemp.R")
 
