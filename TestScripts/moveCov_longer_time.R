@@ -434,11 +434,14 @@ for(i in seq(52)){    #52 weeks = 52 moveCov
 #to plot just the temp preferences over time
 source("R/BENS_plot_spatiotemp_hab_justtemp.R")
 
-BENS_plot_spatiotemp_hab_justtemp(plot_wk = c(1,10,20,30,40,50),hab = hab, moveCov = moveCov, spwn_wk = list("spp1" = 16:18, "spp2" = 16:19), plot.file = NULL)
+BENS_plot_spatiotemp_hab_justtemp(plot_wk = seq(1,1040,50),hab = hab, moveCov = moveCov, spwn_wk = list("spp1" = 16:18, "spp2" = 16:19), plot.file = "testfolder")
 
 dev.off()
 
 
+#plot spatiotemperal distribution (combine temp and spatial preferences)
+source("R/BENS_plot_spatiotemp_hab.R")
+plot_spatiotemp_hab(plot_monthly = TRUE, plot_wk = seq(1,1040,50),hab = hab, moveCov = moveCov, spwn_wk = list("spp1" = 16:18, "spp2" = 16:19), plot.file = "testfolder")
 
 
 
