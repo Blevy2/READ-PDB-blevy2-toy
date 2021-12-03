@@ -440,7 +440,7 @@ dev.off()
 
 
 #plot spatiotemperal distribution (combine temp and spatial preferences)
-source("R/BENS_plot_spatiotemp_hab.R")
+source("R/Bens_plot_spatiotemp_hab.R")
 plot_spatiotemp_hab(plot_monthly = TRUE, plot_wk = seq(1,1040,50),hab = hab, moveCov = moveCov, spwn_wk = list("spp1" = 16:18, "spp2" = 16:19), plot.file = "testfolder")
 
 
