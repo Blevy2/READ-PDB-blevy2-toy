@@ -391,18 +391,20 @@ for(i in seq(steps)){
     if((i %% 52 < 27) & (i %% 52 !=0)){
       new_moveCov[["cov.matrix"]][[i]] <- Good_moveCov[[i %% 52]]
       
-     new_moveCov[["cov.matrix"]][[i]] <- pracma::fliplr(new_moveCov[["cov.matrix"]][[i]])
+     new_moveCov[["cov.matrix"]][[i]] <- pracma::fliplr(new_moveCov[["cov.matrix"]][[i]]) #flip left to right to obtain correct temp gradient (cold NE, hot SW, SW ~ SE)
 
     }
     
     #increase/stretch
     if((i %% 52 >= 27)  & (i %% 52 !=0)){
       new_moveCov[["cov.matrix"]][[i]] <- inc*Good_moveCov[[i %% 52]]
+      new_moveCov[["cov.matrix"]][[i]] <- pracma::fliplr(new_moveCov[["cov.matrix"]][[i]]) #flip left to right to obtain correct temp gradient (cold NE, hot SW, SW ~ SE)
     }
     
     #increase/stretch
     if(i %% 52 == 0){
       new_moveCov[["cov.matrix"]][[i]] <- inc*Good_moveCov[[52]]
+      new_moveCov[["cov.matrix"]][[i]] <- pracma::fliplr(new_moveCov[["cov.matrix"]][[i]]) #flip left to right to obtain correct temp gradient (cold NE, hot SW, SW ~ SE)
     }
   }
   
@@ -431,6 +433,8 @@ for(i in seq(steps)){
 moveCov[["cov.matrix"]] <- new_moveCov[["cov.matrix"]]
 
 
+#detach pracma package incase it interferes with other packages
+detach("package:pracma",unload = TRUE)
 
 # 
 # 
