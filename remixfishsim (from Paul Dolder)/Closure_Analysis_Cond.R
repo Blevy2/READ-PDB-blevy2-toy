@@ -49,7 +49,9 @@ x[which(x>0)] <-1
 over[[i]] <- x
 }
 
-plot <- F
+
+#plotting overlapping habitat areas
+plot <- T
 if(plot) {
 par(mfrow = c(2,3))
 image(over[[1]] + over[[2]], main = "spp1 and spp 2")
