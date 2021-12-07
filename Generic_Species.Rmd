@@ -359,7 +359,7 @@ res <- run_sim(sim_init = sim,
 	       hab_init = hab,
 	       save_pop_bio = TRUE,
 	       survey = surv_random,
-	       closure = closure,
+	       closure = NULL,
 	       InParallel = TRUE)  #does it runin parallel? Doesnt seem like it
 
 ```
