@@ -74,7 +74,7 @@ The object returned is used internally by MixFishSim a list with two levels:
 #NEW VERSION that has week breaks for entire simulation
 source("R/init_sim_Bens_nofish.R")
 sim <- init_sim_Bens_nofish(nrows = 100, ncols = 100, n_years = 20, n_tows_day = 1,
-                n_days_wk_fished = 1, n_fleets = 1, n_vessels = 0, n_species = 2,
+                n_days_wk_fished = 1, n_fleets = 1, n_vessels = 1, n_species = 2,
                 move_freq = 1)
 
 class(sim)
@@ -276,13 +276,13 @@ random walk function.
 
 
 #no fishing
-fleets <- init_fleet(sim_init = sim, VPT = list("spp1" = 1, "spp2" = 1), #VPT = value per ton
-		     Qs = list("fleet 1" = c("spp1" = 0, "spp2" = 0)   #Q = catchability
+fleets <- init_fleet(sim_init = sim, VPT = list("spp1" = 10, "spp2" = 10), #VPT = value per ton
+		     Qs = list("fleet 1" = c("spp1" = 0.1, "spp2" = 0.1)   #Q = catchability
 			       ),
 		     fuelC = list("fleet1" = 3),
 		     step_params = list("fleet 1" = c("rate" = 3, "B1" = 1, "B2" = 2, "B3" = 3)
 					),				
-		     past_knowledge = TRUE,
+		     past_knowledge = FALSE,  #dont use past knowledge
 		     past_year_month = TRUE,
 		     past_trip = TRUE,
 		     threshold = 0.7
@@ -351,6 +351,10 @@ distributions. These can be examined with some inbuilt plotting functions.
 ```{r sim}
 
 source("R/run_sim.R")
+
+
+
+source("R/go_fish.R") #my edited version that skips most things
 
 res <- run_sim(sim_init = sim,
 	       pop_init = Pop,
