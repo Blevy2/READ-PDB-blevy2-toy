@@ -352,9 +352,20 @@ distributions. These can be examined with some inbuilt plotting functions.
 
 source("R/run_sim.R")
 
+source("R/go_fish.R") 
 
 
-source("R/go_fish.R") #my edited version that skips most things
+
+
+
+#to source a new go_fish where I edited to skips most things:
+#1: load file
+source("R/go_fish_Bens.R") #my edited version that skips most things
+#2: allow the function to call other hidden functions from mixfishsim 
+environment(go_fish_Bens) <- asNamespace('MixFishSim')
+#3: replace go_fish with go_fish_Bens in the MixFishSim package
+assignInNamespace("go_fish", go_fish_Bens, ns = "MixFishSim")
+
 
 res <- run_sim(sim_init = sim,
 	       pop_init = Pop,
