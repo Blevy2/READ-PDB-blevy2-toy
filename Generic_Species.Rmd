@@ -276,7 +276,7 @@ random walk function.
 
 
 #no fishing
-fleets <- init_fleet(sim_init = sim, VPT = list("spp1" = 0, "spp2" = 0), #VPT = value per ton
+fleets <- init_fleet(sim_init = sim, VPT = list("spp1" = 1, "spp2" = 1), #VPT = value per ton
 		     Qs = list("fleet 1" = c("spp1" = 0, "spp2" = 0)   #Q = catchability
 			       ),
 		     fuelC = list("fleet1" = 3),
