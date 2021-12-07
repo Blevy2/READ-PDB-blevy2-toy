@@ -64,9 +64,18 @@ The object returned is used internally by MixFishSim a list with two levels:
 
 ```{r basic}
 
-sim <- init_sim(nrows = 100, ncols = 100, n_years = 20, n_tows_day = 4,
-		n_days_wk_fished = 5, n_fleets = 2, n_vessels = 20, n_species = 2,
-	  move_freq = 1)
+#NEW VERSION that has week breaks for entire simulation
+# source("R/init_sim_Bens.R")
+# sim <- init_sim_Bens(nrows = 100, ncols = 100, n_years = 20, n_tows_day = 1,
+#                 n_days_wk_fished = 1, n_fleets = 1, n_vessels = 0, n_species = 2,
+#                 move_freq = 1)
+
+
+#NEW VERSION that has week breaks for entire simulation
+source("R/init_sim_Bens_nofish.R")
+sim <- init_sim_Bens_nofish(nrows = 100, ncols = 100, n_years = 20, n_tows_day = 1,
+                n_days_wk_fished = 1, n_fleets = 1, n_vessels = 0, n_species = 2,
+                move_freq = 1)
 
 class(sim)
 sim$idx
@@ -115,12 +124,12 @@ hab <- BENS_create_hab(sim_init = sim,
 		  
 		  spawn_areas = list(
 				     "spp1" = list(
-						   'area1' = c(40,50,40,50),   #of the form  c(x1, x2, y1, y2) THESE ARE BOUNDARIES OF MATRIX VALUES
-						   'area2' = c(80,90,60,70)   #need to revisit closure areas
+						   'area1' = c(30,45,55,65),   #of the form  c(x1, x2, y1, y2) THESE ARE BOUNDARIES OF MATRIX VALUES
+						   'area2' = c(70,90,50,60)   #need to revisit closure areas
 						   ),
 				     "spp2" = list(
-						   'area1' = c(50,60,30,40),
-						   'area2' = c(80,90,90,90)
+						   'area1' = c(30,45,55,65),
+						   'area2' = c(70,90,50,60)
 						   ),
 				     spwn_mult = 10, 
 				    plot.dist = TRUE, 
@@ -169,30 +178,30 @@ We can plot the starting distributions for each population as a check.
 
 ```{r pop_init}
 
-Pop <- init_pop(sim_init = sim, Bio = c("spp1" = 1e5, "spp2" = 2e5,"spp3" = 1e5, "spp4" = 1e4),
-		hab = hab[["hab"]], start_cell = c(5,5), #single start cell for all species?
-		lambda = c("spp1" = 0.1, "spp2" = 0.1,"spp3" = 0.1, "spp4" = 0.1), #same lambda for all?
-		init_move_steps = 40,
+#Week 13 is first week of april
+#half way through april to half way through may would be week 15-18
+
+Pop <- init_pop(sim_init = sim, Bio = c("spp1" = 1e5, "spp2" = 2e5), #these values from paper 
+		hab = hab[["hab"]], start_cell = c(50,50), 
+		lambda = c("spp1" = 0.1, "spp2" = 0.1), #same lambda for all?
+		init_move_steps = 20,
 		rec_params = list("spp1" = c("model" = "BH", "a" = 6, "b" = 4, "cv" = 0.7),
-				  "spp2" = c("model" = "BH", "a" = 27, "b" = 4,"cv" = 0.6),
-				  "spp3" = c("model" = "BH", "a" = 18, "b" = 11,"cv" = 0.7),
-				  "spp4" = c("model" = "BH", "a" = 0.3, "b" = 0.5,"cv" = 0.6)),
-		rec_wk = list("spp1" = 13:16, "spp2" = 12:16,"spp3" = 14:16, "spp4" = 16:20),
-		spwn_wk = list("spp1" = 16:18, "spp2" = 16:19,"spp3" = 16:18, "spp4" = 18:20),
-		M = c("spp1" = 0.2, "spp2" = 0.1,"spp3" = 0.2, "spp4" = 0.1),
-		K = c("spp1" = 0.3, "spp2" = 0.3,"spp3" = 0.3, "spp4" = 0.3) #all the same for now
+				  "spp2" = c("model" = "BH", "a" = 27, "b" = 4,"cv" = 0.6)), #these values from paper 
+		rec_wk = list("spp1" = 12:15, "spp2" = 12:15),
+		spwn_wk = list("spp1" = 15:18, "spp2" = 15:18),
+		M = c("spp1" = 0.2, "spp2" = 0.1), #these values from paper 
+		K = c("spp1" = 0.3, "spp2" = 0.3) #all the same for now
 		)
 
 names(Pop)
 
 Pop$dem_params
 
-par(mfrow = c(2,2))
+par(mfrow = c(2,1))
 
 image(Pop$Start_pop[[1]], main = "spp1 starting biomass")
 image(Pop$Start_pop[[2]], main = "spp2 starting biomass")
-image(Pop$Start_pop[[3]], main = "spp3 starting biomass")
-image(Pop$Start_pop[[4]], main = "spp4 starting biomass")
+
 					   
 ```
 
@@ -210,9 +219,9 @@ interact.
 
 moveCov <- init_moveCov(sim_init = sim, steps = 52,
 			spp_tol = list("spp1" = list("mu" = 12, "va" = 8),
-				       "spp2" = list("mu" = 15, "va" = 9), #given as 7 in code but 9 in paper
-				       "spp3" = list("mu" = 17, "va" = 7),
-				       "spp4" = list("mu" = 14, "va" = 10)
+				       "spp2" = list("mu" = 15, "va" = 9) #given as 7 in code but 9 in paper
+	#			       "spp3" = list("mu" = 17, "va" = 7),
+	#			       "spp4" = list("mu" = 14, "va" = 10)
 				       )
 			)
 
@@ -222,12 +231,11 @@ lines(norm_fun(x = 0:25, mu = 15, va = 9)/ max(norm_fun(0:25, 15, 9)),
       type = "l", col = "blue", lwd = 2)
 lines(norm_fun(x = 0:25, mu = 17, va = 7)/ max(norm_fun(0:25, 17, 7)),
       type = "l", col = "green", lwd = 2)
-lines(norm_fun(x = 0:25, mu = 14, va = 10)/ max(norm_fun(0:25, 14, 10)),
-      type = "l", col = "red", lwd = 2)
-legend(x = 2, y = 0.9, legend = c("spp1", "spp2"), lwd = 2, col = c("black", "blue","green","red"))
+
+legend(x = 2, y = 0.9, legend = c("spp1", "spp2"), lwd = 2, col = c("black", "blue"))
 
 
-plot_spatiotemp_hab(hab = hab, moveCov = moveCov, spwn_wk = list("spp1" = 16:18, "spp2" = 16:19,"spp3" = 16:18, "spp4" = 18:20), plot.file =  "testfolder")
+plot_spatiotemp_hab(hab = hab, moveCov = moveCov, spwn_wk = list("spp1" = 15:18, "spp2" = 15:18), plot.file =  "testfolder")
 
 
 
@@ -251,20 +259,36 @@ from a fishing tow and the next move by the vessel when using the correlated
 random walk function.
 
 ```{r fleets}
+#initial settings
+# fleets <- init_fleet(sim_init = sim, VPT = list("spp1" = 4, "spp2" = 3),
+# 		     Qs = list("fleet 1" = c("spp1" = 1e-5, "spp2" = 3e-5),
+# 			       "fleet 2" = c("spp1" = 5e-5, "spp2" = 1e-5)
+# 			       ),
+# 		     fuelC = list("fleet1" = 3, "fleet 2" = 8),
+# 		     step_params = list("fleet 1" = c("rate" = 3, "B1" = 1, "B2" = 2, "B3" = 3),
+# 					"fleet 2" = c("rate" = 3, "B1" = 2, "B2" = 4, "B3" = 4)
+# 					),				
+# 		     past_knowledge = TRUE,
+# 		     past_year_month = TRUE,
+# 		     past_trip = TRUE,
+# 		     threshold = 0.7
+# 		     )
 
-fleets <- init_fleet(sim_init = sim, VPT = list("spp1" = 4, "spp2" = 3),
-		     Qs = list("fleet 1" = c("spp1" = 1e-5, "spp2" = 3e-5),
-			       "fleet 2" = c("spp1" = 5e-5, "spp2" = 1e-5)
+
+#no fishing
+fleets <- init_fleet(sim_init = sim, VPT = list("spp1" = 0, "spp2" = 0), #VPT = value per ton
+		     Qs = list("fleet 1" = c("spp1" = 0, "spp2" = 0)   #Q = catchability
 			       ),
-		     fuelC = list("fleet1" = 3, "fleet 2" = 8),
-		     step_params = list("fleet 1" = c("rate" = 3, "B1" = 1, "B2" = 2, "B3" = 3),
-					"fleet 2" = c("rate" = 3, "B1" = 2, "B2" = 4, "B3" = 4)
+		     fuelC = list("fleet1" = 3),
+		     step_params = list("fleet 1" = c("rate" = 3, "B1" = 1, "B2" = 2, "B3" = 3)
 					),				
 		     past_knowledge = TRUE,
 		     past_year_month = TRUE,
 		     past_trip = TRUE,
 		     threshold = 0.7
 		     )
+
+
 
 test_step(step_params = fleets$fleet_params[[1]]$step_params, rev.max = 1e2)
 test_step(step_params = fleets$fleet_params[[2]]$step_params, rev.max = 1e2)
@@ -278,23 +302,23 @@ this, but we simply define a static fixed site closure for demonstration
 purposes. 
 
 ```{r close}
-#practice creating a larger data.frame than just single points
-library(tidyr)
-
-#set x and y min/max which are coordinates on the grid
-xmin <- 6
-xmax <- 10
-ymin <- 26
-ymax <- 40
-
-
-x <- xmin:xmax
-y<- ymin:ymax
-
-#View(crossing(x,y))
-
-closure <- init_closure(input_coords = data.frame(x = x, y = y),
-			spp1 = "spp1", year_start = 2) 
+# #practice creating a larger data.frame than just single points
+# library(tidyr)
+# 
+# #set x and y min/max which are coordinates on the grid
+# xmin <- 6
+# xmax <- 10
+# ymin <- 26
+# ymax <- 40
+# 
+# 
+# x <- xmin:xmax
+# y<- ymin:ymax
+# 
+# #View(crossing(x,y))
+# 
+# closure <- init_closure(input_coords = data.frame(x = x, y = y),
+# 			spp1 = "spp1", year_start = 2) 
 
 ```
 
@@ -309,13 +333,12 @@ if this is required.
 source("R/BENS_init_survey.R")
 
 
-surv_fixed <- BENS_init_survey(sim_init = sim,design = 'fixed_station', n_stations = 48, start_day = 1, stations_per_day = 7, Qs = c("spp1" = 0.1, "spp2"= 0.2))
 
 #CURRENTLY NEED TO MAKE SURE THAT N_STATIONS*#YEARS / #STRATA IS A WHOLE NUMBER OTHERWISE DAY, TOW, YEAR WONT LINEUP WITH NUMBER OF STATIONS
 #ALSO NEED N_STATION TO BE DIVISIBLE BY STATIONS_PER_DAY
 
 
-surv_random <- BENS_init_survey(sim_init = sim,design = 'random_station', n_stations = 48, start_day = 1, stations_per_day = 7, Qs = c("spp1" = 0.1, "spp2"= 0.2), strata_coords = hab$strata, strata_num = hab$stratas )
+surv_random <- BENS_init_survey(sim_init = sim,design = 'random_station', n_stations = 49, start_day = 1, stations_per_day = 7, Qs = c("spp1" = 0.1, "spp2"= 0.2), strata_coords = hab$strata, strata_num = hab$stratas )
 
 ```
 
@@ -335,9 +358,9 @@ res <- run_sim(sim_init = sim,
 	       fleets_init = fleets,
 	       hab_init = hab,
 	       save_pop_bio = TRUE,
-	       survey = surv_fixed,
+	       survey = surv_random,
 	       closure = closure,
-	       InParallel = TRUE)
+	       InParallel = TRUE)  #does it runin parallel? Doesnt seem like it
 
 ```
 
