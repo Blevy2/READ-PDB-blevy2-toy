@@ -17,6 +17,8 @@ sim <- init_sim(nrows = 100, ncols = 100, n_years = 20, n_tows_day = 4,
 
 
 
+
+
 #NEW VERSION that has week breaks for entire simulation
 source("R/init_sim_Bens.R")
 sim <- init_sim_Bens(nrows = 100, ncols = 100, n_years = 20, n_tows_day = 4,
@@ -60,7 +62,7 @@ hab <- BENS_create_hab(sim_init = sim,
                          ),
                          "spp2" = list(
                            'area1' = c(50,60,30,40),
-                           'area2' = c(80,90,90,90)
+                           'area2' = c(70,90,80,90)
                          ),
                          spwn_mult = 10, 
                          plot.dist = TRUE, 
@@ -163,16 +165,31 @@ moveCov <- init_moveCov_Bens4(sim_init = sim, steps = steps,
 
 #the above creates a gradient that gets too cold on one side and too hot on the other. 
 #below adjusts it here
-moveCov$cov.matrix[[1]]<-ifelse(moveCov$cov.matrix[[1]]<10,moveCov$cov.matrix[[1]]+.75,moveCov$cov.matrix[[1]]-2.5)
+
+#this one add to the small and subtracts from the large, but eventually results in values flipping (less than 10 become greater than 10 and vice versa)
+#moveCov$cov.matrix[[1]]<-ifelse(moveCov$cov.matrix[[1]]<10,moveCov$cov.matrix[[1]]+13,moveCov$cov.matrix[[1]]-3.25)  #was +.75 and -2.5
+
+#this one JUST adds to the small to increase min value as max seemed ok
+#moveCov$cov.matrix[[1]]<-ifelse(moveCov$cov.matrix[[1]]<10,moveCov$cov.matrix[[1]]+5,moveCov$cov.matrix[[1]])
+
+#do it in a way that avoids numbers jumping each other
+inc <- 8 #set increase amount
+moveCov$cov.matrix[[1]]<-ifelse(moveCov$cov.matrix[[1]]<10,  #want to add diff to them, but not if
+  
+  ifelse(moveCov$cov.matrix[[1]]+inc<10,moveCov$cov.matrix[[1]]+inc,moveCov$cov.matrix[[1]]+10-.075*(row(moveCov$cov.matrix[[1]])+col(moveCov$cov.matrix[[1]]))),moveCov$cov.matrix[[1]]+1
+  
+  
+                                )
+
 
 
 #############################################################################################
-###take each single original covariate map and apply sine to create 52 different 1-year oscilating pattern
+###take single original covariate map and apply sine to create 1-year oscilating pattern
 #############################################################################################
 
   all_moveCov <- list()  #create list to store all 52 sequences
 
-for(j in seq(length(moveCov[[1]]))){
+for(j in seq(1)){  #now just pulling out first map and making it work
 
   #assign(paste0('moveCov',j),list())  #create list using index j
   
@@ -180,12 +197,12 @@ for(j in seq(length(moveCov[[1]]))){
   
   temp <- list()
 
-for(i in seq(pi/2,2*pi+pi/2,2*pi/51)){
+for(i in seq(pi/2 + 22*2*pi/51 , 2*pi+pi/2 + 22*2*pi/51, 2*pi/51) ){  #old one from August: seq(pi/2,2*pi+pi/2,2*pi/51)
   
  # print(j)
 # print(idx)
   
-  temp[[idx]] <- 0.45*(sin(i)+2)*moveCov[[1]][[j]] #creates list of size 52
+  temp[[idx]] <- 0.3*(sin(i)+2)*moveCov[[1]][[j]] #creates list of size 52  used to be 0.45* and +2
   
     
   idx <- idx + 1
@@ -202,7 +219,7 @@ for(i in seq(pi/2,2*pi+pi/2,2*pi/51)){
 
 pdf(file="testfolder/moveCov_plots.pdf")
 
-for(j in seq(1)){  #seq(1) plots the first one. to plot them all do seq(52)
+for(j in seq(1)){  #seq(1) plots the first year to plot them all do seq(52)
 #plot each weekly mean
 wk_meantemp <- vector()
 yr_meantemp <- vector()
@@ -359,7 +376,7 @@ for(i in seq(steps)){
 #############################################################################################
 ###this version tries to lift up the first copy the correct amount and then copy away the rest
 #############################################################################################
-
+Good_moveCov <- all_moveCov[[1]]  #to be used below
 
 #package for flipping over
 library(pracma)
