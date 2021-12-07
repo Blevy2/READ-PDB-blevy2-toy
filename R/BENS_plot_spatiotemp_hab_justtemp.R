@@ -17,6 +17,7 @@ BENS_plot_spatiotemp_hab_justtemp <- function(hab = NULL, moveCov = NULL, plot.f
   nrows <- nrow(hab[["hab"]][[1]]) 
   ncols <- ncol(hab[["hab"]][[1]])
   
+  
   library(fields)
   library(lattice)
   library(RColorBrewer)
