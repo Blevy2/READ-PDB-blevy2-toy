@@ -71,7 +71,7 @@ The object returned is used internally by MixFishSim a list with two levels:
 #                 move_freq = 1)
 
 
-#NEW VERSION that has week breaks for entire simulation
+#NEW VERSION that has week breaks for entire simulation and allows fishing on just 1 day per week
 source("R/init_sim_Bens_nofish.R")
 sim <- init_sim_Bens_nofish(nrows = 100, ncols = 100, n_years = 20, n_tows_day = 1,
                 n_days_wk_fished = 1, n_fleets = 1, n_vessels = 1, n_species = 2,
