@@ -7,6 +7,8 @@
 
 #Descriptions of new scripts
 
+run_sim has been edited to work for our purposes. This includes eliminating fishing and allowing for a sequence of move_cov matrices to be used
+
 init_movCov_Bens  (original, 2 and 3) each create temperature covariate matrices that extend longer than 1 year
 
 
@@ -33,6 +35,9 @@ init_sim_Bens_nofish is the same as init_sim_Bens except it also creates a day.s
 Bens_plot_spatiotemp_hab takes plot_spatiotemp_hab and allows only certain weeks to be plotted, as specified by plot_wk
 
 Bens_plot_spatiotemp_hab_justtemp takes plot_spatiotemp_hab and plots only the temperature gradient (no habitat preferences). Also allows only certain weeks to be plotted, as specified by plot_wk
+
+
+go_fish_Bens eliminates most of the script to avoid decision about where to fish and instead chooses a random location for the single vessel. At the bottom the catchability value is replaced with a 0
 
 
 
