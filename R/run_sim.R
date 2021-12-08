@@ -286,8 +286,8 @@ catches <- lapply(seq_len(n_fleets), function(fl) {
 		   sp_fleets_catches =  fleets_init[["sp_fleet_catches"]][[fl]], 
 		   closed_areas = AreaClosures, pops = B, t = t)
     })
-
-
+#print("catches")
+#print(catches)
 } # end t==1 run
 
 if(t > 1) {
@@ -350,8 +350,16 @@ spp_catches <- sum_fleets_catches(sim_init = sim_init, fleets_log =
 				  catches)
 
 ## Fs for all populations
-spat_fs <- find_spat_f_pops(sim_init = sim_init, C = spp_catches, B = B, 
-                            dem_params = pop_init[["dem_params"]])
+#spat_fs <- find_spat_f_pops(sim_init = sim_init, C = spp_catches, B = B, 
+#                            dem_params = pop_init[["dem_params"]])
+
+#No fishing so no spatial F. Instead make a matrix of 0s to use elsewhere
+spat_fs <- lapply(paste0("spp", seq_len(n_spp)), function(x) { matrix(data = 0, nrow = nrows, ncol = ncols)  })
+names(spat_fs)  <- paste("spp", seq_len(n_spp), sep = "")
+
+#print("spat_fs")
+#print(spat_fs)
+
 
 #spat_fs <- lapply(names(B), function(x) {
 #			  find_spat_f_naive(C = spp_catches[[x]], B = B[[x]])
