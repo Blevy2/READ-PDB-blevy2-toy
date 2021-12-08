@@ -119,9 +119,10 @@ source("R/BENS_init_survey.R")
 
 #CURRENTLY NEED TO MAKE SURE THAT N_STATIONS*#YEARS / #STRATA IS A WHOLE NUMBER OTHERWISE DAY, TOW, YEAR WONT LINEUP WITH NUMBER OF STATIONS
 #ALSO NEED N_STATION TO BE DIVISIBLE BY STATIONS_PER_DAY
+#ALSO NEED N_STATIONS / STATIONS_PER_DAY <= 52 otherwise wont get to all of them in a year results in NA in the matrix
 
 
-surv_random <- BENS_init_survey(sim_init = sim,design = 'random_station', n_stations = 50, start_day = 1, stations_per_day = 7, Qs = c("spp1" = 0.1, "spp2"= 0.2), strata_coords = hab$strata, strata_num = hab$stratas )
+surv_random <- BENS_init_survey(sim_init = sim,design = 'random_station', n_stations = 40, start_day = 1, stations_per_day = 1, Qs = c("spp1" = 0.1, "spp2"= 0.2), strata_coords = hab$strata, strata_num = hab$stratas )
 
 
 source("R/run_sim.R")
