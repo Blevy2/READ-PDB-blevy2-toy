@@ -395,15 +395,15 @@ print(t)
 	for (i in seq(idx[["n.spp"]])) {
 
 	# store for the fleets record
-	catch[t,paste("spp",i,sep="")] <- pops[[paste("spp",i,sep="")]][coords[1],coords[2]] * 
-		Q[[paste("spp",i,sep="")]] 
+	catch[t,paste("spp",i,sep="")] <- pops[[paste("spp",i,sep="")]][coords[1],coords[2]] * 0   #NO CATCHES
+		#Q[[paste("spp",i,sep="")]] 
 
 	# store for the delay-diff record - add to the passed catch matrix
 	catch_matrix[[paste("spp", i, sep ="")]][coords[1], coords[2]]  <-
 		
 		catch_matrix[[paste("spp", i, sep ="")]][coords[1], coords[2]] +
-		pops[[paste("spp",i,sep="")]][coords[1],coords[2]] *
-		Q[[paste("spp",i,sep="")]] 
+		pops[[paste("spp",i,sep="")]][coords[1],coords[2]] * 0                #NO CATCHES
+		#Q[[paste("spp",i,sep="")]] 
 
 	}
 	
