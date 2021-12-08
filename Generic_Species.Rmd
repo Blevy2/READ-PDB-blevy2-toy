@@ -276,8 +276,8 @@ random walk function.
 
 
 #no fishing
-fleets <- init_fleet(sim_init = sim, VPT = list("spp1" = 10, "spp2" = 10), #VPT = value per ton
-		     Qs = list("fleet 1" = c("spp1" = 0.1, "spp2" = 0.1)   #Q = catchability
+fleets <- init_fleet(sim_init = sim, VPT = list("spp1" = 0, "spp2" = 0), #VPT = value per ton
+		     Qs = list("fleet 1" = c("spp1" = 0, "spp2" = 0)   #Q = catchability
 			       ),
 		     fuelC = list("fleet1" = 3),
 		     step_params = list("fleet 1" = c("rate" = 3, "B1" = 1, "B2" = 2, "B3" = 3)
@@ -362,7 +362,22 @@ environment(go_fish_Bens) <- asNamespace('MixFishSim')
 assignInNamespace("go_fish", go_fish_Bens, ns = "MixFishSim")
 
 
-res <- run_sim(sim_init = sim,
+#run in parallel
+
+library(doParallel)
+no_cores <- detectCores() - 1   #this show 16 cores but I think I have 6??
+
+no_cores <- 5  #one less than I have
+
+registerDoParallel(cores=no_cores)  #fix number of cores to use
+cl <- makeCluster(no_cores, type="FORK")   #create little cluster?  
+registerDoParallel(cl)
+result <- foreach(i = 1:100) %dopar% results(i)
+
+
+res <- list()
+
+res[[i]] <- run_sim(sim_init = sim,
 	       pop_init = Pop,
 	       move_cov = moveCov,
 	       fleets_init = fleets,
@@ -370,7 +385,7 @@ res <- run_sim(sim_init = sim,
 	       save_pop_bio = TRUE,
 	       survey = surv_random,
 	       closure = NULL,
-	       InParallel = TRUE)  #does it runin parallel? Doesnt seem like it
+	       InParallel = TRUE, cores = 10)  #does it runin parallel? Doesnt seem like it
 
 ```
 
