@@ -364,6 +364,8 @@ assignInNamespace("go_fish", go_fish_Bens, ns = "MixFishSim")
 
 run_simulation <- function(x){
   
+  
+library(MixFishSim) #each core needs to load library
    
  res<- run_sim(sim_init = sim,
 	       pop_init = Pop,
