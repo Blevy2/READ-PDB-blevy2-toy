@@ -350,6 +350,7 @@ distributions. These can be examined with some inbuilt plotting functions.
 
 ```{r sim}
 
+
 source("R/run_sim.R")
 
 
@@ -366,6 +367,9 @@ run_simulation <- function(x){
   
   
 library(MixFishSim) #each core needs to load library
+  
+  #load data
+  load("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/20 year moveCov matrices/Final/Final_moveCov_12_9_Bensmethod.RData")
    
  res<- run_sim(sim_init = sim,
 	       pop_init = Pop,
@@ -375,7 +379,7 @@ library(MixFishSim) #each core needs to load library
 	       save_pop_bio = TRUE,
 	       survey = surv_random,
 	       closure = NULL,
-	       InParallel = FALSE)  #does it runin parallel? Doesnt seem like it
+	       InParallel = TRUE)  #does it runin parallel? Doesnt seem like it
 
   
 }
@@ -397,7 +401,13 @@ registerDoParallel(cl)
 
 result <- list()
 
-result[[i]] <- foreach(i=1:3) %dopar% run_simulation(i)
+#below throws an error
+#result <- foreach(i=1:3) %dopar% run_simulation(i)
+
+#below throws a similar error: 3 nodes produced errors; first error: missing value where TRUE/FALSE needed
+result <- parLapply(cl,1:3,run_simulation)
+stopCluster(cl)
+
  
 ```
 
