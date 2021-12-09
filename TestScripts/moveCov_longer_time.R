@@ -19,10 +19,10 @@ sim <- init_sim(nrows = 100, ncols = 100, n_years = 20, n_tows_day = 4,
 
 
 
-#NEW VERSION that has week breaks for entire simulation
+#NEW VERSION that has week breaks for entire simulation and allows no fishing
 source("R/init_sim_Bens.R")
 sim <- init_sim_Bens(nrows = 100, ncols = 100, n_years = 20, n_tows_day = 4,
-                n_days_wk_fished = 5, n_fleets = 2, n_vessels = 20, n_species = 2,
+                n_days_wk_fished = 1, n_fleets = 1, n_vessels = 1, n_species = 2,
                 move_freq = 1)
 
 
@@ -163,6 +163,29 @@ moveCov <- init_moveCov_Bens4(sim_init = sim, steps = steps,
                               )
 )
 
+
+###############################################################################################
+###############################################################################################
+##mean of initial moveCov matrix is 10. seeing how many values are less tahn 10 or more than 10
+mean(moveCov$cov.matrix[[1]])
+
+test_moveCov <- matrix(0, nrow = 100, ncol = 100)
+
+#check where the 10s are
+test_moveCov <- ifelse(moveCov$cov.matrix[[1]]==10,NA,1)  #puts NA on antidiagonal
+#10s exist along the antidiagonal of the matrix
+
+
+#put 1 for <10 and 99 for >10
+test_moveCov <- ifelse(moveCov$cov.matrix[[1]]<10,1,99)
+
+###FINAL TAKEAWAY: NUMBERS ABOVE ANTIDIAGONAL < 10, NUMBERS BELOW > 10, NUMBERS ON IT = 10
+###############################################################################################
+###############################################################################################
+
+
+
+
 #the above creates a gradient that gets too cold on one side and too hot on the other. 
 #below adjusts it here
 
@@ -172,14 +195,18 @@ moveCov <- init_moveCov_Bens4(sim_init = sim, steps = steps,
 #this one JUST adds to the small to increase min value as max seemed ok
 #moveCov$cov.matrix[[1]]<-ifelse(moveCov$cov.matrix[[1]]<10,moveCov$cov.matrix[[1]]+5,moveCov$cov.matrix[[1]])
 
+
+
 #do it in a way that avoids numbers jumping each other
-inc <- 8 #set increase amount
-moveCov$cov.matrix[[1]]<-ifelse(moveCov$cov.matrix[[1]]<10,  #want to add diff to them, but not if
+inc <- 10 #set increase amount
+moveCov$cov.matrix[[1]]<-ifelse(moveCov$cov.matrix[[1]]<10,  #want to add inc to them, but not if it causes values to increase past 10
   
-  ifelse(moveCov$cov.matrix[[1]]+inc<10,moveCov$cov.matrix[[1]]+inc,moveCov$cov.matrix[[1]]+10-.075*(row(moveCov$cov.matrix[[1]])+col(moveCov$cov.matrix[[1]]))),moveCov$cov.matrix[[1]]+1
+  ifelse(moveCov$cov.matrix[[1]]+inc<10,moveCov$cov.matrix[[1]]+inc,moveCov$cov.matrix[[1]]+inc-.075*(row(moveCov$cov.matrix[[1]])+col(moveCov$cov.matrix[[1]]))),moveCov$cov.matrix[[1]]+1
   
   
                                 )
+
+#inc <- 8, +10 instead of +inc, and +1 at the end creates plot I sent to chris
 
 
 
