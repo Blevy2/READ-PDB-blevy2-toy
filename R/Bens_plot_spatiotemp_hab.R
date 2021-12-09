@@ -12,7 +12,7 @@
 
 #' @export
 
-plot_spatiotemp_hab <- function(hab = NULL, moveCov = NULL, plot.file = NULL, spwn_wk = NULL, plot_wk = NULL, plot_monthly = NULL) {
+plot_spatiotemp_hab <- function(hab = NULL, moveCov = NULL, plot.file = NULL, spwn_wk = NULL, plot_wk = NULL, plot_monthly = NULL,colrange = NULL) {
 
 	nrows <- nrow(hab[["hab"]][[1]]) 
 	ncols <- ncol(hab[["hab"]][[1]])
@@ -35,16 +35,16 @@ for(s in seq_len(length(hab[["hab"]]))) {
 				 sapply(move_cov_wk, norm_fun, 
                           mu = moveCov[["spp_tol"]][[s]][["mu"]], 
 		  	  va = moveCov[["spp_tol"]][[s]][["va"]]))
-
+#col = grey(seq(1,0,l = 51)),
 		if(!i %in% spwn_wk[[s]]) {
-		image(hab[["hab"]][[paste0('spp',s)]] * move_cov_wk_spp, cex.axis = 1.5, cex.main = 2, col = grey(seq(1,0,l = 51)), axes = F)
+		image.plot(hab[["hab"]][[paste0('spp',s)]] * move_cov_wk_spp, cex.axis = 1.5, cex.main = 2,  axes = F, zlim = colrange )
 		}
-	
+	# col = grey(seq(1,0,l = 51)),
 		if(i %in% spwn_wk[[s]]) {
-		image(hab[["spwn_hab"]][[paste0('spp',s)]] * move_cov_wk_spp, cex.axis = 1.5, cex.main = 1, col = grey(seq(1,0,l = 51)), axes = F)
+		image.plot(hab[["spwn_hab"]][[paste0('spp',s)]] * move_cov_wk_spp, cex.axis = 1.5, cex.main = 1, axes = F, zlim = colrange )
 		}
-	axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
-	axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
+#	axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
+#	axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
 	text(0.5, 0.98, labels = paste('week', i), cex = 1)
 
 	}
@@ -84,16 +84,16 @@ for(s in seq_len(length(hab[["hab"]]))) {
 	                            sapply(move_cov_wk, norm_fun, 
 	                                   mu = moveCov[["spp_tol"]][[s]][["mu"]], 
 	                                   va = moveCov[["spp_tol"]][[s]][["va"]]))
-	  
+	  #col = grey(seq(1,0,l = 51)), 
 	  if(!i %in% spwn_wk[[s]]) {
-	    image(hab[["hab"]][[paste0('spp',s)]] * move_cov_wk_spp, cex.axis = 1.5, cex.main = 2, col = grey(seq(1,0,l = 51)), axes = F)
+	    image.plot(hab[["hab"]][[paste0('spp',s)]] * move_cov_wk_spp, cex.axis = 1.5, cex.main = 2, axes = F, zlim = colrange )
 	  }
-	  
+	  # col = grey(seq(1,0,l = 51)),
 	  if(i %in% spwn_wk[[s]]) {
-	    image(hab[["spwn_hab"]][[paste0('spp',s)]] * move_cov_wk_spp, cex.axis = 1.5, cex.main = 1, col = grey(seq(1,0,l = 51)), axes = F)
+	    image.plot(hab[["spwn_hab"]][[paste0('spp',s)]] * move_cov_wk_spp, cex.axis = 1.5, cex.main = 1, axes = F, zlim = colrange )
 	  }
-	  axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
-	  axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
+#	  axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
+#	  axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
 	  text(0.5, 0.98, labels = paste('week', i), cex = 1)
 	  
 	  

@@ -8,11 +8,13 @@
 #' @param plot.file path to save the plots of the spatiotemporal habitats 
 #' @param spwn_wk is a named list of the spawning week for each population
 
+#' @param colrange is the color range to use in the image plots. Best to set it as the range of all possible images 
+
 #' @examples None
 
 #' @export
 
-BENS_plot_spatiotemp_hab_justtemp <- function(hab = NULL, moveCov = NULL, plot.file = NULL, spwn_wk = NULL, plot_wk = NULL) {
+BENS_plot_spatiotemp_hab_justtemp <- function(hab = NULL, moveCov = NULL, plot.file = NULL, spwn_wk = NULL, plot_wk = NULL, colrange = NULL) {
   
   nrows <- nrow(hab[["hab"]][[1]]) 
   ncols <- ncol(hab[["hab"]][[1]])
@@ -48,10 +50,10 @@ BENS_plot_spatiotemp_hab_justtemp <- function(hab = NULL, moveCov = NULL, plot.f
  #   levelplot(move_cov_wk, col.regions = coul) # try cm.colors() or terrain.colors()  
  # plot<- levelplot(move_cov_wk, col.regions = coul) # try cm.colors() or terrain.colors()  
 #  print(plot)
-    
-    image(move_cov_wk, cex.axis = 1.5, cex.main = 2, col = heat.colors(12), axes = F)
-    axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
-    axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
+    # col = heat.colors(12)
+    image.plot(move_cov_wk, cex.axis = 1.5, cex.main = 2, axes = F, zlim=colrange)
+   # axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
+  #  axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
     text(0.5, 0.98, labels = paste('week', i), cex = 1)
 
     
@@ -90,16 +92,16 @@ BENS_plot_spatiotemp_hab_justtemp <- function(hab = NULL, moveCov = NULL, plot.f
       
       
       if(!i %in% spwn_wk[[s]]) {
-       
-        image(move_cov_wk_spp, cex.axis = 1.5, cex.main = 2, col = heat.colors(12), axes = F)
+       #, col = heat.colors(12)
+        image.plot(move_cov_wk_spp, cex.axis = 1.5, cex.main = 2, axes = F)
       }
       
       if(i %in% spwn_wk[[s]]) {
-        
-        image( move_cov_wk_spp, cex.axis = 1.5, cex.main = 1, col = grey(seq(1,0,l = 51)), axes = F)
+        col = grey(seq(1,0,l = 51))
+        image.plot( move_cov_wk_spp, cex.axis = 1.5, cex.main = 1,  axes = F)
       }
-      axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
-      axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
+    #  axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
+    #  axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
       text(0.5, 0.98, labels = paste('week', i), cex = 1)
       
     }
