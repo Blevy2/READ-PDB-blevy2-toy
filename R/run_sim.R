@@ -30,6 +30,7 @@ start.time <- Sys.time() # for printing runtime
 ####### Indices #######
 #######################
 
+
 # Extract these to make indexing easier 
 
 ntow         <- sim_init[["idx"]][["ntow"]] # length of t loop
