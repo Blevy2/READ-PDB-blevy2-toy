@@ -217,6 +217,8 @@ interact.
 
 #CREATE USING MOVECOV_LONGER_BENSMETHOD
 
+#make new init_moveCov_Bens5 to load saved init moveCOv sequence and define temperature tolerances
+
 # moveCov <- init_moveCov(sim_init = sim, steps = 52,
 # 			spp_tol = list("spp1" = list("mu" = 12, "va" = 8),
 # 				       "spp2" = list("mu" = 15, "va" = 9) #given as 7 in code but 9 in paper
@@ -349,7 +351,7 @@ the information on fisheries catches, the population dynamics and population
 distributions. These can be examined with some inbuilt plotting functions. 
 
 ```{r sim}
-
+run_simulation <- function(x){
 
 source("R/run_sim.R")
 
@@ -363,7 +365,7 @@ environment(go_fish_Bens) <- asNamespace('MixFishSim')
 assignInNamespace("go_fish", go_fish_Bens, ns = "MixFishSim")
 
 
-run_simulation <- function(x){
+
   
   
 library(MixFishSim) #each core needs to load library
@@ -388,25 +390,30 @@ library(MixFishSim) #each core needs to load library
 
 #run in parallel
 
-library(doParallel)
-no_cores <- detectCores() - 1   #this show 16 cores but I think I have 6??
+library(parallel)
 
-no_cores <- 3  #one less than I have
+nCoresToUse <- detectCores() - 1   #this show 16 cores but I think I have 6??
 
-registerDoParallel(cores=no_cores)  #fix number of cores to use
-cl <- makeCluster(no_cores)   #create little cluster?  
-registerDoParallel(cl)
+nCoresToUse <- 3  #one less than I have
 
+
+cl <- parallel::makeCluster(nCoresToUse)
 
 
 result <- list()
 
-#below throws an error
-#result <- foreach(i=1:3) %dopar% run_simulation(i)
 
-#below throws a similar error: 3 nodes produced errors; first error: missing value where TRUE/FALSE needed
-result <- parLapply(cl,1:3,run_simulation)
-stopCluster(cl)
+result <- parallel::parLapply(cl,1:100,run_simulation)
+parallel::stopCluster(cl)
+
+
+# 
+# #below throws an error
+# #result <- foreach(i=1:3) %dopar% run_simulation(i)
+# 
+# #below throws a similar error: 3 nodes produced errors; first error: missing value where TRUE/FALSE needed
+#  parLapply(cl,1:3,run_simulation)
+# stopCluster(cl)
 
  
 ```
