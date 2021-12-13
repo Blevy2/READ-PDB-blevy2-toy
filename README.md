@@ -27,6 +27,9 @@ init_movCov_Bens3 is an attempt at an oscillating relationship rather than just 
 init_movCov_Bens4 is same as init_moveCov except only creates first matrix. Then this matrix is adjusted, sine is applied, second half stretched, and finally copied 52 times
 
 
+init_pop_Bens same as init_pop except I also record the lambda parameter for use in creating movement probabilities
+
+
 init_sim_Bens creates different week.breaks (called week.breaks.all) that will run from week 1 to week n where n is total week in simulation
 week.breaks.all will be used to call the temperature covariate matrix for each week in the simulation (rather than looping back each year)
 
@@ -38,6 +41,8 @@ Bens_plot_spatiotemp_hab_justtemp takes plot_spatiotemp_hab and plots only the t
 
 
 go_fish_Bens eliminates most of the script to avoid decision about where to fish and instead chooses a random location for the single vessel. At the bottom the catchability value is replaced with a 0
+
+
 
 
 
