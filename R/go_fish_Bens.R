@@ -49,9 +49,10 @@ PastKnowledge <- params[["past_knowledge"]]  # overall flag if past knowledge us
 coords <- c(round(runif(1,1,idx[["nrows"]])),round(runif(1,1,idx[["ncols"]]))) # Choose a random lat and lon
 
 #}
-	
+
+if(t%%52 == 0){
 print("inside edited go_fish_Bens")
-print(t)
+print(t)}
 
 # # For t > 1
 # if(t > 1) {   #THIS IS CLOSED ALL THE WAY DOWN ON LINE 383
