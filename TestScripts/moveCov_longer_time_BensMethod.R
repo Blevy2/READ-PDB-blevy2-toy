@@ -104,6 +104,22 @@ dev.off()
 
 
 
+#############################################################################################
+###Init moveCov
+
+#############################################################################################
+
+#fourth try (others in original file) - try to get initial setup to not get so cold/hot on first
+source("R/init_moveCov_Bens4.R")
+
+steps <- 52 #must be multiple of 52
+moveCov <- init_moveCov_Bens4(sim_init = sim, steps = steps,
+                              spp_tol = list("spp1" = list("mu" = 12, "va" = 8),
+                                             "spp2" = list("mu" = 15, "va" = 7)
+                              )
+)
+
+
 ###############################################################################################
 ###############################################################################################
 ##mean of initial moveCov matrix is 10. seeing how many values are less tahn 10 or more than 10
