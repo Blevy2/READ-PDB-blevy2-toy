@@ -423,9 +423,9 @@ B <- Bp1
 # 	survey[["log.mat"]] <- log.mat
 # 
 # }
-# 
-# 
-# } # end if statement
+
+
+} # end if statement
 
 #######################
 ##### Pop movement ####
