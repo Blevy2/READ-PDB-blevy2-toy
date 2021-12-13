@@ -82,16 +82,16 @@ closure_list <- vector("list", 52 * (sim_init[["idx"]][["ny"]] - closure[["year_
 
 if(is.null(closure)) { closure_list <- NULL} 
 		       
-##################################q
-###### Move probabilities #########
-###################################
-print("Calculating movement probabilities")
-
-MoveProb  <- lapply(paste0("spp", seq_len(n_spp)), function(s) { move_prob_Lst(lambda = 0.3, hab = hab_init[["hab"]][[s]])})
-MoveProb_spwn <- lapply(paste0("spp", seq_len(n_spp)), function(s) { move_prob_Lst(lambda = 0.3, hab = hab_init[["spwn_hab"]][[s]])})
-	  
-names(MoveProb)      <- paste0("spp", seq_len(n_spp))
-names(MoveProb_spwn) <- paste0("spp", seq_len(n_spp))
+# ###################################
+# ###### Move probabilities #########  I MOVED THESE OUT OF HERE TO IMPROVE SPEED
+# ###################################
+# print("Calculating movement probabilities")
+# 
+# MoveProb  <- lapply(paste0("spp", seq_len(n_spp)), function(s) { move_prob_Lst(lambda = 0.3, hab = hab_init[["hab"]][[s]])})
+# MoveProb_spwn <- lapply(paste0("spp", seq_len(n_spp)), function(s) { move_prob_Lst(lambda = 0.3, hab = hab_init[["spwn_hab"]][[s]])})
+# 	  
+# names(MoveProb)      <- paste0("spp", seq_len(n_spp))
+# names(MoveProb_spwn) <- paste0("spp", seq_len(n_spp))
 
 ## Avoid printing every tow
 print.seq <- seq(1, ntow, 100)
