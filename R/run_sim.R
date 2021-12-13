@@ -12,7 +12,7 @@
 #' @param hab_init is the parameterised habitat maps from \code{create_hab}
 #' @param save_pop_bio is a logical flag to indicate if you want to record #' true spatial population at each time step (day)
 #' @param survey is the survey settings from \link{init_survey}, else NULL if no survey is due to be simulated
-#' @param closure is the spatial closure settings from \link{init_closure}m
+#' @param closure is the spatial closure settings from \link{init_closure}
 #' else NULL if no closures are to be implemented
 
 #' @return is the results...
