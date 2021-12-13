@@ -393,37 +393,39 @@ B <- Bp1
 ## scientific survey
 ####################
 
-if(sim_init[["brk.idx"]][["day.breaks"]][t] %in% survey[["log.mat"]][,"day"] & !is.null(survey)) {
-
-##print("undertaking scientific survey")
-
-# doy and y
-  doy <- sim_init[["brk.idx"]][["day.breaks"]][t]
-  y   <- sim_init[["brk.idx"]][["year.breaks"]][t]
-
-	# survey log
-	log.mat <- survey[["log.mat"]]
-
-	# survey locations
-	x_loc <- log.mat[log.mat[,"day"] == doy & log.mat[,"year"] == y, "x"]
-	y_loc <- log.mat[log.mat[,"day"] == doy & log.mat[,"year"] == y, "y"]
-
-	# For each set of locations
-	for(i in seq_len(length(x_loc))) {
-		
-# For each species
-for(s in seq_len(n_spp)) {
-log.mat[log.mat[,"day"]==doy & log.mat[,"year"]==y,paste0("spp",s)][i]  <-  	B[[s]][x_loc[i],y_loc[i]] * as.numeric(survey[["survey_settings"]][[paste0("Qs.spp",s)]])
-}
-	}
-
-	# return log.mat to the list
-	survey[["log.mat"]] <- log.mat
-
-}
-
-
-} # end if statement
+# #SKIPPING FOR NOW AND WILL SAMPLE AFTERWARDS
+# 
+# if(sim_init[["brk.idx"]][["day.breaks"]][t] %in% survey[["log.mat"]][,"day"] & !is.null(survey)) {
+# 
+# ##print("undertaking scientific survey")
+# 
+# # doy and y
+#   doy <- sim_init[["brk.idx"]][["day.breaks"]][t]
+#   y   <- sim_init[["brk.idx"]][["year.breaks"]][t]
+# 
+# 	# survey log
+# 	log.mat <- survey[["log.mat"]]
+# 
+# 	# survey locations
+# 	x_loc <- log.mat[log.mat[,"day"] == doy & log.mat[,"year"] == y, "x"]
+# 	y_loc <- log.mat[log.mat[,"day"] == doy & log.mat[,"year"] == y, "y"]
+# 
+# 	# For each set of locations
+# 	for(i in seq_len(length(x_loc))) {
+# 		
+# # For each species
+# for(s in seq_len(n_spp)) {
+# log.mat[log.mat[,"day"]==doy & log.mat[,"year"]==y,paste0("spp",s)][i]  <-  	B[[s]][x_loc[i],y_loc[i]] * as.numeric(survey[["survey_settings"]][[paste0("Qs.spp",s)]])
+# }
+# 	}
+# 
+# 	# return log.mat to the list
+# 	survey[["log.mat"]] <- log.mat
+# 
+# }
+# 
+# 
+# } # end if statement
 
 #######################
 ##### Pop movement ####
