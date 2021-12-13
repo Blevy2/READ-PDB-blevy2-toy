@@ -98,9 +98,9 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 
 	  
 	  #prepare indices for each strata 
-	  index <- matrix(0,1,100)  #large vector of zeros
+	  index <- vector()  #empty vector
 	  for(j in unique_numbers){
-	    index[j]<-1
+	    index[j]<-0
 
 	
 	  #go through entire strata and number each strata 1 to n where n is the total elements in the strata
@@ -138,16 +138,21 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 	    #index[j] is how many total stations there are in each strata
 	    #currently dividing total number of samples evening among each strata
 	    my_sample <- sample(index[j],n_stations*sim_init[["idx"]][["ny"]]/length(strata_index_list),replace = FALSE)
-	    
+#	print("max/min is")
+#	print(max(my_sample))
+#	print(min(my_sample))
+#	print("length index j")
+#	print(length(index[j]))
+#	View(index)
 	    #find index for each sample
 	    for(i in seq(1:length(my_sample))){
 	    coords <- c(coords,which(strata_index_list[[j]]==my_sample[i]))
-	    
+
 	    #record strata number
 	    str_num <-c(str_num,unique_numbers[j])
 	    }
 	    
-	    
+#	    print(length(coords))   #LENGTH OF COORDS IS NOT ALWAYS THE SAME WHICH MEANS IT CANT ALWAYS FIND MY_SAMPLE VALUES IN STRATA_INDEX_LIST 
 	  }
 	  
 	
@@ -165,6 +170,9 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 	  
 	  x<-vector()
 	  y<-vector()
+	  
+#	  View(coords)
+#	  View(str_num)
 	  
 	  #translate each matrix position into an (x,y) index for given strata
 	  for(i in coords){
@@ -204,6 +212,11 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 	log.mat 	       <- matrix(NA, nrow = length(x), 
 	                          ncol = 7 + idx[["n.spp"]])
 #	View(log.mat)
+	
+	#print(str_num)
+#	print(length(str_num))
+	
+#	print(length(log.mat[,1]))
 	
 	colnames(log.mat)      <- c("station_no", "x","y","strata","day","tow","year",
 	                            paste0("spp",seq(idx[["n.spp"]])))
