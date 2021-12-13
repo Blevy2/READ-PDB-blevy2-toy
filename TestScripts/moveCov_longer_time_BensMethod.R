@@ -537,3 +537,117 @@ mtext("Strata 4- SE", side = 3, line = -1, outer = TRUE)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#############################################################################################
+###manipulate single yearly temp gradient for re-use  VERSION #3 (others in original file)
+#############################################################################################
+#############################################################################################
+###THIS VERSION IS TO SIMPLY COPY THE SAME PATTERN WITH NO TEMP INCREASE
+#############################################################################################
+Good_moveCov <- all_moveCov  #to be used below
+
+
+#take initial yearly run and extend it so that temp growth over time is 5 degrees
+
+
+#moveCov <- list()
+steps <- 52*20 #total months
+inc <- 1 #percent increase each year (IE, NONE)
+new_moveCov <- list()
+
+
+for(i in seq(steps)){
+  
+  
+  
+  #week 1 is 1st week january
+  #temp decreases until week 5 (increases again starting week 6)
+  #temp increases through week 30 (decreases again starting week 31)
+  
+  #run for 5 weeks, start stretching from week 6 through week 30 then raise up remainin points by difference between stretchd week 30 and original week 30
+  
+  
+  #decrease
+  if(i <= 5){
+    new_moveCov[["cov.matrix"]][[i]] <- Good_moveCov[[i]]
+    
+  }
+  
+  #increase/stretch
+  if( (i >= 6)  & (i <= 30 ) ){
+    new_moveCov[["cov.matrix"]][[i]] <- inc*Good_moveCov[[i]]
+  }
+  
+  
+  
+  
+  #after creating first stretched sequence, see how far first and last mean values are
+  if(i==31){
+    
+    #rasie up by this amount
+    diff <- 0
+    
+  }
+  
+  #finish off the first year
+  
+  if((i >=31) & (i<=52)){
+    
+    new_moveCov[["cov.matrix"]][[i]] <- diff+Good_moveCov[[i]]
+    
+  }
+  
+  
+  
+  #after creating first stretched sequence, use previous one as basis for next one
+  if(i>52){
+    
+    new_moveCov[["cov.matrix"]][[i]] <- diff+new_moveCov[["cov.matrix"]][[i-52]]
+    
+    
+  }
+  
+}
+
+
+
+#pass to moveCov to be used elsewhere
+moveCov[["cov.matrix"]] <- new_moveCov[["cov.matrix"]]
+
+
+
+
+
+
