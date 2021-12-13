@@ -181,7 +181,8 @@ We can plot the starting distributions for each population as a check.
 #Week 13 is first week of april
 #half way through april to half way through may would be week 15-18
 
-Pop <- init_pop(sim_init = sim, Bio = c("spp1" = 1e5, "spp2" = 2e5), #these values from paper 
+source("R/init_pop_Bens.R")
+Pop <- init_pop_Bens(sim_init = sim, Bio = c("spp1" = 1e5, "spp2" = 2e5), #these values from paper 
 		hab = hab[["hab"]], start_cell = c(50,50), 
 		lambda = c("spp1" = 0.1, "spp2" = 0.1), #same lambda for all?
 		init_move_steps = 20,
@@ -193,6 +194,22 @@ Pop <- init_pop(sim_init = sim, Bio = c("spp1" = 1e5, "spp2" = 2e5), #these valu
 		K = c("spp1" = 0.3, "spp2" = 0.3) #all the same for now
 		)
 
+
+
+#Calculate movement probabilities (used to be in run_sim)
+MoveProb  <- lapply(paste0("spp", seq_len(sim[["idx"]][["n.spp"]])), function(s) { move_prob_Lst(lambda = Pop[["dem_params"]][[s]][["lambda"]], hab = hab[["hab"]][[s]])})
+
+
+MoveProb_spwn <- lapply(paste0("spp", seq_len(sim[["idx"]][["n.spp"]])), function(s) { move_prob_Lst(lambda = Pop[["dem_params"]][[s]][["lambda"]], hab = hab[["spwn_hab"]][[s]])})
+
+
+names(MoveProb)      <- paste0("spp", seq_len(sim[["idx"]][["n.spp"]]))
+names(MoveProb_spwn) <- paste0("spp", seq_len(sim[["idx"]][["n.spp"]]))
+	
+	
+	
+
+
 names(Pop)
 
 Pop$dem_params
@@ -201,6 +218,8 @@ par(mfrow = c(2,1))
 
 image(Pop$Start_pop[[1]], main = "spp1 starting biomass")
 image(Pop$Start_pop[[2]], main = "spp2 starting biomass")
+
+
 
 					   
 ```
@@ -214,19 +233,14 @@ interact.
 
 ```{r temp}
 
+#set temperature preferences manually. 
+#The following assumes moveCov has been created and already has an empty spp_tol sublist
+moveCov[["spp_tol"]] <- list() #just in case
+moveCov[["spp_tol"]] <- list("spp1" = list("mu" = 12, "va" = 8),
+				                               "spp2" = list("mu" = 15, "va" = 9) )
 
-#CREATE USING MOVECOV_LONGER_BENSMETHOD
 
-#make new init_moveCov_Bens5 to load saved init moveCOv sequence and define temperature tolerances
-
-# moveCov <- init_moveCov(sim_init = sim, steps = 52,
-# 			spp_tol = list("spp1" = list("mu" = 12, "va" = 8),
-# 				       "spp2" = list("mu" = 15, "va" = 9) #given as 7 in code but 9 in paper
-# 	#			       "spp3" = list("mu" = 17, "va" = 7),
-# 	#			       "spp4" = list("mu" = 14, "va" = 10)
-# 				       )
-# 			)
-# 
+ 
 # plot(norm_fun(x = 0:25, mu = 12, va = 8)/max(norm_fun(0:25, 12, 8)),
 #      type = "l", xlab = "Temperature", ylab = "Tolerance", lwd = 2)
 # lines(norm_fun(x = 0:25, mu = 15, va = 9)/ max(norm_fun(0:25, 15, 9)),
@@ -340,7 +354,9 @@ source("R/BENS_init_survey.R")
 #ALSO NEED N_STATIONS / STATIONS_PER_DAY <= 52 otherwise wont get to all of them in a year results in NA in the matrix
 
 
-surv_random <- BENS_init_survey(sim_init = sim,design = 'random_station', n_stations = 40, start_day = 1, stations_per_day = 1, Qs = c("spp1" = 0.1, "spp2"= 0.2), strata_coords = hab$strata, strata_num = hab$stratas )
+surv_random <- BENS_init_survey(sim_init = sim,design = 'random_station', n_stations = 40, #this is total per year (10 in each of 4 strata)
+                                start_day = 1, stations_per_day = 1, Qs = c("spp1" = 0.1, "spp2"= 0.2),
+                                strata_coords = hab$strata, strata_num = hab$stratas )
 
 ```
 
@@ -383,7 +399,7 @@ load("/net/home5/blevy/Bens_R_Projects/READ-PDB-blevy2-toy/20 year moveCov matri
 	       fleets_init = fleets,
 	       hab_init = hab,
 	       save_pop_bio = TRUE,
-	       survey = surv_random,
+	       survey = NULL, #surv_random, will try to survey after simulation
 	       closure = NULL,
 	       InParallel = TRUE)  #does it runin parallel? Doesnt seem like it
 
