@@ -73,7 +73,7 @@ The object returned is used internally by MixFishSim a list with two levels:
 
 #NEW VERSION that has week breaks for entire simulation and allows fishing on just 1 day per week
 source("R/init_sim_Bens_nofish.R")
-sim <- init_sim_Bens_nofish(nrows = 100, ncols = 100, n_years = 1, n_tows_day = 1,
+sim <- init_sim_Bens_nofish(nrows = 100, ncols = 100, n_years = 20, n_tows_day = 1,
                 n_days_wk_fished = 1, n_fleets = 1, n_vessels = 1, n_species = 2,
                 move_freq = 1)
 
@@ -353,8 +353,8 @@ source("R/BENS_init_survey.R")
 #ALSO NEED N_STATION TO BE DIVISIBLE BY STATIONS_PER_DAY
 #ALSO NEED N_STATIONS / STATIONS_PER_DAY <= 52 otherwise wont get to all of them in a year results in NA in the matrix
 
-
-surv_random <- BENS_init_survey(sim_init = sim,design = 'random_station', n_stations = 40, #this is total per year (10 in each of 4 strata)
+#setup catch log
+surv_random <- BENS_init_survey(sim_init = sim,design = 'random_station', n_stations = 80, #this is total per year (20 in each of 4 strata)
                                 start_day = 1, stations_per_day = 1, Qs = c("spp1" = 0.1, "spp2"= 0.2),
                                 strata_coords = hab$strata, strata_num = hab$stratas )
 
