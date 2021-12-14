@@ -211,12 +211,12 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 	
 	log.mat 	       <- matrix(NA, nrow = length(x), 
 	                          ncol = 7 + idx[["n.spp"]])
-#	View(log.mat)
+	View(log.mat)
 	
-	#print(str_num)
-#	print(length(str_num))
+	print(str_num)
+print(length(str_num))
 	
-#	print(length(log.mat[,1]))
+	print(length(log.mat[,1]))
 	
 	colnames(log.mat)      <- c("station_no", "x","y","strata","day","tow","year",
 	                            paste0("spp",seq(idx[["n.spp"]])))

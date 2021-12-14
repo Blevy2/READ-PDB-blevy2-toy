@@ -59,6 +59,7 @@ Bm1  <- pop_init[["Start_pop"]]  # For storing last time-step biomass, is overwr
 AreaClosures <- NULL
 close_count <- 0 # counter for recording closures
 
+
 # preallocate closure list
 
 if(is.null(closure)) { CalcClosures  <- FALSE }
@@ -110,9 +111,9 @@ closeArea <- FALSE
 
 ##################
 ### loop control #
-for (t in seq_len(ntow)) {  #THIS DEFINES THE LOOP. NTOW = n_tows_day * n_days_wk_fished * 52 * n_years
+for (t in seq_len(ntow)) { #for(t in seq(50,ntow,1)){ #THIS DEFINES THE LOOP. NTOW = n_tows_day * n_days_wk_fished * 52 * n_years
 ##################
-
+print(t)
 ## Loop messages
 
 	## Print when new year
