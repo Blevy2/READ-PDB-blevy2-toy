@@ -51,7 +51,7 @@ for(i in seq(nstrata)){
   strata_surv[[i]] <- temp[idx:(idx+strat_samp_tot-1),1:9]
   
   idx <- idx + strat_samp_tot
-  print(idx)
+ # print(idx)
 }
 
 
@@ -59,21 +59,49 @@ for(i in seq(nstrata)){
 
 #add a column to each strata_surv that will contain the month to sample from
 
-  S1_wks <- c(13,37)  #strata1 sample weeks- 1st week in each season
-  S2_wks <- c(13,37)  #strata2 sample weeks- 1st week in each season
-  S3_wks <- c(14,38)  #strata3 sample weeks- 2nd week in each season
-  S4_wks <- c(14,38)  #strata4 sample weeks- 2nd week in each season
-  
-  S1_seq <- rep(c(rep(S1_wks[1],sample_per_sn),rep(S1_wks[2],sample_per_sn)),nyears)
-  S2_seq <- rep(c(rep(S2_wks[1],sample_per_sn),rep(S2_wks[2],sample_per_sn)),nyears) #create sequence that will fit in matrix based on above input
-  S3_seq <- rep(c(rep(S3_wks[1],sample_per_sn),rep(S3_wks[2],sample_per_sn)),nyears)
-  S4_seq <- rep(c(rep(S4_wks[1],sample_per_sn),rep(S4_wks[2],sample_per_sn)),nyears)
-  
-  strata_surv[[1]]<-cbind(strata_surv[[1]],S1_seq)
-  strata_surv[[2]]<-cbind(strata_surv[[1]],S2_seq) #add the above sequence as new column in sample matrix
-  strata_surv[[3]]<-cbind(strata_surv[[1]],S3_seq)
-  strata_surv[[4]]<-cbind(strata_surv[[1]],S4_seq)
 
+#######################################################
+# FIRST CHUNK IS FOR ALL SAMPLES IN EACH STRATA REMOVED IN SINGLE WEEK
+######################################################
+  # S1_wks <- c(13,37)  #strata1 sample weeks- 1st week in each season
+  # S2_wks <- c(13,37)  #strata2 sample weeks- 1st week in each season
+  # S3_wks <- c(14,38)  #strata3 sample weeks- 2nd week in each season
+  # S4_wks <- c(14,38)  #strata4 sample weeks- 2nd week in each season
+  # 
+  # S1_seq <- rep(c(rep(S1_wks[1],sample_per_sn),rep(S1_wks[2],sample_per_sn)),nyears)
+  # S2_seq <- rep(c(rep(S2_wks[1],sample_per_sn),rep(S2_wks[2],sample_per_sn)),nyears) #create sequence that will fit in matrix based on above input
+  # S3_seq <- rep(c(rep(S3_wks[1],sample_per_sn),rep(S3_wks[2],sample_per_sn)),nyears)
+  # S4_seq <- rep(c(rep(S4_wks[1],sample_per_sn),rep(S4_wks[2],sample_per_sn)),nyears)
+  # 
+  # strata_surv[[1]]<-cbind(strata_surv[[1]],S1_seq)
+  # strata_surv[[2]]<-cbind(strata_surv[[1]],S2_seq) #add the above sequence as new column in sample matrix
+  # strata_surv[[3]]<-cbind(strata_surv[[1]],S3_seq)
+  # strata_surv[[4]]<-cbind(strata_surv[[1]],S4_seq)
+#################################################
+
+
+
+#######################################################
+# SECOND CHUNK SPLITS 10 SAMPLES PER STRATA AS 7 IN ONE WEEK 3 IN THE OTHER 
+######################################################
+S1_wks <- c(13,13,13,13,13,13,13,14,14,14,37,37,37,37,37,37,37,38,38,38)  #strata1 sample weeks- 7 in 1st week, 3 in second week in each season
+S2_wks <- c(13,13,13,13,13,13,13,14,14,14,37,37,37,37,37,37,37,38,38,38)  #strata2 sample weeks- 7 in 1st week, 3 in second week in each season
+S3_wks <- c(14,14,14,15,15,15,15,15,15,15,38,38,38,39,39,39,39,39,39,39)  #strata3 sample weeks- 3 in 1st week, 7 in second week in each season
+S4_wks <- c(14,14,14,15,15,15,15,15,15,15,38,38,38,39,39,39,39,39,39,39)  #strata4 sample weeks- 3 in 1st week, 7 in second week in each season
+
+S1_seq <- rep(S1_wks,nyears)
+S2_seq <- rep(S2_wks,nyears) #create sequence that will fit in matrix based on above input
+S3_seq <- rep(S3_wks,nyears)
+S4_seq <- rep(S4_wks,nyears)
+
+#################################################
+
+
+
+strata_surv[[1]]<-cbind(strata_surv[[1]],S1_seq)
+strata_surv[[2]]<-cbind(strata_surv[[2]],S2_seq) #add the above sequence as new column in sample matrix
+strata_surv[[3]]<-cbind(strata_surv[[3]],S3_seq)
+strata_surv[[4]]<-cbind(strata_surv[[4]],S4_seq)
 
 
 
