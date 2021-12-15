@@ -152,22 +152,23 @@ plot.file =  "testfolder")
 #plotting after running on multiple cores
 ###############################################################################
 
-#plotting same week from different iterations to see any differences
-image.plot(result[[1]][["pop_bios"]][[5]][["spp1"]])
-image.plot(result[[9]][["pop_bios"]][[5]][["spp1"]]) # (cant visually see any differences)
+#plotting same week from different years to see any differences
+image.plot(result[[3]][["pop_bios"]][[6]][["spp2"]])# (cant visually see any differences for constant temp)
+image.plot(result[[3]][["pop_bios"]][[(6+52*15)]][["spp2"]]) #huge differences for change temp
 
 
 #printing values from same week in different iterations to see differences
-result[[2]][["pop_bios"]][[26]][["spp2"]][80,50]
-result[[5]][["pop_bios"]][[26]][["spp2"]][80,50] # (small changes. 573 vs 572 vs 576 etc)
+result[[2]][["pop_bios"]][[6]][["spp2"]][80,50]# (small changes for constant temp. 573 vs 572 vs 576 etc)
+result[[3]][["pop_bios"]][[6+52*15]][["spp2"]][80,50] #HUGE CHANGE FOR CHANGE TEMP. 382 VS 6
 
 
 #checking mean values from same week in different iterations to see differences 
-mean(result[[1]][["pop_bios"]][[26]][["spp1"]])
-mean(result[[2]][["pop_bios"]][[26]][["spp1"]])
-mean(result[[3]][["pop_bios"]][[26]][["spp1"]])
-mean(result[[4]][["pop_bios"]][[26]][["spp1"]]) #(same number, different decimals)
-mean(result[[5]][["pop_bios"]][[26]][["spp1"]])
+wk<-1030
+mean(result[[1]][["pop_bios"]][[wk]][["spp1"]])
+mean(result[[2]][["pop_bios"]][[wk]][["spp1"]])
+mean(result[[3]][["pop_bios"]][[wk]][["spp1"]])
+mean(result[[4]][["pop_bios"]][[wk]][["spp1"]]) #(same number, different decimals)
+mean(result[[5]][["pop_bios"]][[wk]][["spp1"]])
 mean(result[[6]][["pop_bios"]][[26]][["spp1"]])
 mean(result[[7]][["pop_bios"]][[26]][["spp1"]])
 mean(result[[8]][["pop_bios"]][[26]][["spp1"]])
@@ -175,10 +176,10 @@ mean(result[[8]][["pop_bios"]][[26]][["spp1"]])
 
 #plotting same week from different iterations to see any differences BY QUADRANT
 image.plot(result[[1]][["pop_bios"]][[1000]][["spp1"]][50:100,50:100])
-image.plot(result[[9]][["pop_bios"]][[1000]][["spp1"]][50:100,50:100]) # 
+image.plot(result[[3]][["pop_bios"]][[1000]][["spp1"]][50:100,50:100]) # 
 
 image.plot(result[[1]][["pop_bios"]][[1000]][["spp1"]][1:50,1:50])
-image.plot(result[[9]][["pop_bios"]][[1000]][["spp1"]][1:50,1:50]) # 
+image.plot(result[[3]][["pop_bios"]][[1000]][["spp1"]][1:50,1:50]) # 
 
 
 
