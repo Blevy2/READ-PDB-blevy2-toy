@@ -45,7 +45,10 @@ day.breaks     <- sim_init[["brk.idx"]][["day.breaks"]]
 week.breaks    <- sim_init[["brk.idx"]][["week.breaks"]]  
 trip.breaks    <- sim_init[["brk.idx"]][["trip.breaks"]]  
 month.breaks   <- sim_init[["brk.idx"]][["month.breaks"]]  
-year.breaks    <- sim_init[["brk.idx"]][["year.breaks"]]  
+year.breaks    <- sim_init[["brk.idx"]][["year.breaks"]]
+
+#new to use all moveCov matrices
+week.breaks.all <-sim_init[["brk.idx"]][["week.breaks.all"]]
 
 ###################################
 ##### Temporary containers ########
@@ -451,7 +454,7 @@ if(Pop_move) {
 	if(!is.null(move_cov)) {
 	
 	## The temperature covariates for the week
-	move_cov_wk <- move_cov[["cov.matrix"]][[week.breaks[t]]]
+	move_cov_wk <- move_cov[["cov.matrix"]][[week.breaks.all[t]]]  #this should now use all moveCov matrices
 
 		
 	B <- lapply(paste0("spp", seq_len(n_spp)), function(s) {
