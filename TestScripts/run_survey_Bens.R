@@ -103,7 +103,11 @@ strata_surv[[2]]<-cbind(strata_surv[[2]],S2_seq) #add the above sequence as new 
 strata_surv[[3]]<-cbind(strata_surv[[3]],S3_seq)
 strata_surv[[4]]<-cbind(strata_surv[[4]],S4_seq)
 
-
+#name columns
+colnames(strata_surv[[1]]) <- c("Matrix index","x","y","strata","day","tow","year","spp1","spp2","week")
+colnames(strata_surv[[2]]) <- c("Matrix index","x","y","strata","day","tow","year","spp1","spp2","week")
+colnames(strata_surv[[3]]) <- c("Matrix index","x","y","strata","day","tow","year","spp1","spp2","week")
+colnames(strata_surv[[4]]) <- c("Matrix index","x","y","strata","day","tow","year","spp1","spp2","week")
 
 
 
@@ -112,6 +116,15 @@ strata_surv[[4]]<-cbind(strata_surv[[4]],S4_seq)
 # procedure:
   # pull out given strata
   # run down each strata_surv matrix created above and sample using information in the given matrix
+
+#survey_results <- list("strata 1","strata 2", "strata 3", "strata 4")
+
+all1 <- list()
+all2 <- list()
+all3 <- list()
+all4 <- list()
+
+for(res in seq(length(result))){ #for each simulation result
 
 for(s in seq(nstrata)){  #pull out strata
   
@@ -123,117 +136,33 @@ for(s in seq(nstrata)){  #pull out strata
     month <- strata_surv[[s]][i,10]  #appended sample month into 10th column above
 
     
-    strata_surv[[s]][i,8] <- POPULATIONMATRIX$spp1(month+(52*(year-1))[x,y]   #spp1 in col 8
-    strata_surv[[s]][i,9] <- POPULATIONMATRIX$spp2(month+(52*(year-1))[x,y]   #spp2 in col 9
+    strata_surv[[s]][i,8] <- result[[res]][["pop_bios"]][[(month+(52*(year-1)))]][["spp1"]][x,y]   #POPULATIONMATRIX$spp1(month+(52*(year-1))[x,y]   #spp1 in col 8
+    strata_surv[[s]][i,9] <- result[[res]][["pop_bios"]][[(month+(52*(year-1)))]][["spp2"]][x,y]   #POPULATIONMATRIX$spp2(month+(52*(year-1))[x,y]   #spp2 in col 9
     
   }
-  
-}
-
-
-
-
-  
-  
-  
-  
-  
-  
-  
-# procedure:
-# pull out strata survey matrix (created above)
-# populate each strata survey values based on strat_surv_wks samp_per_sn
-# first week of each season, sample stratas 1 and 2
-# second week of each season, sample starats 3 and 4
-# use info in surv_random$log.mat to paramaterize sample 
-# 
-
-# 1st 2 weeks of April (13&14) and 1st 2 weeks of October (wk 37&38)
-
-#set survey weeks for each strata
-strat_surv_wks <- list()
-strat_surv_wks[[1]] <- c(13,37)  #strata 1
-strat_surv_wks[[2]] <- c(13,37)  #strata 1
-strat_surv_wks[[3]] <- c(14,38)  #strata 1
-strat_surv_wks[[4]] <- c(14,38)  #strata 1
-
-
-for(s in seq(nstrata)){
-  for(j in strat_surv_wks[[s]]){
-    for(i in seq(sample_per_sn)){
-  
-      strata_surv[[s]][i,8] <- POPULATIONMATRIX() strat_surv_wks[[s]]      #spp1 in col 8
-      strata_surv[[s]][i,9] <-     #spp2 in col 9
-  }
-}
-}
-
-
-for(w in sample_wks){
-  
-  
-  if(w==sample_wks[1] | w==sample_wks[3]){
-    
-  }
-  
-  
-  
-   # For each strata
-  for(s in seq_len(strata)) {
   
  
-
-    for(j in seq(sample_per_sn))
-    
-        strata_surv[s][j,"spp1"] <- 
-    
-    log.mat[log.mat[,"day"]==doy & log.mat[,"year"]==y,paste0("spp",s)][i]  <-  	B[[s]][x_loc[i],y_loc[i]] * as.numeric(survey[["survey_settings"]][[paste0("Qs.spp",s)]])
-  }
-  surv_random["log.mat"] <- res$pop_bios$sppNUMBER$WEEKNUMBER
   
-  
-  
-  
-  
-  
+}
+ #store results
+  all1[[res]] <- strata_surv[[1]]
+  all2[[res]] <- strata_surv[[2]]
+  all3[[res]] <- strata_surv[[3]]
+  all4[[res]] <- strata_surv[[4]]
   
 }
 
+survey_results <- list(list(),list(),list(),list())
+survey_results[[1]] <- all1
+survey_results[[2]] <- all2
+survey_results[[3]] <- all3
+survey_results[[4]] <- all4 
 
 
 
 
 
 
-
-if(sim_init[["brk.idx"]][["day.breaks"]][t] %in% survey[["log.mat"]][,"day"] & !is.null(survey)) {
-
-##print("undertaking scientific survey")
-
-# doy and y
-  doy <- sim_init[["brk.idx"]][["day.breaks"]][t]
-  y   <- sim_init[["brk.idx"]][["year.breaks"]][t]
-
-	# survey log
-	log.mat <- survey[["log.mat"]]
-
-	# survey locations
-	x_loc <- log.mat[log.mat[,"day"] == doy & log.mat[,"year"] == y, "x"]
-	y_loc <- log.mat[log.mat[,"day"] == doy & log.mat[,"year"] == y, "y"]
-
-	# For each set of locations
-	for(i in seq_len(length(x_loc))) {
-
-# For each species
-for(s in seq_len(n_spp)) {
-log.mat[log.mat[,"day"]==doy & log.mat[,"year"]==y,paste0("spp",s)][i]  <-  	B[[s]][x_loc[i],y_loc[i]] * as.numeric(survey[["survey_settings"]][[paste0("Qs.spp",s)]])
-}
-	}
-
-	# return log.mat to the list
-	survey[["log.mat"]] <- log.mat
-
-}
-
-
-} # end if statement
+  
+  
+  
