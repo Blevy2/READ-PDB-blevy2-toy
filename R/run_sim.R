@@ -277,6 +277,11 @@ AreaClosures <- closure[["input_coords"]][[week.breaks[[t]]]]
 # every t
 # uses go_fish_fleet function, either
 
+## IF WE FISH EVERY DAY THE CATCH MATRIX WILL EXTEND BEYOND ITS SIZE
+## INSTEAD, ONLY FISH 1 DAY PER WEEK USING IF STATMENT
+
+if(t%%7 == 1){#fish on first day of week
+
 if(t==1) {
 
 catches <- lapply(seq_len(n_fleets), function(fl) { 
@@ -325,7 +330,7 @@ catches <- lapply(seq_len(n_fleets), function(fl) {
 	} # end new day run
 
 } # end if t>1
-
+} #end if first day of week
 
 #######################
 ##### Pop dynamics ####

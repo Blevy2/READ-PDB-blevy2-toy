@@ -78,7 +78,7 @@ init_sim_Bens_nofish <- function(n_years = 1, n_tows_day = 4, n_days_wk_fished =
 
 	brk.idx <- list(
         tow.breaks = rep(sort(rep(seq(idx["nt"]), length.out = idx["ntow.py"])), idx["ny"]),
-	day.seq = day.seq[!day.seq %in% c(seq(7,364,7),seq(6,364,7),seq(5,364,7),seq(4,364,7),seq(3,364,7),seq(2,364,7))],
+	day.seq =   day.seq[!day.seq %in% c(seq(7,364,7),seq(6,364,7),seq(5,364,7),seq(4,364,7),seq(3,364,7),seq(2,364,7))],
 	day.breaks = rep(rep(day.seq[!day.seq %in%
 				 c(seq(7,364,7),seq(6,364,7),seq(5,364,7),seq(4,364,7),seq(3,364,7),seq(2,364,7))],each =
 				 idx["ntd"]),idx["ny"]),

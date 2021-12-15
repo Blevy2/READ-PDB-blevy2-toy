@@ -50,9 +50,9 @@ coords <- c(round(runif(1,1,idx[["nrows"]])),round(runif(1,1,idx[["ncols"]]))) #
 
 #}
 
-if(t%%52 == 0){
-print("inside edited go_fish_Bens")
-print(t)}
+
+#print("inside edited go_fish_Bens")
+#print(t)
 
 # # For t > 1
 # if(t > 1) {   #THIS IS CLOSED ALL THE WAY DOWN ON LINE 383
@@ -387,18 +387,19 @@ print(t)}
 # coords <- new.point # assign new fishing position
 # 
 # 	} #THIS IS END OF IF t>1 STATEMENT ON LINE 52!!
-
+#print(coords)
 # save coords fished
 	catch[t,"x"] <- coords[1]
 	catch[t,"y"] <- coords[2]
 		
 	# sample from catch of species
 	for (i in seq(idx[["n.spp"]])) {
-
+#print("spot 1")
+#print(i)	  
 	# store for the fleets record
 	catch[t,paste("spp",i,sep="")] <- pops[[paste("spp",i,sep="")]][coords[1],coords[2]] * 0   #NO CATCHES
 		#Q[[paste("spp",i,sep="")]] 
-
+#print("spot2")
 	# store for the delay-diff record - add to the passed catch matrix
 	catch_matrix[[paste("spp", i, sep ="")]][coords[1], coords[2]]  <-
 		
