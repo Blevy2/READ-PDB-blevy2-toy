@@ -21,7 +21,7 @@
 #'
 #' @export
 
-run_sim <- function(sim_init = NULL, pop_init = NULL, move_cov = NULL, fleets_init = NULL, hab_init = NULL, save_pop_bio = FALSE, survey = NULL, closure = NULL,...) {
+run_sim <- function(MoveProb = NULL, MoveProb_spwn = NULL, sim_init = NULL, pop_init = NULL, move_cov = NULL, fleets_init = NULL, hab_init = NULL, save_pop_bio = FALSE, survey = NULL, closure = NULL,...) {
 # Overarching function for running the simulations
 
 start.time <- Sys.time() # for printing runtime
