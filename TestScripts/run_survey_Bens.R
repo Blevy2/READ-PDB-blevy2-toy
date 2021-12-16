@@ -30,7 +30,7 @@ surv_random <- BENS_init_survey(sim_init = sim,design = 'random_station', n_stat
 
 
 sample_per_sn <- 10   #samples per season per strata
-                      #10 per season for 2 seasons is 20 samples in each strata over a year, or 80 total per year This would be 1600 over 20 years 
+#10 per season for 2 seasons is 20 samples in each strata over a year, or 80 total per year This would be 1600 over 20 years 
 
 n_spp <- 2     #number of species
 
@@ -51,7 +51,7 @@ for(i in seq(nstrata)){
   strata_surv[[i]] <- temp[idx:(idx+strat_samp_tot-1),1:9]
   
   idx <- idx + strat_samp_tot
- # print(idx)
+  # print(idx)
 }
 
 
@@ -63,20 +63,20 @@ for(i in seq(nstrata)){
 #######################################################
 # FIRST CHUNK IS FOR ALL SAMPLES IN EACH STRATA REMOVED IN SINGLE WEEK
 ######################################################
-  # S1_wks <- c(13,37)  #strata1 sample weeks- 1st week in each season
-  # S2_wks <- c(13,37)  #strata2 sample weeks- 1st week in each season
-  # S3_wks <- c(14,38)  #strata3 sample weeks- 2nd week in each season
-  # S4_wks <- c(14,38)  #strata4 sample weeks- 2nd week in each season
-  # 
-  # S1_seq <- rep(c(rep(S1_wks[1],sample_per_sn),rep(S1_wks[2],sample_per_sn)),nyears)
-  # S2_seq <- rep(c(rep(S2_wks[1],sample_per_sn),rep(S2_wks[2],sample_per_sn)),nyears) #create sequence that will fit in matrix based on above input
-  # S3_seq <- rep(c(rep(S3_wks[1],sample_per_sn),rep(S3_wks[2],sample_per_sn)),nyears)
-  # S4_seq <- rep(c(rep(S4_wks[1],sample_per_sn),rep(S4_wks[2],sample_per_sn)),nyears)
-  # 
-  # strata_surv[[1]]<-cbind(strata_surv[[1]],S1_seq)
-  # strata_surv[[2]]<-cbind(strata_surv[[1]],S2_seq) #add the above sequence as new column in sample matrix
-  # strata_surv[[3]]<-cbind(strata_surv[[1]],S3_seq)
-  # strata_surv[[4]]<-cbind(strata_surv[[1]],S4_seq)
+# S1_wks <- c(13,37)  #strata1 sample weeks- 1st week in each season
+# S2_wks <- c(13,37)  #strata2 sample weeks- 1st week in each season
+# S3_wks <- c(14,38)  #strata3 sample weeks- 2nd week in each season
+# S4_wks <- c(14,38)  #strata4 sample weeks- 2nd week in each season
+# 
+# S1_seq <- rep(c(rep(S1_wks[1],sample_per_sn),rep(S1_wks[2],sample_per_sn)),nyears)
+# S2_seq <- rep(c(rep(S2_wks[1],sample_per_sn),rep(S2_wks[2],sample_per_sn)),nyears) #create sequence that will fit in matrix based on above input
+# S3_seq <- rep(c(rep(S3_wks[1],sample_per_sn),rep(S3_wks[2],sample_per_sn)),nyears)
+# S4_seq <- rep(c(rep(S4_wks[1],sample_per_sn),rep(S4_wks[2],sample_per_sn)),nyears)
+# 
+# strata_surv[[1]]<-cbind(strata_surv[[1]],S1_seq)
+# strata_surv[[2]]<-cbind(strata_surv[[1]],S2_seq) #add the above sequence as new column in sample matrix
+# strata_surv[[3]]<-cbind(strata_surv[[1]],S3_seq)
+# strata_surv[[4]]<-cbind(strata_surv[[1]],S4_seq)
 #################################################
 
 
@@ -114,8 +114,8 @@ colnames(strata_surv[[4]]) <- c("station_no","x","y","strata","day","tow","year"
 #then can just run through list and use indices in matrix to populate
 
 # procedure:
-  # pull out given strata
-  # run down each strata_surv matrix created above and sample using information in the given matrix
+# pull out given strata
+# run down each strata_surv matrix created above and sample using information in the given matrix
 
 #survey_results <- list("strata 1","strata 2", "strata 3", "strata 4")
 
@@ -125,26 +125,26 @@ all3 <- list()
 all4 <- list()
 
 for(res in seq(length(result))){ #for each simulation result
-
-for(s in seq(nstrata)){  #pull out strata
   
-  for(i in seq(length(strata_surv[[s]][,1]))){ #go down list
+  for(s in seq(nstrata)){  #pull out strata
     
-    x <- strata_surv[[s]][i,2]   #x coord in second column
-    y <- strata_surv[[s]][i,3]   #y coord in third column  
-    year <- strata_surv[[s]][i,7] #year in 7th column
-    week <- strata_surv[[s]][i,10]  #appended sample week into 10th column above
-
+    for(i in seq(length(strata_surv[[s]][,1]))){ #go down list
+      
+      x <- strata_surv[[s]][i,2]   #x coord in second column
+      y <- strata_surv[[s]][i,3]   #y coord in third column  
+      year <- strata_surv[[s]][i,7] #year in 7th column
+      week <- strata_surv[[s]][i,10]  #appended sample week into 10th column above
+      
+      
+      strata_surv[[s]][i,8] <- result[[res]][["pop_bios"]][[(week+(52*(year-1)))]][["spp1"]][x,y]   #POPULATIONMATRIX$spp1(week+(52*(year-1))[x,y]   #spp1 in col 8
+      strata_surv[[s]][i,9] <- result[[res]][["pop_bios"]][[(week+(52*(year-1)))]][["spp2"]][x,y]   #POPULATIONMATRIX$spp2(week+(52*(year-1))[x,y]   #spp2 in col 9
+      
+    }
     
-    strata_surv[[s]][i,8] <- result[[res]][["pop_bios"]][[(week+(52*(year-1)))]][["spp1"]][x,y]   #POPULATIONMATRIX$spp1(week+(52*(year-1))[x,y]   #spp1 in col 8
-    strata_surv[[s]][i,9] <- result[[res]][["pop_bios"]][[(week+(52*(year-1)))]][["spp2"]][x,y]   #POPULATIONMATRIX$spp2(week+(52*(year-1))[x,y]   #spp2 in col 9
+    
     
   }
-  
- 
-  
-}
- #store results
+  #store results
   all1[[res]] <- strata_surv[[1]]
   all2[[res]] <- strata_surv[[2]]
   all3[[res]] <- strata_surv[[3]]
@@ -182,19 +182,22 @@ sum_survey_results <- list()
 
 for(i in seq(nstrata)){ #4 strata
   
-    sum_survey_results[[i]] <- Reduce("+",survey_results[[i]])/length(survey_results[[i]])
-
-    m<-survey_results[[i]] #pull out list for given strata
-    sd_mat <- matrix(apply(sapply(1:length(survey_results[[1]][[1]]), 
-                    function(x) unlist(m)[seq(x, length(unlist(m)),
-                    length(survey_results[[1]][[1]]) )]), 2, sd), 
-                    ncol = length(survey_results[[1]][[1]][1,]))
-    
-    #the sd_mat above is mostly 0 since things dont change. just pull out sample columns 8 and 9 and append them to previous
-    sum_survey_results[[i]] <- cbind(sum_survey_results[[i]],sd_mat[,8:9])
-    
-    colnames(sum_survey_results[[i]]) <- c("Matrix index","x","y","strata","day","tow","year","spp1","spp2","week","sd_spp1","sd_spp2")
+  sum_survey_results[[i]] <- Reduce("+",survey_results[[i]])/length(survey_results[[i]])
+  
+  m<-survey_results[[i]] #pull out list for given strata
+  sd_mat <- matrix(apply(sapply(1:length(survey_results[[1]][[1]]), 
+                                function(x) unlist(m)[seq(x, length(unlist(m)),
+                                                          length(survey_results[[1]][[1]]) )]), 2, sd), 
+                   ncol = length(survey_results[[1]][[1]][1,]))
+  
+  #the sd_mat above is mostly 0 since things dont change. just pull out sample columns 8 and 9 and append them to previous
+  sum_survey_results[[i]] <- cbind(sum_survey_results[[i]],sd_mat[,8:9])
+  
+  colnames(sum_survey_results[[i]]) <- c("station_no","x","y","strata","day","tow","year","spp1","spp2","week","sd_spp1","sd_spp2")
 }
+
+#combine back into single log.mat
+log.mat <- rbind(sum_survey_results[[1]],sum_survey_results[[2]],sum_survey_results[[3]],sum_survey_results[[4]])
 
 
 
@@ -274,9 +277,9 @@ for(wk in seq(52)){ #fix week
 spp1 <- list()
 spp2 <- list()
 spp1[["Bio.mat"]] <-sum_pop_sum_s1_biomat
-spp1[["Catch.mat"]] <- sum_pop_sum_s1_recmat
+spp1[["Rec.mat"]] <- sum_pop_sum_s1_recmat
 spp2[["Bio.mat"]] <-sum_pop_sum_s2_biomat
-spp2[["Catch.mat"]] <- sum_pop_sum_s2_recmat
+spp2[["Rec.mat"]] <- sum_pop_sum_s2_recmat
 
 #put spp1 and spp2 into pop_summary
 pop_summary <- list()
@@ -302,3 +305,4 @@ res <- list()
 
 res[["pop_summary"]] <- pop_summary
 res[["pop_bios"]] <- pop_bios
+res[["survey"]][["log.mat"]] <- log.mat
