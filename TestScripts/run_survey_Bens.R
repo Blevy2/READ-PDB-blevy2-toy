@@ -104,10 +104,10 @@ strata_surv[[3]]<-cbind(strata_surv[[3]],S3_seq)
 strata_surv[[4]]<-cbind(strata_surv[[4]],S4_seq)
 
 #name columns
-colnames(strata_surv[[1]]) <- c("Matrix index","x","y","strata","day","tow","year","spp1","spp2","week")
-colnames(strata_surv[[2]]) <- c("Matrix index","x","y","strata","day","tow","year","spp1","spp2","week")
-colnames(strata_surv[[3]]) <- c("Matrix index","x","y","strata","day","tow","year","spp1","spp2","week")
-colnames(strata_surv[[4]]) <- c("Matrix index","x","y","strata","day","tow","year","spp1","spp2","week")
+colnames(strata_surv[[1]]) <- c("station_no","x","y","strata","day","tow","year","spp1","spp2","week")
+colnames(strata_surv[[2]]) <- c("station_no","x","y","strata","day","tow","year","spp1","spp2","week")
+colnames(strata_surv[[3]]) <- c("station_no","x","y","strata","day","tow","year","spp1","spp2","week")
+colnames(strata_surv[[4]]) <- c("station_no","x","y","strata","day","tow","year","spp1","spp2","week")
 
 
 
