@@ -1,5 +1,12 @@
 # after simulation takes place, go through and do a random survey
 
+
+#RUN BELOW IF JUST RAN SINGLE ITERATION
+#result <- list()
+#result[[1]] <- res
+
+
+
 source("R/BENS_init_survey.R")
 
 
