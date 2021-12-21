@@ -28,7 +28,7 @@ plot_pop_summary <- function(results = res, timestep = 'daily', save = FALSE, sa
 		      	      if(x1 !="Rec.mat") {	res_out <- data.frame("pop" = rep(paste("spp",x, sep = "_"), length.out = nrow(x1_res)), 
 						              "metric" = rep(sapply(strsplit(x1,".",fixed = T),"[",1), length.out = nrow(x1_res)), 
 							      "year" = x1_res$year, 
-							      "day" = rep(1:362, length.out = nrow(x1_res)),
+							      "day" = rep(1:358, length.out = nrow(x1_res)),#changed 362 to 358
 							      "julien_day" = seq_len(nrow(x1_res)),
 							      "data" = x1_res$value) }
 			      if(x1 == "Rec.mat") { res_out <- data.frame("pop" = rep(paste("spp",x, sep = "_"), length.out = nrow(x1_res)), 
@@ -47,6 +47,9 @@ plot_pop_summary <- function(results = res, timestep = 'daily', save = FALSE, sa
 	if(timestep == "daily") {
 	require(ggplot2)
 	print(ggplot(results_df, aes(x = julien_day, y = data, group = 2)) + geom_point() + facet_grid(pop ~ metric, scale = "free"))
+	
+
+	
 	}
 	
 	if(timestep == "annual") {
@@ -61,6 +64,9 @@ plot_pop_summary <- function(results = res, timestep = 'daily', save = FALSE, sa
 
 	print(ggplot(results_df_annual, aes(x = year, y = data, group = 2)) + geom_point() + geom_line() + 
 	facet_grid(pop ~ metric, scale = "free") + expand_limits(y = 0))
+	
+	
+	
 	}
 
 	if(save == TRUE) {
@@ -68,9 +74,10 @@ plot_pop_summary <- function(results = res, timestep = 'daily', save = FALSE, sa
 	}
 	
 	
+	#plotting recruitment by itself
 	
-	
-	
+	 plot(res$pop_summary$spp1$Rec.mat[1:21])
+	 plot(res$pop_summary$spp2$Rec.mat[1:21])
 	
 	
 }

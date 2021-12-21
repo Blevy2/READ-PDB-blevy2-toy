@@ -461,13 +461,14 @@ and all the results are saved in the output from the run_sim function.
 ```{r plots}
 
 ## Biological
+source("R/plot_pop_summary.R")
 p1 <- plot_pop_summary(results = res,
 		 timestep = "annual",
-		 save = TRUE, 
+		 save = FALSE, 
 		 save.location = "C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/testfolder"
 		 )
 
-plot_pop_summary(results = res, timestep = "daily", save = TRUE, save.location = "C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/testfolder")
+plot_pop_summary(results = res, timestep = "daily", save = FALSE, save.location = "C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/testfolder")
 p1
 
 p2 <- plot_daily_fdyn(res)
