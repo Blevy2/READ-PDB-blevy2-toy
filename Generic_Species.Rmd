@@ -182,7 +182,7 @@ We can plot the starting distributions for each population as a check.
 #half way through april to half way through may would be week 15-18
 
 source("R/init_pop_Bens.R")
-Pop <- init_pop_Bens(sim_init = sim, Bio = c("spp1" = 1e5, "spp2" = 2e5), #these values from paper 
+Pop <- init_pop_Bens(sim_init = sim, Bio = c("spp1" = 2e5, "spp2" = 4e5), #these values from paper : 1e5 and 2e5
 		hab = hab[["hab"]], start_cell = c(50,50), 
 		lambda = c("spp1" = 0.1, "spp2" = 0.1), #same lambda for all?
 		init_move_steps = 20,
@@ -236,8 +236,8 @@ interact.
 #set temperature preferences manually. 
 #The following assumes moveCov has been created and already has an empty spp_tol sublist
 moveCov[["spp_tol"]] <- list() #just in case
-moveCov[["spp_tol"]] <- list("spp1" = list("mu" = 8.3, "va" = 3),  #8.5 IF TEMP INCREASES
-				                               "spp2" = list("mu" = 8.3, "va" = 3) )
+moveCov[["spp_tol"]] <- list("spp1" = list("mu" = 8.13, "va" = 3),  #8.13 IF TEMP INCREASES   7.98 if temp constant
+				                               "spp2" = list("mu" = 8.13, "va" = 3) )
 
 
  
