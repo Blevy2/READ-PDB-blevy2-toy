@@ -205,12 +205,16 @@ fields::image.plot(t(B_moveCov[nrow(B_moveCov):1,]) )  #the inside t part change
 
   idx <- 1
   
-for(i in  seq(pi/2 + 22*2*pi/51 , 2*pi+pi/2 + 22*2*pi/51, 2*pi/51) ){  #to start in Januarny use seq(pi/2 + 22*2*pi/51 , 2*pi+pi/2 + 22*2*pi/51, 2*pi/51). Old one that starts in August: seq(pi/2,2*pi+pi/2,2*pi/51)
+for(i in  seq(pi/2 + 22*2*pi/52 , 2*pi+pi/2 + 22*2*pi/52 -pi/52, 2*pi/52) ){  #to start in Januarny use seq(pi/2 + 22*2*pi/51 , 2*pi+pi/2 + 22*2*pi/51, 2*pi/51). Old one that starts in August: seq(pi/2,2*pi+pi/2,2*pi/51)
+  #hottest week is week 33, which is 22 away form 52. so we do this to begin in january
+  #-pi/52 at end makes sure the 52nd week is 1 step from returning to week 1 temp, otherwise week 1 temp gets repeated (week 52 and week1 of each year)
+  
+  
   
  # print(j)
 # print(idx)
   
-  all_moveCov[[idx]] <- 0.35*(sin(i)+2)*B_moveCov #creates list of size 52  used to be 0.45* and +2
+  all_moveCov[[idx]] <- 0.33*(sin(i)+2)*B_moveCov #creates list of size 52  used to be 0.45* and +2
   
     
   idx <- idx + 1
@@ -299,7 +303,7 @@ Good_moveCov <- all_moveCov  #to be used below
 
 #moveCov <- list()
 steps <- 52*20 #total months
-inc <- 1.019 #percent increase each year
+inc <- 1.025 #percent increase each year
 new_moveCov <- list()
 
 
