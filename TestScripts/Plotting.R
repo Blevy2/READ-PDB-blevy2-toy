@@ -38,6 +38,24 @@ legend(1, 95, legend=c("Strata 1","Strata 2","Strata 3","Strata 4"),
 
 
 
+#trying a simple plot with plot() command
+plot(new_random_survey$year[2:length(new_random_survey[,1])],
+     new_random_survey$sd_spp1[2:length(new_random_survey[,1])],                       # Draw Base R plot
+     pch = 16,
+     col = new_random_survey$strata)
+
+legend(1, 95, legend=c("Strata 1","Strata 2","Strata 3","Strata 4"),
+       col=c("green", "blue", "black", "red"), lty=1:2, cex=0.8)
+
+
+
+
+
+
+
+
+
+
 #plot some matrices
 
 ggplot(dat) +
