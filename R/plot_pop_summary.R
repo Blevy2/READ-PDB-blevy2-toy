@@ -25,13 +25,13 @@ plot_pop_summary <- function(results = res, timestep = 'daily', save = FALSE, sa
 		res_df <- lapply(seq_len(n_spp), function(x) {
 	 		res_spp <- lapply(names(results[["pop_summary"]][[x]]), function(x1) {
 			      x1_res <- tidyr::gather(as.data.frame(t(results[["pop_summary"]][[x]][[x1]])), key = "year", factor_key = T)
-		      	      if(x1 !="Rec.mat") {	res_out <- data.frame("pop" = rep(paste("spp",x, sep = "_"), length.out = nrow(x1_res)), 
+		      	      if(x1 == "Bio.mat" | x1 == "Bio.mat.sd") {	res_out <- data.frame("pop" = rep(paste("spp",x, sep = "_"), length.out = nrow(x1_res)), 
 						              "metric" = rep(sapply(strsplit(x1,".",fixed = T),"[",1), length.out = nrow(x1_res)), 
 							      "year" = x1_res$year, 
 							      "day" = rep(1:358, length.out = nrow(x1_res)),#changed 362 to 358
 							      "julien_day" = seq_len(nrow(x1_res)),
 							      "data" = x1_res$value) }
-			      if(x1 == "Rec.mat") { res_out <- data.frame("pop" = rep(paste("spp",x, sep = "_"), length.out = nrow(x1_res)), 
+			      if(x1 == "Rec.mat" | x1 == "Rec.mat.sd") { res_out <- data.frame("pop" = rep(paste("spp",x, sep = "_"), length.out = nrow(x1_res)), 
 						              "metric" = rep(sapply(strsplit(x1,".",fixed = T),"[",1), length.out = nrow(x1_res)), 
 							      "year" = seq_len(nrow(x1_res)), 
 							      "day" = rep(1, length.out = nrow(x1_res)),
@@ -79,6 +79,25 @@ plot_pop_summary <- function(results = res, timestep = 'daily', save = FALSE, sa
 	 plot(res$pop_summary$spp1$Rec.mat[1:21])
 	 plot(res$pop_summary$spp2$Rec.mat[1:21])
 	
+	 
+	 
+	 
+	 
+	 #plotting recruitment  SD by itself
+	 
+	 plot(res$pop_summary$spp1$Rec.mat.sd[1:21])
+	 plot(res$pop_summary$spp2$Rec.mat.sd[1:21])
+	 
+	 
+	 
+	 #plotting weekly  SD of population values
+	 
+	 #remove NA
+	 NO_NA <- vector()
+	 NO_NA <- res$pop_summary$spp1$Bio.mat.sd[!is.na(res$pop_summary$spp1$Bio.mat.sd)]
+	 
+	 plot(seq(length(NO_NA)),NO_NA)
+	 plot(res$pop_summary$spp2$Rec.mat[1:21])
 	
 }
 
