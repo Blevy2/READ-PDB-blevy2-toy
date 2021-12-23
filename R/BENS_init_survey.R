@@ -36,6 +36,7 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 	n_vessels <- idx[["nv"]]
 	brk.idx   <- sim_init[["brk.idx"]]
 	
+	n_strata <- length(strata_coords)
 
 
 	### Checks
@@ -226,7 +227,7 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 	log.mat[,'strata']     <- str_num #new
 	log.mat[,'day']        <- rep(station_days, times = sim_init[["idx"]][["ny"]])
 	log.mat[,'tow']        <- rep(seq_len(n_stations), sim_init[["idx"]][["ny"]]) 
-	log.mat[,'year']       <- rep(seq_len(sim_init[["idx"]][["ny"]]), each = n_stations)
+	log.mat[,'year']       <- rep(rep(seq_len(sim_init[["idx"]][["ny"]]), each = n_stations/n_strata), n_strata)
 	
 	
 	return(list(survey_settings = c("design" = design, "n_stations" =
