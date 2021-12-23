@@ -19,10 +19,11 @@
 
 #' @export
 
-Bens_plot_pop_spatiotemp <- function(results = res, timestep = 'daily', save = FALSE, save.location = '.') {
+Bens_plot_pop_spatiotemp <- function(results = res, timestep = 'daily', save = FALSE , plot_monthly = FALSE, save.location = NULL, plot_weekly = FALSE) {
   
   
   
+
   
   #creating a plot similar to plot_spatiotemp_hab
   
@@ -30,10 +31,12 @@ Bens_plot_pop_spatiotemp <- function(results = res, timestep = 'daily', save = F
   ncols <- ncol(res$pop_bios[[1]]$spp1)
   
   
+  if(plot_weekly == TRUE){
+  
   for(s in seq_len(length(results[["pop_summary"]]))) {  #number of species
     
     nt <- length(results[["pop_bios"]])  #number of weeks to plot
-    if(save == TRUE & !is.null(save.location)) {
+    if(!is.null(save.location)) {
       png(filename = paste0(save.location,'/','Population_spatiotemp_spp_',s,'.png'), width = 800, height = 800)
     }
     par(mfrow = c(ceiling(sqrt(nt)), ceiling(nt/ceiling(sqrt(nt)))), mar = c(1, 1, 1, 1))
@@ -55,6 +58,63 @@ Bens_plot_pop_spatiotemp <- function(results = res, timestep = 'daily', save = F
     }
     dev.off()
   }
+    
+  }
+  
+  
+  
+  
+  
+  
+  
+  if(plot_monthly == TRUE){
+    
+    if(!is.null(save.location)) {
+
+      pdf(file=paste0(save.location,'/Monthly_sd_plots','.pdf'))
+      #png(filename = paste0(plot.file,'/Monthly_covariate_plots/','monthly_habitat_spatiotemp_spp_',s,'month_',k,'.png'), width = 800, height = 800)
+    }
+    
+    
+    
+    for(s in seq_len(length(hab[["hab"]]))) {
+      
+      #set color range for spatial plots
+      colrange <- range(res[["pop_bios_sd"]][[s]],na.rm=TRUE)
+      
+      
+      
+      for(k in seq(12)){
+        
+        nt <- length(moveCov[["cov.matrix"]])
+
+        par(mfrow = c(5,4),mar = c(1, 1, 1, 1))
+        
+        
+        for(i in seq(1,nt,52)){
+          
+          month_shift <- 4*(k-1)
+          
+          pop_sd_wk <- res[["pop_bios_sd"]][[s]][[i+month_shift]]
+          
+          
+          fields::image.plot(pop_sd_wk,  zlim = colrange )
+          
+          #	  axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
+          #	  axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
+          text(0.5, 0.98, labels = paste('week', i), cex = 1)
+          
+          
+        }
+        
+        
+      }
+    }
+    
+    dev.off()
+    
+  }
+
   
   
   
