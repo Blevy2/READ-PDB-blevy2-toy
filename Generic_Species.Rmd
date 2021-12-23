@@ -463,7 +463,7 @@ and all the results are saved in the output from the run_sim function.
 ## Biological
 source("R/plot_pop_summary.R")
 p1 <- plot_pop_summary(results = res,
-		 timestep = "annual",
+		 timestep = "daily",
 		 save = FALSE, 
 		 save.location = "C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/testfolder"
 		 )
