@@ -173,7 +173,7 @@ survey_results[[4]] <- all4
 
 
 ##################################################################################
-#Aggregate results of all iterations into single object (mean and variance)
+#Aggregate results of all survey iterations into single object (mean and sd/variance)
 ##################################################################################
 
 
@@ -189,13 +189,18 @@ sum_survey_results <- list()
 
 for(i in seq(nstrata)){ #4 strata
   
+  #average them
   sum_survey_results[[i]] <- Reduce("+",survey_results[[i]])/length(survey_results[[i]])
   
+  #calc standard deviation
   m<-survey_results[[i]] #pull out list for given strata
   sd_mat <- matrix(apply(sapply(1:length(survey_results[[1]][[1]]), 
                                 function(x) unlist(m)[seq(x, length(unlist(m)),
                                                           length(survey_results[[1]][[1]]) )]), 2, sd), 
                    ncol = length(survey_results[[1]][[1]][1,]))
+  
+  
+  
   
   #the sd_mat above is mostly 0 since things dont change. just pull out sample columns 8 and 9 and append them to previous
   sum_survey_results[[i]] <- cbind(sum_survey_results[[i]],sd_mat[,8:9])
@@ -208,7 +213,139 @@ log.mat <- rbind(sum_survey_results[[1]],sum_survey_results[[2]],sum_survey_resu
 
 
 
-### SECOND DO IT FOR THE POPULATION RESULTS
+
+#################################
+#Plot SD by year/strata SPP1
+#################################
+new_random_survey <- list()
+new_random_survey[[1]] <- log.mat
+#change into a data frame to be used by ggplot
+new_random_survey <-do.call(rbind.data.frame,new_random_survey) #surv_random comes out of BENS_init_survey
+
+plot(new_random_survey$year,
+     new_random_survey$sd_spp1,                       # Draw Base R plot
+     pch = 16,
+     col = new_random_survey$strata)
+
+legend(1, 4, legend=c("Strata 3","Strata 4","Strata 1","Strata 2"),
+       col=c("green", "blue", "black", "red"), lty=1:2, cex=0.8)
+
+
+#################################
+#Plot SD by year/strata SPP2
+#################################
+new_random_survey <- list()
+new_random_survey[[1]] <- log.mat
+#change into a data frame to be used by ggplot
+new_random_survey <-do.call(rbind.data.frame,new_random_survey) #surv_random comes out of BENS_init_survey
+
+plot(new_random_survey$year,
+     new_random_survey$sd_spp2,                       # Draw Base R plot
+     pch = 16,
+     col = new_random_survey$strata)
+
+legend(1, 4, legend=c("Strata 3","Strata 4","Strata 1","Strata 2"),
+       col=c("green", "blue", "black", "red"), lty=1:2, cex=0.8)
+
+
+
+
+
+
+
+#################################
+#Plot SD by strata SPP1
+#################################
+new_random_survey <- list()
+new_random_survey[[1]] <- log.mat
+#change into a data frame to be used by ggplot
+new_random_survey <-do.call(rbind.data.frame,new_random_survey) #surv_random comes out of BENS_init_survey
+
+plot(new_random_survey$strata,
+     new_random_survey$sd_spp1,                       # Draw Base R plot
+     pch = 16,
+     col = new_random_survey$strata)
+
+legend(1, 4, legend=c("Strata 3","Strata 4","Strata 1","Strata 2"),
+       col=c("green", "blue", "black", "red"), lty=1:2, cex=0.8)
+
+
+
+
+#################################
+#Plot SD by strata SPP2
+#################################
+new_random_survey <- list()
+new_random_survey[[1]] <- log.mat
+#change into a data frame to be used by ggplot
+new_random_survey <-do.call(rbind.data.frame,new_random_survey) #surv_random comes out of BENS_init_survey
+
+plot(new_random_survey$strata,
+     new_random_survey$sd_spp2,                       # Draw Base R plot
+     pch = 16,
+     col = new_random_survey$strata)
+
+legend(1, 4, legend=c("Strata 3","Strata 4","Strata 1","Strata 2"),
+       col=c("green", "blue", "black", "red"), lty=1:2, cex=0.8)
+
+
+
+
+
+
+
+#################################
+#Plot SD over time for each strata SPP1
+#################################
+new_random_survey <- list()
+new_random_survey[[1]] <- log.mat
+#change into a data frame to be used by ggplot
+new_random_survey <-do.call(rbind.data.frame,new_random_survey) #surv_random comes out of BENS_init_survey
+
+
+plot(1:1600,
+     new_random_survey$sd_spp1,                       # Draw Base R plot
+     pch = 16,
+     col = new_random_survey$strata)
+
+legend(1, 4, legend=c("Strata 3","Strata 4","Strata 1","Strata 2"),
+       col=c("green", "blue", "black", "red"), lty=1:2, cex=0.8)
+
+
+
+
+#################################
+#Plot SD over time for each strata SPP2
+#################################
+new_random_survey <- list()
+new_random_survey[[1]] <- log.mat
+#change into a data frame to be used by ggplot
+new_random_survey <-do.call(rbind.data.frame,new_random_survey) #surv_random comes out of BENS_init_survey
+
+
+plot(1:1600,
+     new_random_survey$sd_spp2,                       # Draw Base R plot
+     pch = 16,
+     col = new_random_survey$strata)
+
+legend(1, 4, legend=c("Strata 3","Strata 4","Strata 1","Strata 2"),
+       col=c("green", "blue", "black", "red"), lty=1:2, cex=0.8)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### SECOND SUMMARIZE THE POPULATION RESULTS
 
 #procedure for biomat (sum of population) and recmat (recruitment)
 #1) go through each iteration and put individual results in their own list 
@@ -223,6 +360,7 @@ pop_sum_s2_recmat <- list()
 
 for(i in seq(length(result))){
   
+  #make a list of each category from each iteration
   pop_sum_s1_biomat[[i]] <- result[[i]][["pop_summary"]][["spp1"]][["Bio.mat"]] 
   pop_sum_s1_recmat[[i]] <- result[[i]][["pop_summary"]][["spp1"]][["Rec.mat"]] 
   pop_sum_s2_biomat[[i]] <- result[[i]][["pop_summary"]][["spp2"]][["Bio.mat"]]
@@ -230,6 +368,7 @@ for(i in seq(length(result))){
   
 }
 
+#FINDING MEANS
 sum_pop_sum_s1_biomat <- list()
 sum_pop_sum_s1_recmat <- list()
 sum_pop_sum_s2_biomat <- list()
@@ -238,9 +377,58 @@ sum_pop_sum_s2_recmat <- list()
 #biomat matrices of form [year,day]
 #recmat are vector of form [recruitment in year]
 sum_pop_sum_s1_biomat <- Reduce("+", pop_sum_s1_biomat)/length(pop_sum_s1_biomat)
-sum_pop_sum_s1_recmat <- Reduce("+", pop_sum_s1_recmat)/length(pop_sum_s1_recmat)
+sum_pop_sum_s1_recmat <- Reduce("+", pop_sum_s1_recmat)/length(pop_sum_s1_recmat)  #FINDING THE MEAN
 sum_pop_sum_s2_biomat <- Reduce("+", pop_sum_s2_biomat)/length(pop_sum_s2_biomat) 
 sum_pop_sum_s2_recmat <- Reduce("+", pop_sum_s2_recmat)/length(pop_sum_s2_recmat)
+
+
+
+
+#FINDING STANDARD DEV
+sd_pop_sum_s1_biomat <- list()
+sd_pop_sum_s1_recmat <- list()
+sd_pop_sum_s2_biomat <- list()
+sd_pop_sum_s2_recmat <- list()
+
+
+m<-pop_sum_s1_biomat #pull out list to summarize
+sd_pop_sum_s1_biomat <- matrix(apply(sapply(1:length(pop_sum_s1_biomat[[1]]), 
+                              function(x) unlist(m)[seq(x, length(unlist(m)),
+                                                        length(pop_sum_s1_biomat[[1]]) )]), 2, sd), 
+                 ncol = length(pop_sum_s1_biomat[[1]][1,]))
+
+
+
+m<-pop_sum_s1_recmat #pull out list to summarize
+sd_pop_sum_s1_recmat <- matrix(apply(sapply(1:length(pop_sum_s1_recmat[[1]]), 
+                                            function(x) unlist(m)[seq(x, length(unlist(m)),
+                                                                      length(pop_sum_s1_recmat[[1]]) )]), 2, sd), 
+                               ncol = length(pop_sum_s1_recmat[[1]][1,]))
+
+
+m<-pop_sum_s2_biomat #pull out list to summarize
+sd_pop_sum_s2_biomat <- matrix(apply(sapply(1:length(pop_sum_s2_biomat[[1]]), 
+                                            function(x) unlist(m)[seq(x, length(unlist(m)),
+                                                                      length(pop_sum_s2_biomat[[1]]) )]), 2, sd), 
+                               ncol = length(pop_sum_s2_biomat[[1]][1,]))
+
+
+m<-pop_sum_s2_recmat #pull out list to summarize
+sd_pop_sum_s2_recmat <- matrix(apply(sapply(1:length(pop_sum_s2_recmat[[1]]), 
+                                            function(x) unlist(m)[seq(x, length(unlist(m)),
+                                                                      length(pop_sum_s2_recmat[[1]]) )]), 2, sd), 
+                               ncol = length(pop_sum_s2_recmat[[1]][1,]))
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -250,11 +438,18 @@ sum_pop_sum_s2_recmat <- Reduce("+", pop_sum_s2_recmat)/length(pop_sum_s2_recmat
 #4) summarize that list as PopBios
 #5) go on to next week
 
+#was tough calculating SD same as before because list was so long and sapply took a long time
+#found info here to update the process for speed: https://stackoverflow.com/questions/38493741/calculating-standard-deviation-of-variables-in-a-large-list-in-r
+
 spat_pop_spp1 <- list()
 spat_pop_spp2 <- list()
 
 
-for(wk in seq(52)){ #fix week
+spat_pop_spp1_sd <- list()
+spat_pop_spp2_sd <- list()
+
+
+for(wk in seq(52*nyears)){ #fix week
   
   temp_wk_spp1 <- list()
   temp_wk_spp2 <- list()
@@ -271,7 +466,40 @@ for(wk in seq(52)){ #fix week
   spat_pop_spp1[[wk]] <-  Reduce("+", temp_wk_spp1)/length(temp_wk_spp1)
   spat_pop_spp2[[wk]] <-  Reduce("+", temp_wk_spp2)/length(temp_wk_spp2)
   
+  
+  
+  #calculate SD for given week
+  
+  #spp1
+  m<-temp_wk_spp1 #pull out list to summarize
+  list.mean <- spat_pop_spp1[[wk]] #fix mean as E[x]
+  list.squared.mean <-  Reduce("+", lapply(temp_wk_spp1, "^", 2)) / length(temp_wk_spp1)
+  
+  #list.variance <- list.squared.mean - list.mean^2
+  
+  list.sd <- sqrt(list.squared.mean - list.mean^2)   #sd(x) = sqrt(E(x^2) - (E(x))^2)
+  
+  spat_pop_spp1_sd[[wk]] <- list.sd
+  
+  
+  
+  
+  #spp2
+  m<-temp_wk_spp2 #pull out list to summarize
+  list.mean <- spat_pop_spp2[[wk]] #fix mean as E[x]
+  list.squared.mean <-  Reduce("+", lapply(temp_wk_spp2, "^", 2)) / length(temp_wk_spp2)
+  
+  #list.variance <- list.squared.mean - list.mean^2
+  
+  list.sd <- sqrt(list.squared.mean - list.mean^2)   #sd(x) = sqrt(E(x^2) - (E(x))^2)
+  
+  spat_pop_spp2_sd[[wk]] <- list.sd
+
+  
 }
+
+
+
 
 
 
@@ -288,6 +516,13 @@ spp1[["Rec.mat"]] <- sum_pop_sum_s1_recmat
 spp2[["Bio.mat"]] <-sum_pop_sum_s2_biomat
 spp2[["Rec.mat"]] <- sum_pop_sum_s2_recmat
 
+spp1[["Bio.mat.sd"]] <-sd_pop_sum_s1_biomat
+spp1[["Rec.mat.sd"]] <- sd_pop_sum_s1_recmat
+spp2[["Bio.mat.sd"]] <-sd_pop_sum_s2_biomat
+spp2[["Rec.mat.sd"]] <- sd_pop_sum_s2_recmat
+
+
+
 #put spp1 and spp2 into pop_summary
 pop_summary <- list()
 pop_summary[["spp1"]] <- spp1
@@ -295,14 +530,26 @@ pop_summary[["spp2"]] <- spp2
 
 
 
+
 pop_bios <- list()
-for(i in seq(52)){
+for(i in seq(52*nyears)){
   temp <-list()
   temp[["spp1"]] <- spat_pop_spp1[[i]]
   temp[["spp2"]] <- spat_pop_spp2[[i]]
   
   pop_bios[[i]] <- temp
   
+}
+
+
+pop_bios_sd <- list()
+for(i in seq(52*nyears)){
+  # temp <-list()
+  # temp[["spp1.sd"]] <- 
+  # temp[["spp2.sd"]] <-
+  
+  pop_bios_sd[["spp1"]][[i]] <- spat_pop_spp1_sd[[i]]
+  pop_bios_sd[["spp2"]][[i]] <- spat_pop_spp2_sd[[i]]
 }
 
 
@@ -313,3 +560,25 @@ res <- list()
 res[["pop_summary"]] <- pop_summary
 res[["pop_bios"]] <- pop_bios
 res[["survey"]][["log.mat"]] <- log.mat
+
+
+res[["pop_bios_sd"]] <- pop_bios_sd
+
+
+
+
+
+
+
+
+
+
+
+
+#this plots spatial standard deviation in population. Each page is first week in a month for entire simulation
+
+
+source("R/BENS_plot_pop_spatiotemp.R")
+
+Bens_plot_pop_spatiotemp(results = res, timestep = 'daily',plot_weekly=FALSE,
+                         plot_monthly = TRUE, save.location = "testfolder")
