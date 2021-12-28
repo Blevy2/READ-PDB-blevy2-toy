@@ -30,19 +30,28 @@ plot_pop_summary <- function(results = res, timestep = 'daily', save = FALSE, sa
 							      "year" = x1_res$year, 
 							      "day" = rep(1:358, length.out = nrow(x1_res)),#changed 362 to 358
 							      "julien_day" = seq_len(nrow(x1_res)),
-							      "data" = x1_res$value) }
+							      "data" = x1_res$value) 
+		      	      
+		      	      return(res_out)
+		      	      
+		      	      }
 			      if(x1 == "Rec.mat" | x1 == "Rec.mat.sd") { res_out <- data.frame("pop" = rep(paste("spp",x, sep = "_"), length.out = nrow(x1_res)), 
 						              "metric" = rep(sapply(strsplit(x1,".",fixed = T),"[",1), length.out = nrow(x1_res)), 
 							      "year" = seq_len(nrow(x1_res)), 
 							      "day" = rep(1, length.out = nrow(x1_res)),
 							      "julien_day" = rep(1, length.out = nrow(x1_res)),
 							      "data" = x1_res$value) 
+			     
+			       return(res_out)
+			      
 			      }
-			      return(res_out)
+			     
 			      })
 			return(do.call(rbind, res_spp))
 	   })
 	results_df <- do.call(rbind, res_df)
+	
+	View(results_df)
 
 	if(timestep == "daily") {
 	require(ggplot2)
@@ -73,31 +82,31 @@ plot_pop_summary <- function(results = res, timestep = 'daily', save = FALSE, sa
 	ggsave(file = file.path(paste(save.location, '/Population_Summary', timestep, '.png', sep = "")))
 	}
 	
-	
-	#plotting recruitment by itself
-	
-	 plot(res$pop_summary$spp1$Rec.mat[1:21])
-	 plot(res$pop_summary$spp2$Rec.mat[1:21])
-	
-	 
-	 
-	 
-	 
-	 #plotting recruitment  SD by itself
-	 
-	 plot(res$pop_summary$spp1$Rec.mat.sd[1:21])
-	 plot(res$pop_summary$spp2$Rec.mat.sd[1:21])
-	 
-	 
-	 
-	 #plotting weekly  SD of population values
-	 
-	 #remove NA
-	 NO_NA <- vector()
-	 NO_NA <- res$pop_summary$spp1$Bio.mat.sd[!is.na(res$pop_summary$spp1$Bio.mat.sd)]
-	 
-	 plot(seq(length(NO_NA)),NO_NA)
-	 plot(res$pop_summary$spp2$Rec.mat[1:21])
+	# 
+	# #plotting recruitment by itself
+	# 
+	#  plot(res$pop_summary$spp1$Rec.mat[1:21])
+	#  plot(res$pop_summary$spp2$Rec.mat[1:21])
+	# 
+	#  
+	#  
+	#  
+	#  
+	#  #plotting recruitment  SD by itself
+	#  
+	#  plot(res$pop_summary$spp1$Rec.mat.sd[1:21])
+	#  plot(res$pop_summary$spp2$Rec.mat.sd[1:21])
+	#  
+	#  
+	#  
+	#  #plotting weekly  SD of population values
+	#  
+	#  #remove NA
+	#  NO_NA <- vector()
+	#  NO_NA <- res$pop_summary$spp1$Bio.mat.sd[!is.na(res$pop_summary$spp1$Bio.mat.sd)]
+	#  
+	#  plot(seq(length(NO_NA)),NO_NA)
+	#  plot(res$pop_summary$spp2$Rec.mat[1:21])
 	
 }
 
