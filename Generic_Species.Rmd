@@ -73,7 +73,7 @@ The object returned is used internally by MixFishSim a list with two levels:
 
 #NEW VERSION that has week breaks for entire simulation and allows fishing on just 1 day per week
 source("R/init_sim_Bens_nofish.R")
-sim <- init_sim_Bens_nofish(nrows = 100, ncols = 100, n_years = 20, n_tows_day = 1,
+sim <- init_sim_Bens_nofish(nrows = 100, ncols = 100, n_years = 3, n_tows_day = 1,
                 n_days_wk_fished = 1, n_fleets = 1, n_vessels = 1, n_species = 2,
                 move_freq = 1)
 
@@ -182,29 +182,44 @@ We can plot the starting distributions for each population as a check.
 #half way through april to half way through may would be week 15-18
 
 source("R/init_pop_Bens.R")
-Pop <- init_pop_Bens(sim_init = sim, Bio = c("spp1" = 2e5, "spp2" = 4e5), #these values from paper : 1e5 and 2e5
-		hab = hab[["hab"]], start_cell = c(50,50), 
+
+#original settings
+# Pop <- init_pop_Bens(sim_init = sim, Bio = c("spp1" = 2e5, "spp2" = 4e5), #these values from paper : 1e5 and 2e5
+# 		hab = hab[["hab"]], start_cell = c(50,50), 
+# 		lambda = c("spp1" = 0.1, "spp2" = 0.1), #same lambda for all?
+# 		init_move_steps = 20,
+# 		rec_params = list("spp1" = c("model" = "BH", "a" = 6, "b" = 4, "cv" = 0.7),
+# 				  "spp2" = c("model" = "BH", "a" = 27, "b" = 4,"cv" = 0.6)), #these values from paper 
+# 		rec_wk = list("spp1" = 12:15, "spp2" = 12:15),
+# 		spwn_wk = list("spp1" = 15:18, "spp2" = 15:18),
+# 		M = c("spp1" = 0.2, "spp2" = 0.1), #these values from paper: c("spp1" = 0.2, "spp2" = 0.1)
+# 		K = c("spp1" = 0.3, "spp2" = 0.3) #all the same for now
+# 		)
+
+#decreasing population settings
+Pop <- init_pop_Bens(sim_init = sim, Bio = c("spp1" = 4e5, "spp2" = 10e5), #these values from paper : 1e5 and 2e5
+		hab = hab[["hab"]], start_cell = c(50,50),
 		lambda = c("spp1" = 0.1, "spp2" = 0.1), #same lambda for all?
 		init_move_steps = 20,
-		rec_params = list("spp1" = c("model" = "BH", "a" = 6, "b" = 4, "cv" = 0.7),
-				  "spp2" = c("model" = "BH", "a" = 27, "b" = 4,"cv" = 0.6)), #these values from paper 
+		rec_params = list("spp1" = c("model" = "BH", "a" = 6, "b" = 1, "cv" = 0),
+				  "spp2" = c("model" = "BH", "a" = 27, "b" = 1,"cv" = 0)), #these values from paper
 		rec_wk = list("spp1" = 12:15, "spp2" = 12:15),
 		spwn_wk = list("spp1" = 15:18, "spp2" = 15:18),
-		M = c("spp1" = 0.2, "spp2" = 0.1), #these values from paper 
+		M = c("spp1" = 0.8, "spp2" = 0.8), #these values from paper: c("spp1" = 0.2, "spp2" = 0.1)
 		K = c("spp1" = 0.3, "spp2" = 0.3) #all the same for now
 		)
 
 
 
 #Calculate movement probabilities (used to be in run_sim)
-MoveProb  <- lapply(paste0("spp", seq_len(sim[["idx"]][["n.spp"]])), function(s) { move_prob_Lst(lambda = Pop[["dem_params"]][[s]][["lambda"]], hab = hab[["hab"]][[s]])})
+Move_Prob  <- lapply(paste0("spp", seq_len(sim[["idx"]][["n.spp"]])), function(s) { move_prob_Lst(lambda = Pop[["dem_params"]][[s]][["lambda"]], hab = hab[["hab"]][[s]])})
 
 
-MoveProb_spwn <- lapply(paste0("spp", seq_len(sim[["idx"]][["n.spp"]])), function(s) { move_prob_Lst(lambda = Pop[["dem_params"]][[s]][["lambda"]], hab = hab[["spwn_hab"]][[s]])})
+Move_Prob_spwn <- lapply(paste0("spp", seq_len(sim[["idx"]][["n.spp"]])), function(s) { move_prob_Lst(lambda = Pop[["dem_params"]][[s]][["lambda"]], hab = hab[["spwn_hab"]][[s]])})
 
 
-names(MoveProb)      <- paste0("spp", seq_len(sim[["idx"]][["n.spp"]]))
-names(MoveProb_spwn) <- paste0("spp", seq_len(sim[["idx"]][["n.spp"]]))
+names(Move_Prob)      <- paste0("spp", seq_len(sim[["idx"]][["n.spp"]]))
+names(Move_Prob_spwn) <- paste0("spp", seq_len(sim[["idx"]][["n.spp"]]))
 	
 	
 	
@@ -236,8 +251,8 @@ interact.
 #set temperature preferences manually. 
 #The following assumes moveCov has been created and already has an empty spp_tol sublist
 moveCov[["spp_tol"]] <- list() #just in case
-moveCov[["spp_tol"]] <- list("spp1" = list("mu" = 8.13, "va" = 3),  #8.13 IF TEMP INCREASES   7.98 if temp constant
-				                               "spp2" = list("mu" = 8.13, "va" = 3) )
+moveCov[["spp_tol"]] <- list("spp1" = list("mu" = 7.98, "va" = 3),  #8.13 IF TEMP INCREASES   7.98 if temp constant
+				                               "spp2" = list("mu" = 7.98, "va" = 3) )
 
 
  
@@ -463,9 +478,9 @@ and all the results are saved in the output from the run_sim function.
 ## Biological
 source("R/plot_pop_summary.R")
 p1 <- plot_pop_summary(results = res,
-		 timestep = "daily",
+		 timestep = "annual",
 		 save = FALSE, 
-		 save.location = "C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/testfolder"
+		 save.location = NULL
 		 )
 
 plot_pop_summary(results = res, timestep = "daily", save = FALSE, save.location = "C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/testfolder")
