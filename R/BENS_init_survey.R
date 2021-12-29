@@ -173,7 +173,7 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 	  y<-vector()
 	  
 #	  View(coords)
-#	  View(str_num)
+	#  View(str_num)
 	  
 	  #translate each matrix position into an (x,y) index for given strata
 	  for(i in coords){
