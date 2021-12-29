@@ -578,7 +578,7 @@ res[["pop_bios_sd"]] <- pop_bios_sd
 #this plots spatial standard deviation in population. Each page is first week in a month for entire simulation
 
 
-source("R/BENS_plot_pop_spatiotemp.R")
+source("R/Bens_plot_pop_spatiotemp.R")
 
 Bens_plot_pop_spatiotemp(results = res, timestep = 'daily',plot_weekly=FALSE,
                          plot_monthly = TRUE, save.location = "testfolder")
