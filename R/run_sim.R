@@ -184,7 +184,7 @@ CalcClosures <- ifelse(week.breaks[t] != week.breaks[t-1], TRUE, FALSE)
 # Recruitment based on pop in spawning grounds in first week of spawning,
 # but occurs throughout the spawning period
 # Different spawning periods for different pops, so we need to handle this...
-
+print(Recruit)
 if(Recruit) { # Check for new week
 
 ##print("Recruiting")
@@ -194,6 +194,11 @@ if(Recruit) { # Check for new week
 
 	    if(week.breaks[t] %in% pop_init[["dem_params"]][[s]][["rec_wk"]]) {
 
+	      	      print(t)
+	      print(s)
+View(B[[s]])
+print(sum(B[[s]]))
+	      
     rec <- Recr_mat(model = pop_init[["dem_params"]][[s]][["rec_params"]][["model"]],
      params = c("a" = as.numeric(pop_init[["dem_params"]][[s]][["rec_params"]][["a"]]),
 		"b" = as.numeric(pop_init[["dem_params"]][[s]][["rec_params"]][["b"]])),
@@ -346,7 +351,7 @@ catches <- lapply(seq_len(n_fleets), function(fl) {
 
 if(Pop_dyn) { #POP_DYN IS SET ON LINE 143
 
-##print("Delay-difference model")
+  print("Delay-difference model")
 
 ## Calculate the fishing mortalities
 # 1. Sum all fleet catches - DONE
@@ -381,11 +386,17 @@ names(spat_fs)  <- paste("spp", seq_len(n_spp), sep = "")
 
 # Apply the delay difference model
 Bp1 <- lapply(paste0("spp", seq_len(n_spp)), function(x) {
-
+#print(t)
+ print(sum(Rec[[x]]))
+  #View(B[[x]])
+  
 al   <- ifelse(week.breaks[t] %in% pop_init[["dem_params"]][[x]][["rec_wk"]],
 	     1/length(pop_init[["dem_params"]][[x]][["rec_wk"]]), 0)
 alm1 <- ifelse(c(week.breaks[t]-1) %in% pop_init[["dem_params"]][[x]][["rec_wk"]],
 	     1/length(pop_init[["dem_params"]][[x]][["rec_wk"]]), 0)
+
+print(al)
+print(alm1)
 
 res <- delay_diff(K = pop_init[["dem_params"]][[x]][["K"]], F = spat_fs[[x]], 
 	   M = pop_init[["dem_params"]][[x]][["M"]]/365, 
