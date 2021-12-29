@@ -23,7 +23,7 @@ Bens_plot_pop_spatiotemp <- function(results = res, timestep = 'daily', save = F
   
   
   
-
+  
   
   #creating a plot similar to plot_spatiotemp_hab
   
@@ -32,32 +32,32 @@ Bens_plot_pop_spatiotemp <- function(results = res, timestep = 'daily', save = F
   
   
   if(plot_weekly == TRUE){
-  
-  for(s in seq_len(length(sim$idx[["n.spp"]]))) {  #number of species
     
-    nt <- length(results[["pop_bios"]])  #number of weeks to plot
-    if(!is.null(save.location)) {
-      png(filename = paste0(save.location,'/','Population_spatiotemp_spp_',s,'.png'), width = 800, height = 800)
+    for(s in seq_len(length(sim$idx[["n.spp"]]))) {  #number of species
+      
+      nt <- length(results[["pop_bios"]])  #number of weeks to plot
+      if(!is.null(save.location)) {
+        png(filename = paste0(save.location,'/','Population_spatiotemp_spp_',s,'.png'), width = 800, height = 800)
+      }
+      par(mfrow = c(ceiling(sqrt(nt)), ceiling(nt/ceiling(sqrt(nt)))), mar = c(1, 1, 1, 1))
+      
+      for(i in seq_len(nt-1)) {   #PLOTTED 1 LESS THAN END BECAUSE COMING UP NULL
+        
+        pop_wk <- results[["pop_bios"]][[i]][s]   
+        
+        
+        
+        image(results[["pop_bios"]][[i]][[paste0('spp',s)]], cex.axis = 1.5, cex.main = 2, col = grey(seq(1,0,l = 51)), axes = F)
+        
+        
+        
+        axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
+        axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
+        text(0.5, 0.98, labels = paste('week', i), cex = 1)
+        
+      }
+      dev.off()
     }
-    par(mfrow = c(ceiling(sqrt(nt)), ceiling(nt/ceiling(sqrt(nt)))), mar = c(1, 1, 1, 1))
-    
-    for(i in seq_len(nt-1)) {   #PLOTTED 1 LESS THAN END BECAUSE COMING UP NULL
-      
-      pop_wk <- results[["pop_bios"]][[i]][s]   
-      
-      
-      
-      image(results[["pop_bios"]][[i]][[paste0('spp',s)]], cex.axis = 1.5, cex.main = 2, col = grey(seq(1,0,l = 51)), axes = F)
-      
-      
-      
-      axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
-      axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
-      text(0.5, 0.98, labels = paste('week', i), cex = 1)
-      
-    }
-    dev.off()
-  }
     
   }
   
@@ -69,50 +69,53 @@ Bens_plot_pop_spatiotemp <- function(results = res, timestep = 'daily', save = F
   
   if(plot_monthly == TRUE){
     
-    if(!is.null(save.location)) {
-
-      pdf(file=paste0(save.location,'/Monthly_sd_plots','.pdf'))
-      #png(filename = paste0(plot.file,'/Monthly_covariate_plots/','monthly_habitat_spatiotemp_spp_',s,'month_',k,'.png'), width = 800, height = 800)
-    }
-    
-    
-    
-    for(s in seq_len(length(hab[["hab"]]))) {
+    if(!is.null(res[["pop_bios_sd"]])){
       
-      #set color range for spatial plots
-      colrange <- range(res[["pop_bios_sd"]][[s]],na.rm=TRUE)
-      
-      
-      
-      for(k in seq(12)){
+      if(!is.null(save.location)) {
         
-        nt <- length(moveCov[["cov.matrix"]])
-
-        par(mfrow = c(5,4),mar = c(1, 1, 1, 1))
+        pdf(file=paste0(save.location,'/Monthly_sd_plots','.pdf'))
+        #png(filename = paste0(plot.file,'/Monthly_covariate_plots/','monthly_habitat_spatiotemp_spp_',s,'month_',k,'.png'), width = 800, height = 800)
+      }
+      
+      
+      
+      for(s in seq_len(length(hab[["hab"]]))) {
+        
+        #set color range for spatial plots
+        colrange <- range(res[["pop_bios_sd"]][[s]],na.rm=TRUE)
         
         
-        for(i in seq(1,nt,52)){
+        
+        for(k in seq(12)){
           
-          month_shift <- 4*(k-1)
+          nt <- length(moveCov[["cov.matrix"]])
           
-          pop_sd_wk <- res[["pop_bios_sd"]][[s]][[i+month_shift]]
+          par(mfrow = c(5,4),mar = c(1, 1, 1, 1))
           
           
-          fields::image.plot(pop_sd_wk,  zlim = colrange )
-          
-          #	  axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
-          #	  axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
-          text(0.5, 0.98, labels = paste('week', i), cex = 1)
+          for(i in seq(1,nt,52)){
+            
+            month_shift <- 4*(k-1)
+            
+            pop_sd_wk <- res[["pop_bios_sd"]][[s]][[i+month_shift]]
+            
+            
+            fields::image.plot(pop_sd_wk,  zlim = colrange )
+            
+            #	  axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
+            #	  axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
+            text(0.5, 0.98, labels = paste('week', i), cex = 1)
+            
+            
+          }
           
           
         }
-        
-        
       }
+      
+      dev.off()
+      
     }
-    
-    dev.off()
-    
     
     if(!is.null(save.location)) {
       
@@ -161,7 +164,7 @@ Bens_plot_pop_spatiotemp <- function(results = res, timestep = 'daily', save = F
     
     
   }
-
+  
   
   
   
