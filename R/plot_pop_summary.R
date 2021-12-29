@@ -81,32 +81,32 @@ plot_pop_summary <- function(results = res, timestep = 'daily', save = FALSE, sa
 	if(save == TRUE) {
 	ggsave(file = file.path(paste(save.location, '/Population_Summary', timestep, '.png', sep = "")))
 	}
-	
-	# 
-	# #plotting recruitment by itself
-	# 
-	#  plot(res$pop_summary$spp1$Rec.mat[1:21])
-	#  plot(res$pop_summary$spp2$Rec.mat[1:21])
-	# 
-	#  
-	#  
-	#  
-	#  
-	#  #plotting recruitment  SD by itself
-	#  
-	#  plot(res$pop_summary$spp1$Rec.mat.sd[1:21])
-	#  plot(res$pop_summary$spp2$Rec.mat.sd[1:21])
-	#  
-	#  
-	#  
-	#  #plotting weekly  SD of population values
-	#  
-	#  #remove NA
-	#  NO_NA <- vector()
-	#  NO_NA <- res$pop_summary$spp1$Bio.mat.sd[!is.na(res$pop_summary$spp1$Bio.mat.sd)]
-	#  
-	#  plot(seq(length(NO_NA)),NO_NA)
-	#  plot(res$pop_summary$spp2$Rec.mat[1:21])
-	
+
+
+	#plotting recruitment by itself
+
+	 plot(res$pop_summary$spp1$Rec.mat[1:21])
+	 plot(res$pop_summary$spp2$Rec.mat[1:21])
+
+
+
+
+
+	 #plotting recruitment  SD by itself
+
+	 plot(res$pop_summary$spp1$Rec.mat.sd[1:21])
+	 plot(res$pop_summary$spp2$Rec.mat.sd[1:21])
+
+
+
+	 #plotting weekly  SD of population values
+
+	 #remove NA
+	 NO_NA <- vector()
+	 NO_NA <- res$pop_summary$spp1$Bio.mat.sd[!is.na(res$pop_summary$spp1$Bio.mat.sd)]
+
+	 plot(seq(length(NO_NA)),NO_NA)
+	 plot(res$pop_summary$spp2$Rec.mat[1:21])
+
 }
 

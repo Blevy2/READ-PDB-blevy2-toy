@@ -113,6 +113,53 @@ Bens_plot_pop_spatiotemp <- function(results = res, timestep = 'daily', save = F
     
     dev.off()
     
+    
+    if(!is.null(save.location)) {
+      
+      pdf(file=paste0(save.location,'/Monthly_pop_plots','.pdf'))
+      #png(filename = paste0(plot.file,'/Monthly_covariate_plots/','monthly_habitat_spatiotemp_spp_',s,'month_',k,'.png'), width = 800, height = 800)
+    }
+    
+    
+    
+    for(s in seq_len(length(hab[["hab"]]))) {
+      
+      #set color range for spatial plots
+      colrange <- range(res[["pop_bios"]][[s]],na.rm=TRUE)
+      
+      
+      
+      for(k in seq(12)){
+        
+        nt <- length(moveCov[["cov.matrix"]])
+        
+        par(mfrow = c(5,4),mar = c(1, 1, 1, 1))
+        
+        
+        for(i in seq(1,nt,52)){
+          
+          month_shift <- 4*(k-1)
+          
+          pop_sd_wk <- res[["pop_bios"]][[i+month_shift]][[s]]
+          
+          
+          fields::image.plot(pop_sd_wk,  zlim = colrange )
+          
+          #	  axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
+          #	  axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
+          text(0.5, 0.98, labels = paste('week', i), cex = 1)
+          
+          
+        }
+        
+        
+      }
+    }
+    
+    dev.off()
+    
+    
+    
   }
 
   
