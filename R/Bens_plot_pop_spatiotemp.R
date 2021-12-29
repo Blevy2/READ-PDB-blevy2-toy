@@ -33,7 +33,7 @@ Bens_plot_pop_spatiotemp <- function(results = res, timestep = 'daily', save = F
   
   if(plot_weekly == TRUE){
   
-  for(s in seq_len(length(results[["pop_summary"]]))) {  #number of species
+  for(s in seq_len(length(sim$idx[["n.spp"]]))) {  #number of species
     
     nt <- length(results[["pop_bios"]])  #number of weeks to plot
     if(!is.null(save.location)) {
