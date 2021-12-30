@@ -570,9 +570,56 @@ res[["pop_bios_sd"]] <- pop_bios_sd
 
 
 
+#relist so all pop values are in a sublist rather than 
+new_pop_bios <- list(list(),list())
+
+new_pop_bios_singleList <- list(matrix(nc=100),matrix(nc=100))
+
+new_pop_bios_SD_singleList <- list(matrix(nc=100),matrix(nc=100))
+
+for(s in seq(length(hab[["hab"]]))){
+  
+  for(i in seq(length(res[["pop_bios"]]))){
+    #print(s)
+    #print(i)
+    new_pop_bios[[s]][[i]] <- res$pop_bios[[i]][[s]]
+    
+    new_pop_bios_singleList[[s]] <- rbind(as.matrix(new_pop_bios_singleList[[s]]),as.matrix(res$pop_bios[[i]][[s]]))
+  
+    new_pop_bios_SD_singleList[[s]] <- rbind(as.matrix(new_pop_bios_SD_singleList[[s]]),as.matrix(res$pop_bios_sd[[s]][[i]]))
+    
+    }}
 
 
+#creating new breaks for plotting
+Qbreaks_list <- list(vector(),vector())
 
+#first for population values
+for(s in seq(length(hab[["hab"]]))){
+Qbreaks <- classInt::classIntervals(var=as.vector(round(new_pop_bios_singleList[[s]],0)), style = "quantile") 
+
+#remove zeros from breaks
+Qbreaks2 <- Qbreaks[["brks"]][!Qbreaks[["brks"]] %in% 0]
+Qbreaks2 <- append(0,Qbreaks2)#put single 0 back to start
+
+Qbreaks_list[[s]] <- Qbreaks2
+
+}
+
+#second for SD values
+for(s in seq(length(hab[["hab"]]))){
+  Qbreaks <- classInt::classIntervals(var=as.vector(round(new_pop_bios_SD_singleList[[s]],0)), style = "quantile") 
+  
+  #remove zeros from breaks
+  Qbreaks2 <- Qbreaks[["brks"]][!Qbreaks[["brks"]] %in% 0]
+  Qbreaks2 <- append(0,Qbreaks2)#put single 0 back to start
+  
+  Qbreaks_list[[s+2]] <- Qbreaks2
+  
+}
+
+
+names(Qbreaks_list)  <- c("spp1_pop","spp2_pop","spp1_pop_SD","spp2_pop_SD")
 
 
 #this plots spatial standard deviation in population. Each page is first week in a month for entire simulation
@@ -581,4 +628,5 @@ res[["pop_bios_sd"]] <- pop_bios_sd
 source("R/Bens_plot_pop_spatiotemp.R")
 
 Bens_plot_pop_spatiotemp(results = res, timestep = 'daily',plot_weekly=FALSE,
-                         plot_monthly = TRUE, save.location = "testfolder")
+                         plot_monthly = TRUE, save.location = "testfolder", 
+                         ColBreaks = Qbreaks_list)
