@@ -472,12 +472,15 @@ for(wk in seq(52*nyears)){ #fix week
   
   #spp1
   m<-temp_wk_spp1 #pull out list to summarize
-  list.mean <- spat_pop_spp1[[wk]] #fix mean as E[x]
+ 
+  
   list.squared.mean <-  Reduce("+", lapply(temp_wk_spp1, "^", 2)) / length(temp_wk_spp1)
+  
+  list.mean <- Reduce("+",temp_wk_spp1) / length(temp_wk_spp1)
   
   #list.variance <- list.squared.mean - list.mean^2
   
-  list.sd <- sqrt(list.squared.mean - list.mean^2)   #sd(x) = sqrt(E(x^2) - (E(x))^2)
+  list.sd <- sqrt((round(list.squared.mean - list.mean^2,1)))   #sd(x) = sqrt(E(x^2) - (E(x))^2)
   
   spat_pop_spp1_sd[[wk]] <- list.sd
   
@@ -486,12 +489,14 @@ for(wk in seq(52*nyears)){ #fix week
   
   #spp2
   m<-temp_wk_spp2 #pull out list to summarize
-  list.mean <- spat_pop_spp2[[wk]] #fix mean as E[x]
+
   list.squared.mean <-  Reduce("+", lapply(temp_wk_spp2, "^", 2)) / length(temp_wk_spp2)
-  
+
+  list.mean <- Reduce("+",temp_wk_spp2) / length(temp_wk_spp2)
+    
   #list.variance <- list.squared.mean - list.mean^2
   
-  list.sd <- sqrt(list.squared.mean - list.mean^2)   #sd(x) = sqrt(E(x^2) - (E(x))^2)
+  list.sd <- sqrt((round(list.squared.mean - list.mean^2,1)))   #sd(x) = sqrt(E(x^2) - (E(x))^2)
   
   spat_pop_spp2_sd[[wk]] <- list.sd
 
@@ -569,8 +574,9 @@ res[["pop_bios_sd"]] <- pop_bios_sd
 
 
 
-
+########################################################
 #relist so all pop values are in a sublist rather than 
+########################################################
 new_pop_bios <- list(list(),list())
 
 new_pop_bios_singleList <- list(matrix(nc=100),matrix(nc=100))
