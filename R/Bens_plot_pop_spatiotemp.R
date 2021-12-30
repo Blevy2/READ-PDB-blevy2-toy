@@ -87,7 +87,7 @@ Bens_plot_pop_spatiotemp <- function(results = res, timestep = 'daily', save = F
     #relist so all pop values are in a sublist rather than 
     new_pop_bios <- list(list(),list())
     
-    new_pop_bios_singleList <- list(matrix(nc=100),matrix(nc=100))
+   # new_pop_bios_singleList <- list(matrix(nc=100),matrix(nc=100))
     
     for(s in seq(length(hab[["hab"]]))){
       
