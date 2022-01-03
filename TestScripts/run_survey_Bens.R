@@ -636,3 +636,50 @@ source("R/Bens_plot_pop_spatiotemp.R")
 Bens_plot_pop_spatiotemp(results = res, timestep = 'daily',plot_weekly=FALSE,
                          plot_monthly = TRUE, save.location = "testfolder", 
                          ColBreaks = Qbreaks_list)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#################################################################################
+# if res["pop_bios"] is out of order due to error in original run_sim 
+# use this chunk to reorder correctly
+#################################################################################
+
+                 
+nyears <- 20
+week_p_yr <- 52
+
+res_temp <- list()
+res_temp[["pop_bios"]] <- res[["pop_bios"]] #save them just in case
+
+temp_bios <- vector("list", nyears*week_p_yr)
+dim(temp_bios) <- c(nyears, week_p_yr)
+
+for(i in seq(nyears*week_p_yr)){
+  
+  temp_bios[[i]] <- res[["pop_bios"]][[i]] #put them back the way they came out of the simulation
+  
+}
+
+#reverse order. they are saved above if need them
+res[["pop_bios"]] <- t(temp_bios)
+
+
+
+
+
