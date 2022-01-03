@@ -89,13 +89,20 @@ if(is.null(closure)) { closure_list <- NULL}
 # ###################################
 # ###### Move probabilities #########  I MOVED THESE OUT OF HERE TO IMPROVE SPEED
 # ###################################
-# print("Calculating movement probabilities")
-# 
-# MoveProb  <- lapply(paste0("spp", seq_len(n_spp)), function(s) { move_prob_Lst(lambda = 0.3, hab = hab_init[["hab"]][[s]])})
-# MoveProb_spwn <- lapply(paste0("spp", seq_len(n_spp)), function(s) { move_prob_Lst(lambda = 0.3, hab = hab_init[["spwn_hab"]][[s]])})
-# 	  
-# names(MoveProb)      <- paste0("spp", seq_len(n_spp))
-# names(MoveProb_spwn) <- paste0("spp", seq_len(n_spp))
+ print("Calculating movement probabilities")
+
+ MoveProb  <- lapply(paste0("spp", seq_len(n_spp)), function(s) { move_prob_Lst(lambda = pop_init[["dem_params"]][[s]][["lambda"]], hab = hab_init[["hab"]][[s]])})
+
+
+ MoveProb_spwn <- lapply(paste0("spp", seq_len(n_spp)), function(s) { move_prob_Lst(lambda = pop_init[["dem_params"]][[s]][["lambda"]], hab = hab_init[["spwn_hab"]][[s]])})
+
+
+ names(MoveProb)      <- paste0("spp", seq_len(n_spp))
+ names(MoveProb_spwn) <- paste0("spp", seq_len(n_spp))
+ 
+# View(MoveProb)
+# View(MoveProb_spwn)
+
 
 ## Avoid printing every tow
 print.seq <- seq(1, ntow, 100)
@@ -196,7 +203,7 @@ if(Recruit) { # Check for new week
 
 	      	      print(t)
 	      print(s)
-View(B[[s]])
+#View(B[[s]])
 print(sum(B[[s]]))
 	      
     rec <- Recr_mat(model = pop_init[["dem_params"]][[s]][["rec_params"]][["model"]],
@@ -395,8 +402,8 @@ al   <- ifelse(week.breaks[t] %in% pop_init[["dem_params"]][[x]][["rec_wk"]],
 alm1 <- ifelse(c(week.breaks[t]-1) %in% pop_init[["dem_params"]][[x]][["rec_wk"]],
 	     1/length(pop_init[["dem_params"]][[x]][["rec_wk"]]), 0)
 
-print(al)
-print(alm1)
+#print(al)
+#print(alm1)
 
 res <- delay_diff(K = pop_init[["dem_params"]][[x]][["K"]], F = spat_fs[[x]], 
 	   M = pop_init[["dem_params"]][[x]][["M"]]/365, 
@@ -478,11 +485,13 @@ if(Pop_move) {
 	
 	## If in a non-spawning week or spawning week
 	if(!week.breaks[t] %in% pop_init[["dem_params"]][[s]][["spwn_wk"]]) {
+	  print("non-spawning movement")
 	newPop <- move_population(moveProp = lapply(lapply(MoveProb[[s]], function(x) x * move_cov_wk_spp), function(x1) x1/sum(x1)),
 				  StartPop = Bp1[[s]]) 
 	}
 	
 	if(week.breaks[t] %in% pop_init[["dem_params"]][[s]][["spwn_wk"]]) {
+	  print("spawning movement")
 	newPop <- move_population(moveProp = lapply(lapply(MoveProb_spwn[[s]], function(x) x * move_cov_wk_spp), function(x1) x1/sum(x1)),
 				  StartPop = Bp1[[s]])
 	}
@@ -621,7 +630,7 @@ end.time <- Sys.time()
 time.taken <- end.time - start.time
 print(paste("time taken is :", format(time.taken, units = "auto"), sep = " "))
 
-return(list(fleets_catches = catches, pop_summary = pop_init[["Pop_record"]], pop_bios = pop_bios, survey = survey, closures = closure_list))
+return(list(fleets_catches = catches, pop_summary = pop_init[["Pop_record"]], pop_bios = t(pop_bios), survey = survey, closures = closure_list))
 
 } # end func
 
