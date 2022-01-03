@@ -191,7 +191,7 @@ CalcClosures <- ifelse(week.breaks[t] != week.breaks[t-1], TRUE, FALSE)
 # Recruitment based on pop in spawning grounds in first week of spawning,
 # but occurs throughout the spawning period
 # Different spawning periods for different pops, so we need to handle this...
-print(Recruit)
+#print(Recruit)
 if(Recruit) { # Check for new week
 
 ##print("Recruiting")
@@ -358,7 +358,7 @@ catches <- lapply(seq_len(n_fleets), function(fl) {
 
 if(Pop_dyn) { #POP_DYN IS SET ON LINE 143
 
-  print("Delay-difference model")
+#  print("Delay-difference model")
 
 ## Calculate the fishing mortalities
 # 1. Sum all fleet catches - DONE
@@ -394,7 +394,7 @@ names(spat_fs)  <- paste("spp", seq_len(n_spp), sep = "")
 # Apply the delay difference model
 Bp1 <- lapply(paste0("spp", seq_len(n_spp)), function(x) {
 #print(t)
- print(sum(Rec[[x]]))
+# print(sum(Rec[[x]]))
   #View(B[[x]])
   
 al   <- ifelse(week.breaks[t] %in% pop_init[["dem_params"]][[x]][["rec_wk"]],
@@ -485,13 +485,13 @@ if(Pop_move) {
 	
 	## If in a non-spawning week or spawning week
 	if(!week.breaks[t] %in% pop_init[["dem_params"]][[s]][["spwn_wk"]]) {
-	  print("non-spawning movement")
+#	  print("non-spawning movement")
 	newPop <- move_population(moveProp = lapply(lapply(MoveProb[[s]], function(x) x * move_cov_wk_spp), function(x1) x1/sum(x1)),
 				  StartPop = Bp1[[s]]) 
 	}
 	
 	if(week.breaks[t] %in% pop_init[["dem_params"]][[s]][["spwn_wk"]]) {
-	  print("spawning movement")
+#	  print("spawning movement")
 	newPop <- move_population(moveProp = lapply(lapply(MoveProb_spwn[[s]], function(x) x * move_cov_wk_spp), function(x1) x1/sum(x1)),
 				  StartPop = Bp1[[s]])
 	}
