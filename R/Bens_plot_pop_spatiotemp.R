@@ -116,7 +116,7 @@ Bens_plot_pop_spatiotemp <- function(results = res, timestep = 'daily', save = F
       
       for(k in seq(12)){
         
-        nt <- length(moveCov[["cov.matrix"]])
+        nt <- length(res[["pop_bios"]])
         
         par(mfrow = c(5,4),mar = c(1, 1, 1, 1))
         
@@ -165,7 +165,7 @@ Bens_plot_pop_spatiotemp <- function(results = res, timestep = 'daily', save = F
         
         for(k in seq(12)){
           
-          nt <- length(moveCov[["cov.matrix"]])
+          nt <- length(res[["pop_bios"]])
           
           par(mfrow = c(5,4),mar = c(1, 1, 1, 1))
           
