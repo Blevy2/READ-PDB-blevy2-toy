@@ -73,7 +73,7 @@ The object returned is used internally by MixFishSim a list with two levels:
 
 #NEW VERSION that has week breaks for entire simulation and allows fishing on just 1 day per week
 source("R/init_sim_Bens_nofish.R")
-sim <- init_sim_Bens_nofish(nrows = 100, ncols = 100, n_years = 20, n_tows_day = 1,
+sim <- init_sim_Bens_nofish(nrows = 100, ncols = 100, n_years = 4, n_tows_day = 1,
                 n_days_wk_fished = 1, n_fleets = 1, n_vessels = 1, n_species = 2,
                 move_freq = 1)
 
@@ -201,27 +201,28 @@ Pop <- init_pop_Bens(sim_init = sim, Bio = c("spp1" = 4e5, "spp2" = 10e5), #thes
 		hab = hab[["hab"]], start_cell = c(50,50),
 		lambda = c("spp1" = 0.1, "spp2" = 0.1), #same lambda for all?
 		init_move_steps = 20,
-		rec_params = list("spp1" = c("model" = "BH", "a" = 3, "b" = 1, "cv" = 0),
-				  "spp2" = c("model" = "BH", "a" = 13, "b" = 1,"cv" = 0)), #these values from paper
+		rec_params = list("spp1" = c("model" = "BH", "a" = 6, "b" = 4, "cv" = 0),
+				  "spp2" = c("model" = "BH", "a" = 27, "b" = 4,"cv" = 0)), #these values from paper
 		rec_wk = list("spp1" = 12:15, "spp2" = 12:15),
 		spwn_wk = list("spp1" = 15:18, "spp2" = 15:18),
-		M = c("spp1" = 0.8, "spp2" = 0.95), #these values from paper: c("spp1" = 0.2, "spp2" = 0.1)
+		M = c("spp1" = 0.2, "spp2" = 0.1), #these values from paper: c("spp1" = 0.2, "spp2" = 0.1)
 		K = c("spp1" = 0.3, "spp2" = 0.3) #all the same for now
 		)
 
 
 
-#Calculate movement probabilities (used to be in run_sim)
-Move_Prob  <- lapply(paste0("spp", seq_len(sim[["idx"]][["n.spp"]])), function(s) { move_prob_Lst(lambda = Pop[["dem_params"]][[s]][["lambda"]], hab = hab[["hab"]][[s]])})
+#I PUT THIS BACK INSIDE RUN_SIM
+# #Calculate movement probabilities (used to be in run_sim)
+# Move_Prob  <- lapply(paste0("spp", seq_len(sim[["idx"]][["n.spp"]])), function(s) { move_prob_Lst(lambda = Pop[["dem_params"]][[s]][["lambda"]], hab = hab[["hab"]][[s]])})
+# 
+# 
+# Move_Prob_spwn <- lapply(paste0("spp", seq_len(sim[["idx"]][["n.spp"]])), function(s) { move_prob_Lst(lambda = Pop[["dem_params"]][[s]][["lambda"]], hab = hab[["spwn_hab"]][[s]])})
+# 
+# 
+# names(Move_Prob)      <- paste0("spp", seq_len(sim[["idx"]][["n.spp"]]))
+# names(Move_Prob_spwn) <- paste0("spp", seq_len(sim[["idx"]][["n.spp"]]))
 
 
-Move_Prob_spwn <- lapply(paste0("spp", seq_len(sim[["idx"]][["n.spp"]])), function(s) { move_prob_Lst(lambda = Pop[["dem_params"]][[s]][["lambda"]], hab = hab[["spwn_hab"]][[s]])})
-
-
-names(Move_Prob)      <- paste0("spp", seq_len(sim[["idx"]][["n.spp"]]))
-names(Move_Prob_spwn) <- paste0("spp", seq_len(sim[["idx"]][["n.spp"]]))
-	
-	
 	
 
 
@@ -419,8 +420,6 @@ load("/net/home5/blevy/Bens_R_Projects/READ-PDB-blevy2-toy/20 year moveCov matri
 	       save_pop_bio = TRUE,
 	       survey = NULL, #surv_random, will try to survey after simulation
 	       closure = NULL,
-	       MoveProb = Move_Prob,
-	       MoveProb_spwn = Move_Prob_spwn,
 	       InParallel = TRUE)  #does it runin parallel? Doesnt seem like it
 
   
