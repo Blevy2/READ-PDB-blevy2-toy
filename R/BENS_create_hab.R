@@ -39,7 +39,9 @@
 
 BENS_create_hab <- function (sim_init = sim, stratas = NULL, strata = NULL, seed = 123, spp.ctrl = NULL, spawn_areas = NULL, spwn_mult = 10, plot.dist = FALSE, plot.file = getwd()) {
 
-
+  spwn_mult <- 10
+  
+print(spwn_mult)
   
 	# Extract indices
 	idx <- sim_init[["idx"]]
