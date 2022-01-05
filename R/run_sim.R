@@ -191,7 +191,7 @@ CalcClosures <- ifelse(week.breaks[t] != week.breaks[t-1], TRUE, FALSE)
 # Recruitment based on pop in spawning grounds in first week of spawning,
 # but occurs throughout the spawning period
 # Different spawning periods for different pops, so we need to handle this...
-#print(Recruit)
+print(Recruit)
 if(Recruit) { # Check for new week
 
 ##print("Recruiting")
@@ -201,10 +201,11 @@ if(Recruit) { # Check for new week
 
 	    if(week.breaks[t] %in% pop_init[["dem_params"]][[s]][["rec_wk"]]) {
 
-	      	      print(t)
-	      print(s)
-#View(B[[s]])
-print(sum(B[[s]]))
+	  #    	      print(t)
+	 #     print(s)
+	      print(paste0('sum B is  ',sum(B[[s]])))
+
+#print(sum(B[[s]]))
 	      
     rec <- Recr_mat(model = pop_init[["dem_params"]][[s]][["rec_params"]][["model"]],
      params = c("a" = as.numeric(pop_init[["dem_params"]][[s]][["rec_params"]][["a"]]),
@@ -223,6 +224,62 @@ print(sum(B[[s]]))
 
     })
 names(Rec) <- paste0("spp", seq_len(n_spp))
+
+
+#View(B[[1]])
+#View(Rec[[1]])
+
+#View(B[[2]])
+#View(Rec[[2]])
+
+pdf(file=paste0('testfolder/Qbreaks_Rec_plots/rec_B_plots_',t,'.pdf'))
+
+par(mfrow = c(2,2),mar = c(1, 1, 1, 1))
+
+Qbreaks <- classInt::classIntervals(var=as.vector(round(B[[1]],0)), style = "quantile") 
+#remove zeros from breaks
+QbreaksB1 <- Qbreaks[["brks"]][!Qbreaks[["brks"]] %in% 0]
+QbreaksB1 <- append(0,QbreaksB1)#put single 0 back to start
+
+print(QbreaksB1)
+  
+  # fields::image.plot(pop_wk,  zlim = colrange )
+  fields::image.plot(B[[1]], breaks = unique(QbreaksB1), nlevel = length(unique(QbreaksB1))-1)
+  text(0.5, 0.98, labels = c('Pop 1'), cex = 1)
+
+  
+  Qbreaks <- classInt::classIntervals(var=as.vector(round(Rec[[1]],0)), style = "quantile") 
+  #remove zeros from breaks
+  QbreaksR1 <- Qbreaks[["brks"]][!Qbreaks[["brks"]] %in% 0]
+
+  
+  print(range(Rec[[1]]))
+  print(QbreaksR1)
+  
+  fields::image.plot(Rec[[1]], breaks = unique(QbreaksR1), nlevel = length(unique(QbreaksR1))-1)
+  text(0.5, 0.98, labels = c('Pop 1 Rec'), cex = 1)
+  
+  Qbreaks <- classInt::classIntervals(var=as.vector(round(B[[2]],0)), style = "quantile") 
+  #remove zeros from breaks
+  QbreaksB2 <- Qbreaks[["brks"]][!Qbreaks[["brks"]] %in% 0]
+  QbreaksB2 <- append(0,QbreaksB2)#put single 0 back to start
+  
+  print(QbreaksB2)
+  
+  fields::image.plot(B[[2]], breaks = unique(QbreaksB2), nlevel = length(unique(QbreaksB2))-1)
+  text(0.5, 0.98, labels = c('Pop 2'), cex = 1)
+  
+  Qbreaks <- classInt::classIntervals(var=as.vector(round(Rec[[2]],0)), style = "quantile") 
+  #remove zeros from breaks
+  QbreaksR2 <- Qbreaks[["brks"]][!Qbreaks[["brks"]] %in% 0]
+  #QbreaksR2 <- append(0,QbreaksR2)#put single 0 back to start
+  
+  print(QbreaksR2)
+  
+  fields::image.plot(Rec[[2]], breaks = unique(QbreaksR2), nlevel = length(unique(QbreaksR2))-1)
+  text(0.5, 0.98, labels = c('Pop 2 Rec'), cex = 1)
+  
+  dev.off()
 
 
 }
@@ -394,7 +451,7 @@ names(spat_fs)  <- paste("spp", seq_len(n_spp), sep = "")
 # Apply the delay difference model
 Bp1 <- lapply(paste0("spp", seq_len(n_spp)), function(x) {
 #print(t)
-# print(sum(Rec[[x]]))
+ print(paste0('sum R is  ',sum(Rec[[x]])))
   #View(B[[x]])
   
 al   <- ifelse(week.breaks[t] %in% pop_init[["dem_params"]][[x]][["rec_wk"]],
@@ -402,8 +459,8 @@ al   <- ifelse(week.breaks[t] %in% pop_init[["dem_params"]][[x]][["rec_wk"]],
 alm1 <- ifelse(c(week.breaks[t]-1) %in% pop_init[["dem_params"]][[x]][["rec_wk"]],
 	     1/length(pop_init[["dem_params"]][[x]][["rec_wk"]]), 0)
 
-#print(al)
-#print(alm1)
+print(paste0('a1 is  ',al))
+print(paste0('am1 is  ',alm1))
 
 res <- delay_diff(K = pop_init[["dem_params"]][[x]][["K"]], F = spat_fs[[x]], 
 	   M = pop_init[["dem_params"]][[x]][["M"]]/365, 
