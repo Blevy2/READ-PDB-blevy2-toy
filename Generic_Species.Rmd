@@ -130,8 +130,8 @@ hab <- BENS_create_hab(sim_init = sim,
 				     "spp2" = list(
 						   'area1' = c(30,45,55,65),
 						   'area2' = c(70,90,50,60)
-						   ),
-				     spwn_mult = 10, 
+				     ),
+				     spwn_mult = 99999,#THIS DOES NOT CHANGE ANYTHING. MUST CHANGE VALUE AT TOP OF BENS_CREATE_HAB 
 				    plot.dist = TRUE, 
 				    plot.file = "testfolder" ),
 		  
@@ -203,7 +203,7 @@ Pop <- init_pop_Bens(sim_init = sim, Bio = c("spp1" = 4e5, "spp2" = 10e5), #thes
 		init_move_steps = 20,
 		rec_params = list("spp1" = c("model" = "BH", "a" = 6, "b" = 4, "cv" = 0),
 				  "spp2" = c("model" = "BH", "a" = 27, "b" = 4,"cv" = 0)), #these values from paper
-		rec_wk = list("spp1" = 12:15, "spp2" = 12:15),
+		rec_wk = list("spp1" = 15:18, "spp2" = 15:18),
 		spwn_wk = list("spp1" = 15:18, "spp2" = 15:18),
 		M = c("spp1" = 0.2, "spp2" = 0.1), #these values from paper: c("spp1" = 0.2, "spp2" = 0.1)
 		K = c("spp1" = 0.3, "spp2" = 0.3) #all the same for now
