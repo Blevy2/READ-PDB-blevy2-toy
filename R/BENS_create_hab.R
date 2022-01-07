@@ -39,7 +39,6 @@
 
 BENS_create_hab <- function (sim_init = sim, stratas = NULL, strata = NULL, seed = 123, spp.ctrl = NULL, spawn_areas = NULL, spwn_mult = 10, plot.dist = FALSE, plot.file = getwd()) {
 
-  spwn_mult <- 10
   
 print(spwn_mult)
   
@@ -49,7 +48,7 @@ print(spwn_mult)
 	ncols <- idx[["ncols"]]
 	nrows <- idx[["nrows"]]
 
-	RandomFields::RFoptions(spConform = FALSE) # faster and only returns the matrix of values
+	RandomFields::RFopti==ons(spConform = FALSE) # faster and only returns the matrix of values
 	set.seed(seed)
 
 	# Checks
