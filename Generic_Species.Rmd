@@ -130,10 +130,10 @@ hab <- BENS_create_hab(sim_init = sim,
 				     "spp2" = list(
 						   'area1' = c(30,45,55,65),
 						   'area2' = c(70,90,50,60)
-				     ),
+				     )),
 				     spwn_mult = 99999,#THIS DOES NOT CHANGE ANYTHING. MUST CHANGE VALUE AT TOP OF BENS_CREATE_HAB 
 				    plot.dist = TRUE, 
-				    plot.file = "testfolder" ),
+				    plot.file = "testfolder",
 		  
 		  
 		  #created this new part defining strata
@@ -477,7 +477,7 @@ and all the results are saved in the output from the run_sim function.
 ## Biological
 source("R/plot_pop_summary.R")
 p1 <- plot_pop_summary(results = res,
-		 timestep = "annual",
+		 timestep = "daily",
 		 save = FALSE, 
 		 save.location = NULL
 		 )
