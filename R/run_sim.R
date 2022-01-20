@@ -123,7 +123,7 @@ run_sim <- function(MoveProb = NULL, MoveProb_spwn = NULL, sim_init = NULL, pop_
   ### loop control #
   for (t in seq_len(ntow)) { #for(t in seq(50,ntow,1)){ #THIS DEFINES THE LOOP. NTOW = n_tows_day * n_days_wk_fished * 52 * n_years
     ##################
-    print(t)
+  #  print(t)
     ## Loop messages
     
     ## Print when new year
@@ -194,19 +194,19 @@ run_sim <- function(MoveProb = NULL, MoveProb_spwn = NULL, sim_init = NULL, pop_
     # Recruitment based on pop in spawning grounds in first week of spawning,
     # but occurs throughout the spawning period
     # Different spawning periods for different pops, so we need to handle this...
-    print("Recruit?")
-    print(Recruit)
+    #print("Recruit?")
+    #print(Recruit)
     if(Recruit) { # Check for new week
       
-      print("Recruiting")
+    #  print("Recruiting")
       
       ## Check if its a recruitment week for the population
       Rec <- lapply(paste0("spp", seq_len(n_spp)), function(s) {
         
         if(week.breaks[t] %in% pop_init[["dem_params"]][[s]][["rec_wk"]]) {
           
-          print(t)
-          print(s)
+       #   print(t)
+        #  print(s)
           #View(B[[s]])
           #print(sum(B[[s]]))
           
@@ -426,17 +426,17 @@ run_sim <- function(MoveProb = NULL, MoveProb_spwn = NULL, sim_init = NULL, pop_
       # Apply the delay difference model
       Bp1 <- lapply(paste0("spp", seq_len(n_spp)), function(x) {
         #print(t)
-        print("sum of Rec is")
-        print(sum(Rec[[x]]))
+      #  print("sum of Rec is")
+       # print(sum(Rec[[x]]))
         #View(B[[x]])
         
         al   <- ifelse(week.breaks[t] %in% pop_init[["dem_params"]][[x]][["rec_wk"]],
                        1/length(pop_init[["dem_params"]][[x]][["rec_wk"]]), 0)
         alm1 <- ifelse(c(week.breaks[t]-1) %in% pop_init[["dem_params"]][[x]][["rec_wk"]],
                        1/length(pop_init[["dem_params"]][[x]][["rec_wk"]]), 0)
-        print("al and alm1 are")
-        print(al)
-        print(alm1)
+       # print("al and alm1 are")
+       # print(al)
+       # print(alm1)
         
         res <- delay_diff(K = pop_init[["dem_params"]][[x]][["K"]], F = spat_fs[[x]], 
                           M = pop_init[["dem_params"]][[x]][["M"]]/365, 
