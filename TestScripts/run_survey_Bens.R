@@ -64,6 +64,7 @@ for(i in seq(nstrata)){
 
 
 
+
 #add a column to each strata_surv that will contain the week to sample from
 
 
@@ -115,6 +116,18 @@ colnames(strata_surv[[1]]) <- c("station_no","x","y","strata","day","tow","year"
 colnames(strata_surv[[2]]) <- c("station_no","x","y","strata","day","tow","year","spp1","spp2","week")
 colnames(strata_surv[[3]]) <- c("station_no","x","y","strata","day","tow","year","spp1","spp2","week")
 colnames(strata_surv[[4]]) <- c("station_no","x","y","strata","day","tow","year","spp1","spp2","week")
+
+
+
+#years are out of whack due to init_survey code. Fix it here
+
+for(i in seq(nstrata)){
+  
+  strata_surv[[i]][,"year"] <- rep(3:22,each=length(S1_wks))   #skipping first two years
+}
+
+
+
 
 
 
@@ -181,7 +194,7 @@ survey_results[[4]] <- all4
 
 #procedure
 #1) pull out given strata with all iteration results 
-#2) use Reduce to add all items in list together, then by total number in list to obtain mean
+#2) use Reduce to add all items in list together, then divide by total number in list to obtain mean
 #3) use info from https://stackoverflow.com/questions/39351013/standard-deviation-over-a-list-of-matrices-in-r to calculate standard deviation
 
 sum_survey_results <- list()
