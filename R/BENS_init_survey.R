@@ -17,6 +17,8 @@
 #' @param strata_coords is created by init_hab and contains the corner coordinates of each strata (if rectangular)
 #'
 #' @param strata_num is created by init_hab. It contains the entire domain with each of the n strata labeled 1 to n 
+#' 
+#' @param years_cut cuts off year_shift from the start of the survey
 #'
 #' @return is a list consisting of the survey setting and a a matrix for
 #' storing the log of catches from the survey, to be used as an input to
@@ -28,7 +30,7 @@
 #' @export
 
 BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stations = 50, 
-			     start_day = 90, stations_per_day = 5, Qs = NULL, strata_coords = NULL, strata_num = NULL) {
+			     start_day = 90, stations_per_day = 5, Qs = NULL, strata_coords = NULL, strata_num = NULL, years_cut = 0) {
 
 	# useful indexes
 	idx       <- sim_init[["idx"]]
@@ -138,7 +140,7 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 	    
 	    #index[j] is how many total stations there are in each strata
 	    #currently dividing total number of samples evening among each strata
-	    my_sample <- sample(index[j],n_stations*sim_init[["idx"]][["ny"]]/length(strata_index_list),replace = FALSE)
+	    my_sample <- sample(index[j],n_stations*(sim_init[["idx"]][["ny"]]-years_cut)/length(strata_index_list),replace = FALSE)
 #	print("max/min is")
 #	print(max(my_sample))
 #	print(min(my_sample))
@@ -200,7 +202,7 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 
 	  }
     
-#View(x)
+View(x)
 
 	##########################
 	## set up RANDOM survey log matrix
@@ -225,9 +227,9 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 	log.mat[,'x']          <- x  #different than fixed station section
 	log.mat[,'y']          <- y  #different than fixed station section
 	log.mat[,'strata']     <- str_num #new
-	log.mat[,'day']        <- rep(station_days, times = sim_init[["idx"]][["ny"]])
-	log.mat[,'tow']        <- rep(seq_len(n_stations), sim_init[["idx"]][["ny"]]) 
-	log.mat[,'year']       <- rep(rep(seq_len(sim_init[["idx"]][["ny"]]), each = n_stations/n_strata), n_strata)
+	log.mat[,'day']        <- rep(station_days, times = sim_init[["idx"]][["ny"]]-years_cut)
+	log.mat[,'tow']        <- rep(seq_len(n_stations), sim_init[["idx"]][["ny"]]-years_cut) 
+	log.mat[,'year']       <- rep(rep(seq_len(sim_init[["idx"]][["ny"]]-years_cut), each = n_stations/n_strata), n_strata)
 	
 	
 	return(list(survey_settings = c("design" = design, "n_stations" =

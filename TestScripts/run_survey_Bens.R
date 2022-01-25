@@ -15,9 +15,12 @@ source("R/BENS_init_survey.R")
 #ALSO NEED N_STATIONS / STATIONS_PER_DAY <= 52 otherwise wont get to all of them in a year results in NA in the matrix
 
 #setup catch log
+#MAY NEED TO RUN A FEW TIMES TO GET MATRIX THAT IS CORRECT SIZE
 surv_random <- BENS_init_survey(sim_init = sim,design = 'random_station', n_stations = 80, #this is total per year (20 in each of 4 strata)
                                 start_day = 1, stations_per_day = 1, Qs = c("spp1" = 0.1, "spp2"= 0.2),
-                                strata_coords = hab$strata, strata_num = hab$stratas )
+                                strata_coords = hab$strata, strata_num = hab$stratas, 
+                                years_cut = 2 #remove first 2 years
+                                )
 
 
 
@@ -119,12 +122,12 @@ colnames(strata_surv[[4]]) <- c("station_no","x","y","strata","day","tow","year"
 
 
 
-#years are out of whack due to init_survey code. Fix it here
-
-for(i in seq(nstrata)){
-  
-  strata_surv[[i]][,"year"] <- rep(3:22,each=length(S1_wks))   #skipping first two years
-}
+# #years are out of whack due to init_survey code. Fix it here
+# NO, THERE WAS AN ERROR WITH RUNNING INIT_SURVEY WITH NY=22
+# for(i in seq(nstrata)){
+#   
+#   strata_surv[[i]][,"year"] <- rep(3:22,each=length(S1_wks))   #skipping first two years
+# }
 
 
 
