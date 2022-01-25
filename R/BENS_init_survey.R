@@ -229,7 +229,7 @@ View(x)
 	log.mat[,'strata']     <- str_num #new
 	log.mat[,'day']        <- rep(station_days, times = sim_init[["idx"]][["ny"]]-years_cut)
 	log.mat[,'tow']        <- rep(seq_len(n_stations), sim_init[["idx"]][["ny"]]-years_cut) 
-	log.mat[,'year']       <- rep(rep(seq_len(sim_init[["idx"]][["ny"]]-years_cut), each = n_stations/n_strata), n_strata)
+	log.mat[,'year']       <- rep(rep(seq(years_cut+1,sim_init[["idx"]][["ny"]]), each = n_stations/n_strata), n_strata)
 	
 	
 	return(list(survey_settings = c("design" = design, "n_stations" =
