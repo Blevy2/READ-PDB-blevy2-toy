@@ -95,15 +95,18 @@ for(i in seq(nstrata)){
 #######################################################
 # SECOND CHUNK SPLITS 10 SAMPLES PER STRATA AS 7 IN ONE WEEK 3 IN THE OTHER 
 ######################################################
+#sample weeks
 S1_wks <- c(13,13,13,13,13,13,13,14,14,14,37,37,37,37,37,37,37,38,38,38)  #strata1 sample weeks- 7 in 1st week, 3 in second week in each season
 S2_wks <- c(13,13,13,13,13,13,13,14,14,14,37,37,37,37,37,37,37,38,38,38)  #strata2 sample weeks- 7 in 1st week, 3 in second week in each season
 S3_wks <- c(14,14,14,15,15,15,15,15,15,15,38,38,38,39,39,39,39,39,39,39)  #strata3 sample weeks- 3 in 1st week, 7 in second week in each season
 S4_wks <- c(14,14,14,15,15,15,15,15,15,15,38,38,38,39,39,39,39,39,39,39)  #strata4 sample weeks- 3 in 1st week, 7 in second week in each season
 
+#sequence for weeks
 S1_seq <- rep(S1_wks,nyears)
 S2_seq <- rep(S2_wks,nyears) #create sequence that will fit in matrix based on above input
 S3_seq <- rep(S3_wks,nyears)
 S4_seq <- rep(S4_wks,nyears)
+
 
 #################################################
 
@@ -224,8 +227,31 @@ for(i in seq(nstrata)){ #4 strata
   colnames(sum_survey_results[[i]]) <- c("station_no","x","y","strata","day","tow","year","spp1","spp2","week","sd_spp1","sd_spp2")
 }
 
+#ADD COLUMN FOR SEASON FOR STRAT MEAN
+
+#season
+S1_sn <- c("SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","FALL","FALL","FALL","FALL","FALL","FALL","FALL","FALL","FALL","FALL")  #weeks 13&14 in spring 37&38 FALL
+S2_sn <- c("SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","FALL","FALL","FALL","FALL","FALL","FALL","FALL","FALL","FALL","FALL")  #weeks 13&14 in spring 37&38 FALL
+S3_sn <- c("SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","FALL","FALL","FALL","FALL","FALL","FALL","FALL","FALL","FALL","FALL")  #weeks 13&14 in spring 37&38 FALL
+S4_sn <- c("SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","FALL","FALL","FALL","FALL","FALL","FALL","FALL","FALL","FALL","FALL")  #weeks 13&14 in spring 37&38 FALL
+
+#sequence for season
+Season <- rep(S1_sn,nyears)
+
+
+sum_survey_results[[1]] <- cbind(sum_survey_results[[1]],Season)
+sum_survey_results[[2]] <- cbind(sum_survey_results[[2]],Season)
+sum_survey_results[[3]] <- cbind(sum_survey_results[[3]],Season)
+sum_survey_results[[4]] <- cbind(sum_survey_results[[4]],Season)
+
+
+
+
+
 #combine back into single log.mat
 log.mat <- rbind(sum_survey_results[[1]],sum_survey_results[[2]],sum_survey_results[[3]],sum_survey_results[[4]])
+
+
 
 
 
