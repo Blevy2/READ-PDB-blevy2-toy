@@ -69,13 +69,131 @@ Bens_plot_pop_spatiotemp <- function(results = res, timestep = 'daily', save = F
   
   if(plot_monthly == TRUE){
     
-    #make sure the breaks for the color scale have been defined after running the simulation, possibly in in run_survey_Bens
+    #PART 1: If I have NOT created colbreaks, DONT use them
     if(is.null(ColBreaks)){
-      stop()
-      print("Must enter breaks for color scale after running simulation. Possibly in run_survey_Bens")}
+      if(!is.null(save.location)) {
+        
+        pdf(file=paste0(save.location,'/Monthly_pop_plots','.pdf'))
+        #png(filename = paste0(plot.file,'/Monthly_covariate_plots/','monthly_habitat_spatiotemp_spp_',s,'month_',k,'.png'), width = 800, height = 800)
+      }
+      
+      
+      #relist so all pop values are in a sublist rather than 
+      new_pop_bios <- list(list(),list())
+      
+      # new_pop_bios_singleList <- list(matrix(nc=100),matrix(nc=100))
+      
+      for(s in seq(length(hab[["hab"]]))){
+        
+        for(i in seq(length(res[["pop_bios"]]))){
+          #print(s)
+          #print(i)
+          new_pop_bios[[s]][[i]] <- res$pop_bios[[i]][[s]]
+          
+          #   new_pop_bios_singleList[[s]] <- rbind(as.matrix(new_pop_bios_singleList[[s]]),as.matrix(res$pop_bios[[i]][[s]]))
+          
+        }
+      }
+      
+      
+      
+      
+      
+      
+      for(s in seq_len(length(hab[["hab"]]))) {
+        
+
+        
+        for(k in seq(12)){
+          
+          nt <- length(res[["pop_bios"]])
+          
+          par(mfrow = c(5,4),mar = c(1, 1, 1, 1))
+          
+          
+          for(i in seq(1,nt,52)){
+            
+            month_shift <- 4*(k-1)
+            
+            pop_wk <- new_pop_bios[[s]][[i+month_shift]]
+            
+            
+            # fields::image.plot(pop_wk,  zlim = colrange )
+            fields::image.plot(pop_wk )
+            
+            #	  axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
+            #	  axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
+            text(0.5, 0.98, labels = paste('week', i+month_shift), cex = 1)
+            
+            
+          }
+          
+          
+        }
+      }
+      
+      dev.off()
+      
+      
+      if(!is.null(res[["pop_bios_sd"]])){
+        
+        if(!is.null(save.location)) {
+          
+          pdf(file=paste0(save.location,'/Monthly_sd_plots','.pdf'))
+          #png(filename = paste0(plot.file,'/Monthly_covariate_plots/','monthly_habitat_spatiotemp_spp_',s,'month_',k,'.png'), width = 800, height = 800)
+        }
+        
+        
+        
+        for(s in seq_len(length(hab[["hab"]]))) {
+          
+          #set color range for spatial plots
+          #colrange <- range(res[["pop_bios_sd"]][[s]],na.rm=TRUE)  #old method. now using own breaks
+          
+          Breaks = ColBreaks[[s+2]] #last two in list are for SD
+          
+          
+          for(k in seq(12)){
+            
+            nt <- length(res[["pop_bios"]])
+            
+            par(mfrow = c(5,4),mar = c(1, 1, 1, 1))
+            
+            
+            for(i in seq(1,nt,52)){
+              
+              month_shift <- 4*(k-1)
+              
+              pop_sd_wk <- res[["pop_bios_sd"]][[s]][[i+month_shift]]
+              
+              #fields::image.plot(pop_wk,  zlim = colrange )
+              fields::image.plot(pop_sd_wk)
+              
+              #	  axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
+              #	  axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
+              text(0.5, 0.98, labels = paste('week', i+month_shift), cex = 1)
+              
+              
+            }
+            
+            
+          }
+        }
+        
+        dev.off()
+        
+      }
+      
+      
+      }
     
     
-   
+
+    
+    
+    
+    #PART 2: If I have created colbreaks, use them
+    if(!is.null(ColBreaks)){
     
     if(!is.null(save.location)) {
       
@@ -194,7 +312,7 @@ Bens_plot_pop_spatiotemp <- function(results = res, timestep = 'daily', save = F
       
     }
   }
-  
+}
   
   
   
