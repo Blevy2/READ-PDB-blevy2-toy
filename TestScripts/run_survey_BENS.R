@@ -117,10 +117,10 @@ strata_surv[[3]]<-cbind(strata_surv[[3]],S3_seq)
 strata_surv[[4]]<-cbind(strata_surv[[4]],S4_seq)
 
 #name columns
-colnames(strata_surv[[1]]) <- c("station_no","x","y","strata","day","tow","year","spp1","spp2","week")
-colnames(strata_surv[[2]]) <- c("station_no","x","y","strata","day","tow","year","spp1","spp2","week")
-colnames(strata_surv[[3]]) <- c("station_no","x","y","strata","day","tow","year","spp1","spp2","week")
-colnames(strata_surv[[4]]) <- c("station_no","x","y","strata","day","tow","year","spp1","spp2","week")
+colnames(strata_surv[[1]]) <- c("station_no","x","y","stratum","day","tow","year","spp1","spp2","week")
+colnames(strata_surv[[2]]) <- c("station_no","x","y","stratum","day","tow","year","spp1","spp2","week")
+colnames(strata_surv[[3]]) <- c("station_no","x","y","stratum","day","tow","year","spp1","spp2","week")
+colnames(strata_surv[[4]]) <- c("station_no","x","y","stratum","day","tow","year","spp1","spp2","week")
 
 
 
@@ -223,7 +223,7 @@ for(i in seq(nstrata)){ #4 strata
   #the sd_mat above is mostly 0 since things dont change. just pull out sample columns 8 and 9 and append them to previous
   sum_survey_results[[i]] <- cbind(sum_survey_results[[i]],sd_mat[,8:9])
   
-  colnames(sum_survey_results[[i]]) <- c("station_no","x","y","strata","day","tow","year","spp1","spp2","week","sd_spp1","sd_spp2")
+  colnames(sum_survey_results[[i]]) <- c("station_no","x","y","stratum","day","tow","year","spp1","spp2","week","sd_spp1","sd_spp2")
 }
 
 
