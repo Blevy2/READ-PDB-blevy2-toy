@@ -505,7 +505,7 @@ run_sim <- function(MoveProb = NULL, MoveProb_spwn = NULL, sim_init = NULL, pop_
       if(!is.null(move_cov)) {
         
         ## The temperature covariates for the week
-        move_cov_wk <- move_cov[["cov.matrix"]][[week.breaks[t]]]  #this should now use all moveCov matrices
+        move_cov_wk <- move_cov[["cov.matrix"]][[week.breaks.all[t]]]  #this should now use all moveCov matrices
         
         
         B <- lapply(paste0("spp", seq_len(n_spp)), function(s) {
