@@ -42,10 +42,11 @@ append(temp2,new) -> new
  
  
  
- #old and wrong (only did 2 weeks)
- temp<-list(moveCov[["cov.matrix"]][[1]],moveCov[["cov.matrix"]][[1]])
- append(temp,moveCov[["cov.matrix"]]) -> new
- View(new)
- moveCov[["cov.matrix"]]<-new
+ ##old and wrong (only did 2 weeks)
  
- remove(temp)
+ # temp<-list(moveCov[["cov.matrix"]][[1]],moveCov[["cov.matrix"]][[1]])
+ # append(temp,moveCov[["cov.matrix"]]) -> new
+ # View(new)
+ # moveCov[["cov.matrix"]]<-new
+ # 
+ # remove(temp)
