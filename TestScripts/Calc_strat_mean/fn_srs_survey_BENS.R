@@ -50,7 +50,7 @@ srs_survey <- function(df, sa, str, ta=0.01, sppname = NULL  )  {
     group_by(Season) %>%
     left_join(sa) %>%
     replace(is.na(.), 0) %>%
-    pivot_longer(cols=c(spp.name), values_to="OBS_VALUE") %>%  #changing catchwt to obs_value
+    pivot_longer(cols=c(sppname), values_to="OBS_VALUE") %>%  #changing catchwt to obs_value
     relocate(year, Season, stratum, tow, OBS_VALUE, STRATUM_AREA)
 
 # Calculate null survey

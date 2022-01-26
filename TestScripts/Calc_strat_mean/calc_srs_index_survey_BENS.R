@@ -82,7 +82,7 @@ spp.srs.rel.and.absolute <- spp.srs %>%
   mutate(mean.yr.absolute=mean.yr*spp.area, sd.mean.yr.absolute=sd.mean.yr*spp.area,
          CV.absolute=sd.mean.yr.absolute/mean.yr.absolute)
 
-write.csv(spp.srs.rel.and.absolute, file=paste("C:/Users/benjamin.levy/Desktop/NOAA/GIS_Stuff/From_Liz/",spp.name, spp.stock, "_SRS_from_Rcode.csv", sep="."), row.names=F)
+write.csv(spp.srs.rel.and.absolute, file=paste(spp.name, spp.stock, "_SRS_from_Rcode.csv", sep="."), row.names=F)
 
 # Note: in spp.srs.rel.and.absolute, the relative mean index and sd are "mean.yr" and "sd.mean.yr"
 # the mean index scaled by total area ("absolute abundance index") are "mean.yr.absolute" and "sd.mean.yr.absolute"
