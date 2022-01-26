@@ -251,12 +251,22 @@ plot(sediment_ras_num)
 sediment_thick_ras <-  raster('C:\\Users\\benjamin.levy\\Desktop\\NOAA\\GIS_Stuff\\NOAA_Maps\\GlobalSedimentThickness\\Final_ras\\sed_thick_ras.tif')
 plot(sediment_thick_ras)
 
+#Median sediment size (from Robyns USGS link)
+#extrapolated from points using natural neighbor interpolation method
+median_sed_thick_NN <-  raster('C:\\Users\\benjamin.levy\\Desktop\\NOAA\\GIS_Stuff\\NOAA_Maps\\Median_Sediment_Size_(ecstdb2014)\\med_sdsze_NaturalNeighbor\\Med_SdSze_NN')
+plot(median_sed_thick_NN)
+#extrapolated from points using IDW interpolation method
+median_sed_thick_IDW <-  raster('C:\\Users\\benjamin.levy\\Desktop\\NOAA\\GIS_Stuff\\NOAA_Maps\\Median_Sediment_Size_(ecstdb2014)\\med_sdsze_IDW_Method\\Med_SdSze_IDW')
+plot(median_sed_thick_IDW)
+
 
 #clip data to desired area
 bathy_ras <-crop(bathy_ras,GB_strata)
 sediment_ras_num <- crop(sediment_ras_num,GB_strata)
 sedmient_ras_categ <- crop(sediment_ras_categ,GB_strata)
 sediment_thick_ras <- crop(sediment_thick_ras,GB_strata)
+median_sed_thick_NN <- crop(median_sed_thick_NN,GB_strata)
+median_sed_thick_IDW <- crop(median_sed_thick_IDW,GB_strata)
 
 plot(bathy_ras)
 plot(GB_strata,add=T)
@@ -267,16 +277,29 @@ plot(GB_strata,add=T)
 plot(sediment_thick_ras)
 plot(GB_strata,add=T)
 
+plot(median_sed_thick_NN)
+plot(GB_strata,add=T)
+
+plot(median_sed_thick_IDW)
+plot(GB_strata,add=T)
+
+
+
 #create image files to use later
 bathy_im<- as.im(bathy_ras)
 sediment_im <- as.im(sediment_ras_num) #CHANGE FROM CATEGORICAL TO NUMERICAL HERE
 sediment_thick_im <- as.im(sediment_thick_ras)
+median_sed_thick_IDW_im <- as.im(median_sed_thick_IDW)
+median_sed_thick_NN_im <- as.im(median_sed_thick_NN)
+
+
 
 #scale data
 bathy_im$v <- scale(bathy_im)
 sediment_im$v <- scale(sediment_im)
 sediment_thick_im$v <- scale(sediment_thick_im)
-
+median_sed_thick_IDW_im$v <- scale(median_sed_thick_IDW_im)
+median_sed_thick_NN_im$v <- scale(median_sed_thick_NN_im)
 
 #old (wrong?) way
 #bathy_im_sc<- scale(as.im(bathy_ras))  #scaling here
@@ -286,7 +309,8 @@ sediment_thick_im$v <- scale(sediment_thick_im)
 bathy_ras <- raster::raster(bathy_im)
 sediment_ras_num <- raster::raster(sediment_im)
 sediment_thick_ras <- raster::raster(sediment_thick_im)
-
+median_sed_thick_IDW_ras <- raster::raster(median_sed_thick_IDW_im)
+median_sed_thick_NN_ras <- raster::raster(median_sed_thick_NN_im)
 
 
 
@@ -344,7 +368,7 @@ fall.gis   <- gis[gis$SEASON=='FALL',]
 
 
 #ONLY TAKE MORE RECENT ONES?
-spring.gis <- spring.gis[spring.gis$Year>2005,]
+spring.gis <- spring.gis[spring.gis$Year>2009,]
 
 
 
@@ -368,7 +392,9 @@ spatstat.geom::marks(presence) <- data.frame("presence" = rep(1, presence$n), #a
 
 spatstat.geom::marks(presence)$bathy <-  bathy_im[presence] #adds covariate values for presence locations
 #spatstat.geom::marks(presence)$sediment <- sediment_im[presence]
-spatstat.geom::marks(presence)$sediment_thick <- sediment_thick_im[presence]
+#spatstat.geom::marks(presence)$sediment_thick <- sediment_thick_im[presence]
+spatstat.geom::marks(presence)$median_sed <- median_sed_thick_NN_im[presence]
+
 
 
 
@@ -390,7 +416,9 @@ spatstat.geom::marks(absence) <- data.frame("presence" = rep(0, absence$n),
                                             "lat" = absence$y)
 spatstat.geom::marks(absence)$bathy <-  bathy_im[absence] #some points are outside the region
 #spatstat.geom::marks(absence)$ sediment <- sediment_im[absence]
-spatstat.geom::marks(absence)$ sediment_thick <- sediment_thick_im[absence]
+#spatstat.geom::marks(absence)$ sediment_thick <- sediment_thick_im[absence]
+
+spatstat.geom::marks(absence)$median_sed <- median_sed_thick_NN_im[absence]
 
 
 
@@ -427,7 +455,8 @@ obs_locs <- obs_locs[ , c(6, 2, 3, 1, 4, 5)] #reorders columns so they are in co
 
 predict_locs <- data.frame(raster::rasterToPoints(bathy_ras))  #adds column called layer with bathymetry
 #predict_locs$layer2 <- raster::extract(sediment_ras_num, predict_locs[, 1:2]) #adds column called layer2 with sediment number
-predict_locs$layer2 <- raster::extract(sediment_thick_ras, predict_locs[, 1:2]) #adds column called layer2 with sediment number
+#predict_locs$layer2 <- raster::extract(sediment_thick_ras, predict_locs[, 1:2]) #adds column called layer2 with sediment number
+predict_locs$layer2 <- raster::extract(median_sed_thick_NN_ras, predict_locs[, 1:2]) #adds column called layer2 with sediment number
 
 
 
