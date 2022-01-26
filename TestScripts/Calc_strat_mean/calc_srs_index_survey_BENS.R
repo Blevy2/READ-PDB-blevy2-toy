@@ -76,7 +76,7 @@ spp.area <- sum(sv.area$STRATUM_AREA[sv.area$stratum %in% spp.strata]) #TOTAL AR
 
 
 # calculate SRS estimates ====
-spp.srs <- srs_survey(df=spp, sa=sv.area, str=NULL, ta=0.01, spp.name  )  # if strata=NULL, the function will use the unique strata set found in df
+spp.srs <- srs_survey(df=spp, sa=sv.area, str=NULL, ta=0.01, sppname = spp.name  )  # if strata=NULL, the function will use the unique strata set found in df
                                                        # if strata!=NULL, the function will use that vector of strata
 spp.srs.rel.and.absolute <- spp.srs %>%
   mutate(mean.yr.absolute=mean.yr*spp.area, sd.mean.yr.absolute=sd.mean.yr*spp.area,
