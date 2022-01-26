@@ -244,7 +244,7 @@ new_random_survey <-do.call(rbind.data.frame,new_random_survey) #surv_random com
 plot(new_random_survey$year,
      new_random_survey$sd_spp1,                       # Draw Base R plot
      pch = 16,
-     col = new_random_survey$strata)
+     col = new_random_survey$stratum)
 
 legend(1, 4, legend=c("Strata 3","Strata 4","Strata 1","Strata 2"),
        col=c("green", "blue", "black", "red"), lty=1:2, cex=0.8)
@@ -261,7 +261,7 @@ new_random_survey <-do.call(rbind.data.frame,new_random_survey) #surv_random com
 plot(new_random_survey$year,
      new_random_survey$sd_spp2,                       # Draw Base R plot
      pch = 16,
-     col = new_random_survey$strata)
+     col = new_random_survey$stratum)
 
 legend(1, 4, legend=c("Strata 3","Strata 4","Strata 1","Strata 2"),
        col=c("green", "blue", "black", "red"), lty=1:2, cex=0.8)
@@ -280,10 +280,10 @@ new_random_survey[[1]] <- log.mat
 #change into a data frame to be used by ggplot
 new_random_survey <-do.call(rbind.data.frame,new_random_survey) #surv_random comes out of BENS_init_survey
 
-plot(new_random_survey$strata,
+plot(new_random_survey$stratum,
      new_random_survey$sd_spp1,                       # Draw Base R plot
      pch = 16,
-     col = new_random_survey$strata)
+     col = new_random_survey$stratum)
 
 legend(1, 4, legend=c("Strata 3","Strata 4","Strata 1","Strata 2"),
        col=c("green", "blue", "black", "red"), lty=1:2, cex=0.8)
@@ -299,10 +299,10 @@ new_random_survey[[1]] <- log.mat
 #change into a data frame to be used by ggplot
 new_random_survey <-do.call(rbind.data.frame,new_random_survey) #surv_random comes out of BENS_init_survey
 
-plot(new_random_survey$strata,
+plot(new_random_survey$stratum,
      new_random_survey$sd_spp2,                       # Draw Base R plot
      pch = 16,
-     col = new_random_survey$strata)
+     col = new_random_survey$stratum)
 
 legend(1, 4, legend=c("Strata 3","Strata 4","Strata 1","Strata 2"),
        col=c("green", "blue", "black", "red"), lty=1:2, cex=0.8)
@@ -325,7 +325,7 @@ new_random_survey <-do.call(rbind.data.frame,new_random_survey) #surv_random com
 plot(1:1600,
      new_random_survey$sd_spp1,                       # Draw Base R plot
      pch = 16,
-     col = new_random_survey$strata)
+     col = new_random_survey$stratum)
 
 legend(1, 4, legend=c("Strata 3","Strata 4","Strata 1","Strata 2"),
        col=c("green", "blue", "black", "red"), lty=1:2, cex=0.8)
@@ -345,7 +345,7 @@ new_random_survey <-do.call(rbind.data.frame,new_random_survey) #surv_random com
 plot(1:1600,
      new_random_survey$sd_spp2,                       # Draw Base R plot
      pch = 16,
-     col = new_random_survey$strata)
+     col = new_random_survey$stratum)
 
 legend(1, 4, legend=c("Strata 3","Strata 4","Strata 1","Strata 2"),
        col=c("green", "blue", "black", "red"), lty=1:2, cex=0.8)
