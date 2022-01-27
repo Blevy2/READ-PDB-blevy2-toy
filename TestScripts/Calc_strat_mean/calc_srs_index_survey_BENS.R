@@ -71,7 +71,7 @@ spp.stock <- as.character("Generic")
 
 
 # get total area of stock ====
-spp.strata <- unique(spp$strata)
+spp.strata <- unique(spp$stratum)
 spp.area <- sum(sv.area$STRATUM_AREA[sv.area$stratum %in% spp.strata]) #TOTAL AREA OF ALL STRATA
 
 
