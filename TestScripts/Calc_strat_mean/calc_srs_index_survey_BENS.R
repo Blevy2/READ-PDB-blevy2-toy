@@ -21,7 +21,7 @@ library(readr)
 library(here)
 
 
-source("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/TestScripts/Calc_strat_mean/fn_srs_survey_BENS.R")
+source("TestScripts/Calc_strat_mean/fn_srs_survey_BENS.R")
 
 
 # 
@@ -61,7 +61,7 @@ STRATUM_AREA <- c(2500,2500,2500,2500) #100x100 grid so each corner has area 250
 sv.area <- as_tibble(data.frame(stratum,STRATUM_AREA))
 
 # read in species file of tow by tow data from simulation
-spp <-  as_tibble(surv_random$log.mat,header=T)
+spp <-  as_tibble(res$survey$log.mat,header=T)
 
 
 spp.name <- as.character("spp1")
@@ -71,7 +71,7 @@ spp.stock <- as.character("Generic")
 
 
 # get total area of stock ====
-spp.strata <- unique(spp$stratum)
+spp.strata <- unique(spp$strata)
 spp.area <- sum(sv.area$STRATUM_AREA[sv.area$stratum %in% spp.strata]) #TOTAL AREA OF ALL STRATA
 
 
