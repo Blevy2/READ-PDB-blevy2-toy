@@ -9,6 +9,9 @@
 #edited by Ben Levy January 2022
 
 
+#read in results if needed
+res <- readRDS("C:\\Users\\benjamin.levy\\Desktop\\Github\\READ-PDB-blevy2-toy\\Results\\ConstPop_ConstTemp\\res_TempCon_PopCon.rds")
+
 rm(list=ls(all=TRUE))      # Remove all variables, etc. from the session memory
 
 
