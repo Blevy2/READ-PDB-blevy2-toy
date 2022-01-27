@@ -58,7 +58,7 @@ surv.ind.str <- tmp.tibble %>%
   select(year, Season, stratum,  STRATUM_AREA, tow, OBS_VALUE ) %>%
   arrange(year, Season, stratum, tow) %>%
   group_by(year, Season, stratum )  %>% #INDEX GOING DOWN TO STRATA
-  summarise(mean.str = mean(as.integer(OBS_VALUE)), var.samp.str=var(OBS_VALUE, na.rm=T), ntows.str = n() ) %>%
+  dplyr::summarise(mean.str = mean(as.integer(OBS_VALUE)), var.samp.str=var(OBS_VALUE, na.rm=T), ntows.str = n() ) %>%
   replace(is.na(.), 0) 
 
 surv.ind.yr <- surv.ind.str %>%
