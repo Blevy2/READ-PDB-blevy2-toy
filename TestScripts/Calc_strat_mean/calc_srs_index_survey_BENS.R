@@ -10,7 +10,7 @@
 
 
 #read in results if needed
-res <- readRDS("C:\\Users\\benjamin.levy\\Desktop\\Github\\READ-PDB-blevy2-toy\\Results\\ConstPop_ConstTemp\\res_TempCon_PopCon.rds")
+res <- readRDS("C:\\Users\\benjamin.levy\\Desktop\\Github\\READ-PDB-blevy2-toy\\Results\\IncrPop_ConstTemp\\res_TempCon_PopIncr.rds")
 
 rm(list=ls(all=TRUE))      # Remove all variables, etc. from the session memory
 
@@ -67,7 +67,7 @@ sv.area <- as_tibble(data.frame(stratum,STRATUM_AREA))
 spp <-  as_tibble(res$survey$log.mat,header=T)
 
 
-spp.name <- as.character("spp1")
+spp.name <- as.character("spp2")
 spp.stock <- as.character("Generic")
 #spp.itis <- unique(spp$SPECIES_ITIS)
 

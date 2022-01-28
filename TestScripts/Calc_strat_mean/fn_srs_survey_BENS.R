@@ -66,7 +66,7 @@ surv.ind.yr <- surv.ind.str %>%
   left_join(tmp.total.area) %>%
   mutate(mean.yr.str = (mean.str*STRATUM_AREA/Total), var.mean.yr.str=( (STRATUM_AREA^2/Total^2)*(1-ntows.str/STRATUM_UNITS)*(var.samp.str/ntows.str) ) )%>%
   group_by(year, Season) %>% #INDEX GOING DOWN TO YEAR?
-  summarise(mean.yr = sum(mean.yr.str), var.mean.yr=sum(var.mean.yr.str)) %>% #SUMMARIZE TO CREAT NEW VARIABLES
+  summarise(mean.yr = sum(mean.yr.str), var.mean.yr=sum(var.mean.yr.str),N_samples_strat = ntows.str) %>% #SUMMARIZE TO CREAT NEW VARIABLES
   mutate(sd.mean.yr=sqrt(var.mean.yr), CV=sd.mean.yr/mean.yr)  #MUTATE TO CREATE NEW VARIABLE FROM EXISTING VARIABLE
 
 
