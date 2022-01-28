@@ -190,6 +190,9 @@ plot_obs(test_lrren,
 # Trying to recreate above with my data
 ###########################################################
 
+loadedPackages <- c("envi", "raster", "RStoolbox", "spatstat.data", "spatstat.geom", "spatstat.core")
+invisible(lapply(loadedPackages, library, character.only = TRUE))
+
 
 
 #load stratas for clipping etc
