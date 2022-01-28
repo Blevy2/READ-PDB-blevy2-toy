@@ -16,14 +16,15 @@ plot_spatiotemp_hab <- function(hab = NULL, moveCov = NULL, plot.file = NULL, sp
 
 	nrows <- nrow(hab[["hab"]][[1]]) 
 	ncols <- ncol(hab[["hab"]][[1]])
-
+	
+	if(!is.null(plot.file)) {
+	png(filename = paste0(plot.file,'/','habitat_spatiotemp_spp_','.png'), width = 800, height = 800)
+	}
 
 for(s in seq_len(length(hab[["hab"]]))) {
 
 	nt <- length(moveCov[["cov.matrix"]])
-	if(!is.null(plot.file)) {
-	png(filename = paste0(plot.file,'/','habitat_spatiotemp_spp_',s,'.png'), width = 800, height = 800)
-	}
+
 	par(mfrow = c(ceiling(sqrt(length(plot_wk))), ceiling(length(plot_wk)/ceiling(sqrt(length(plot_wk))))), mar = c(1, 1, 1, 1))
 
 	for(i in plot_wk) {
@@ -37,11 +38,11 @@ for(s in seq_len(length(hab[["hab"]]))) {
 		  	  va = moveCov[["spp_tol"]][[s]][["va"]]))
 #col = grey(seq(1,0,l = 51)),
 		if(!i %in% spwn_wk[[s]]) {
-		image.plot(hab[["hab"]][[paste0('spp',s)]] * move_cov_wk_spp, cex.axis = 1.5, cex.main = 2,  axes = F, zlim = colrange )
+		fields::image.plot(hab[["hab"]][[paste0('spp',s)]] * move_cov_wk_spp, cex.axis = 1.5, cex.main = 2,  axes = F)
 		}
 	# col = grey(seq(1,0,l = 51)),
 		if(i %in% spwn_wk[[s]]) {
-		image.plot(hab[["spwn_hab"]][[paste0('spp',s)]] * move_cov_wk_spp, cex.axis = 1.5, cex.main = 1, axes = F, zlim = colrange )
+		fields::image.plot(hab[["spwn_hab"]][[paste0('spp',s)]] * move_cov_wk_spp, cex.axis = 1.5, cex.main = 1, axes = F )
 		}
 #	axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
 #	axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
@@ -58,18 +59,19 @@ for(s in seq_len(length(hab[["hab"]]))) {
 	#plot a week from each month over entire simulation
 
 	if(plot_monthly == TRUE){	
-	
+	  
+	  if(!is.null(plot.file)) {
+	    
+	    pdf(file=paste0(plot.file,'/Monthly_covariate_plots/','monthly_habitat_spatiotemp_spp_','month_','.pdf'))
+	    #png(filename = paste0(plot.file,'/Monthly_covariate_plots/','monthly_habitat_spatiotemp_spp_',s,'month_',k,'.png'), width = 800, height = 800)
+	  }
 	for(s in seq_len(length(hab[["hab"]]))) {
 	  
   
 	for(k in seq(12)){
 	  
 	  	  nt <- length(moveCov[["cov.matrix"]])
-	  if(!is.null(plot.file)) {
-	    
-	    pdf(file=paste0(plot.file,'/Monthly_covariate_plots/','monthly_habitat_spatiotemp_spp_',s,'month_',k,'.pdf'))
-	    #png(filename = paste0(plot.file,'/Monthly_covariate_plots/','monthly_habitat_spatiotemp_spp_',s,'month_',k,'.png'), width = 800, height = 800)
-	  }
+	
 	  par(mfrow = c(5,4), mar = c(1, 1, 1, 1))
 	
 	  
@@ -86,11 +88,11 @@ for(s in seq_len(length(hab[["hab"]]))) {
 	                                   va = moveCov[["spp_tol"]][[s]][["va"]]))
 	  #col = grey(seq(1,0,l = 51)), 
 	  if(!i %in% spwn_wk[[s]]) {
-	    image.plot(hab[["hab"]][[paste0('spp',s)]] * move_cov_wk_spp, cex.axis = 1.5, cex.main = 2, axes = F, zlim = colrange )
+	    fields::image.plot(hab[["hab"]][[paste0('spp',s)]] * move_cov_wk_spp, cex.axis = 1.5, cex.main = 2, axes = F)
 	  }
 	  # col = grey(seq(1,0,l = 51)),
 	  if(i %in% spwn_wk[[s]]) {
-	    image.plot(hab[["spwn_hab"]][[paste0('spp',s)]] * move_cov_wk_spp, cex.axis = 1.5, cex.main = 1, axes = F, zlim = colrange )
+	    fields::image.plot(hab[["spwn_hab"]][[paste0('spp',s)]] * move_cov_wk_spp, cex.axis = 1.5, cex.main = 1, axes = F )
 	  }
 #	  axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
 #	  axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
