@@ -5,7 +5,7 @@
 # edited by Ben Levy January 2022
 
 
-srs_survey <- function(df, sa, str, ta=0.01, sppname = NULL  )  {
+srs_survey <- function(df, sa, str, ta=1, sppname = NULL  )  {
   
   # df is dataframe of survey data (tow by tow)  
   # sa is vector of stratum area
@@ -51,7 +51,7 @@ srs_survey <- function(df, sa, str, ta=0.01, sppname = NULL  )  {
     left_join(sa) %>%
     replace(is.na(.), 0) %>%
     pivot_longer(cols=c(sppname), values_to="OBS_VALUE") %>%  #changing catchwt to obs_value
-    relocate(year, Season, stratum, tow, OBS_VALUE, STRATUM_AREA)
+    select(year, Season, stratum, tow, OBS_VALUE, STRATUM_AREA)
 
 # Calculate null survey
 surv.ind.str <- tmp.tibble %>%
