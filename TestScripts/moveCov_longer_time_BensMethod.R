@@ -378,8 +378,8 @@ colrange <- range(moveCov[["cov.matrix"]] ) #set colorbar range for plots as ran
 
 BENS_plot_spatiotemp_hab_justtemp(plot_wk = seq(1,1040,52),
                                   hab = hab, 
-                                  moveCov = moveCov, 
-                                  spwn_wk = list("spp1" = 16:18, "spp2" = 16:19), 
+                                  moveCov = move_Cov, 
+                                  spwn_wk = list("spp1" = 15:18, "spp2" = 15:18), 
                                   plot.file = "testfolder", colrange = colrange)
 
 dev.off()
@@ -388,10 +388,10 @@ dev.off()
 #plot spatiotemperal distribution (combine temp and spatial preferences)
 source("R/BENS_plot_spatiotemp_hab.R")
 colrange = range(moveCov[["cov.matrix"]])
-plot_spatiotemp_hab(plot_monthly = TRUE, plot_wk = seq(1,1040,50),
+plot_spatiotemp_hab(plot_monthly = TRUE, plot_wk = seq(1,1040,52),
                     hab = hab, moveCov = moveCov,
-                    spwn_wk = list("spp1" = 16:18, "spp2" = 16:19), 
-                    plot.file = "testfolder", colrange = colrange)
+                    spwn_wk = list("spp1" = 15:18, "spp2" = 15:18), 
+                    plot.file = "testfolder")
 
 
 
