@@ -18,13 +18,16 @@ all_data_spp2 <- read_csv(here("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-b
 
 #CHOOSE JUST ONE OF THE FOLLOWING
 #constant pop, constant temp
-data_spp1 <- read_csv(here("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/Results/ConstPop_ConstTemp", "spp1.Generic._SRS_from_Rcode.csv"))
-data_spp2 <- read_csv(here("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/Results/ConstPop_ConstTemp", "spp2.Generic._SRS_from_Rcode.csv"))
+#data_spp1 <- read_csv(here("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/Results/ConstPop_ConstTemp", "spp1.Generic._SRS_from_Rcode.csv"))
+#data_spp2 <- read_csv(here("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/Results/ConstPop_ConstTemp", "spp2.Generic._SRS_from_Rcode.csv"))
 
 #constant pop, increasing temp
 #data_spp1 <- read_csv(here("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/Results/ConstPop_IncrTemp", "spp1.Generic._SRS_from_Rcode.csv"))
 #data_spp2 <- read_csv(here("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/Results/ConstPop_IncrTemp", "spp2.Generic._SRS_from_Rcode.csv"))
 
+#increasing pop, constant temp
+data_spp1 <- read_csv(here("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/Results/IncrPop_ConstTemp", "spp1.Generic._SRS_from_Rcode.csv"))
+data_spp2 <- read_csv(here("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/Results/IncrPop_ConstTemp", "spp2.Generic._SRS_from_Rcode.csv"))
 
 
 #names(data_spp1)
@@ -73,13 +76,15 @@ gg_season_spp2 +
 
 
 #setup groups by scenario
-gg_spp1_scen <- ggplot(data=all_data_spp1,aes(x=year,y=mean.yr,group=Scenario))
-gg_spp2_scen <- ggplot(data=all_data_spp2,aes(x=year,y=mean.yr,group=Scenario))
+gg_spp1_scen <- ggplot(data=all_data_spp1,aes(x=year,y=mean.yr,group=Scenario, color=Scenario))
+gg_spp2_scen <- ggplot(data=all_data_spp2,aes(x=year,y=mean.yr,group=Scenario,color=Scenario))
 
 
 #plot scenario groups by season
 #spp1
 gg_spp1_scen +
+  #calculating 95% confidence intervals with geom_errorbar. N_samples_strat could be fixed at 10. Added it to calculation after
+  geom_errorbar(aes(ymin=mean.yr-(1.96*sd.mean.yr/sqrt(N_samples_strat)), ymax=mean.yr+(1.96*sd.mean.yr/sqrt(N_samples_strat))),width=.3) +
   geom_point()+
   geom_line(aes(color=Scenario))+
   labs(x="year",y="mean.yr", title = "Spp1") +
@@ -87,6 +92,8 @@ gg_spp1_scen +
 
 # spp2
 gg_spp2_scen +
+  #calculating 95% confidence intervals with geom_errorbar. N_samples_strat could be fixed at 10. Added it to calculation after
+  geom_errorbar(aes(ymin=mean.yr-(1.96*sd.mean.yr/sqrt(N_samples_strat)), ymax=mean.yr+(1.96*sd.mean.yr/sqrt(N_samples_strat))),width=.3) +
   geom_point()+
   geom_line(aes(color=Scenario))+
   labs(x="year",y="mean.yr", title = "Spp2") +
