@@ -57,9 +57,9 @@ Catch_Data$Date <- as.Date(with(Catch_Data,paste(Year,Month,Day,sep="-")),"%Y-%m
 # Make sure that you are in a working directory specifically for the season in which you are running the analysis (...FVCOM/Fall/), some of the files will have the same names for different seasons (unless you change them) and you don't want to overwrite them and lose your work
 
 ##Fall
-# Define the dates in which the survey ran for each season each year. 
-# "by=" how often you want days... e.g by=2 means you will get data every 2  days 9/6/2000, 9/8/2000, 9/10/2000, etc... I recommend this if you are getting data for many months/years because I have had R crash because it was just too much for it to handle, getting daily data. 
-# len= defines the range of dates as 9/6 (there are 24 additional days in September) to 10/20 (add one to your last day. 20+1=21))
+# # Define the dates in which the survey ran for each season each year. 
+# # "by=" how often you want days... e.g by=2 means you will get data every 2  days 9/6/2000, 9/8/2000, 9/10/2000, etc... I recommend this if you are getting data for many months/years because I have had R crash because it was just too much for it to handle, getting daily data. 
+# # len= defines the range of dates as 9/6 (there are 24 additional days in September) to 10/20 (add one to your last day. 20+1=21))
 # dates <- format(c(seq(as.Date("9/6/2000", "%m/%d/%Y"), by=1, len=24+21), #date range from stations in fall 2000
 #                   seq(as.Date("9/5/2001", "%m/%d/%Y"), by=1, len=25+23), #9/5 to 10/22
 #                   seq(as.Date("9/4/2002", "%m/%d/%Y"), by=1, len=26+26), #9/4 to 10/25 etc
@@ -84,15 +84,22 @@ Catch_Data$Date <- as.Date(with(Catch_Data,paste(Year,Month,Day,sep="-")),"%Y-%m
 dates <- as.data.frame(Catch_Data$Date)
 
 
-#STOPPED HERE
+
 
 #At this point check the "dates" file to ensure that the date ranges for each year are correct
 
 colnames(dates) <- "date"
-dates$y <- unlist(lapply(dates$date, function(x) unlist(strsplit(as.character(x), "/", fixed = TRUE))[3]))
-dates$m <- unlist(lapply(dates$date, function(x) unlist(strsplit(as.character(x), "/", fixed = TRUE))[1]))
-dates$d <- unlist(lapply(dates$date, function(x) unlist(strsplit(as.character(x), "/", fixed = TRUE))[2]))
+dates$y <- unlist(lapply(dates$date, function(x) unlist(strsplit(as.character(x), "-", fixed = TRUE))[1]))
+dates$m <- unlist(lapply(dates$date, function(x) unlist(strsplit(as.character(x), "-", fixed = TRUE))[2]))
+dates$d <- unlist(lapply(dates$date, function(x) unlist(strsplit(as.character(x), "-", fixed = TRUE))[3]))
+#RECORD 2 DIGIT YEAR TO SET INDICES LATER
+dates$y2 <- unlist(lapply(dates$y, function(x) paste0(unlist(strsplit(as.character(x),""))[3],unlist(strsplit(as.character(x),""))[4])))
+
+#INDEX TO USE LATER
+dates$index <- seq(length(dates$y))
+
 dates$modified_julian_date <- julian(as.numeric(dates$m), as.numeric(dates$d), as.numeric(dates$y),c(month = 11, day = 17, year = 1858)) + 0.5
+dates$Season <- Catch_Data$SEASON
 
 #### Download FVCOM time ID ####
 fvcom_data <-as.data.frame(read.csv("http://www.smast.umassd.edu:8080/thredds/dodsC/fvcom/hindcasts/30yr_gom3.ascii?time[0:1:342347]"))
@@ -130,7 +137,7 @@ my_mesh=expand.grid(seq(start_x, end_x, by=0.01), seq(start_y, end_y, by=0.01)) 
 coordinates(my_mesh) <- ~Var1 + Var2
 grid_data <-as.data.frame(my_mesh@coords)
 colnames(grid_data) <-c("lon", "lat")
-write.csv(grid_data, file="grid_data.csv")
+write.csv(grid_data, file="TestScripts/FVCOM/grid_data.csv")
 
 
 ####Download FVCOM Depth Data####
@@ -152,12 +159,12 @@ for(i in 1:1){
   rast <- raster(akima.smooth)
   FVcom_depth.list[[i]] <- raster::extract(rast, grid_data)
 }
-save(FVcom_depth.list, file="FVcom_depth.list.RData")
+save(FVcom_depth.list, file="TestScripts/FVCOM/FVcom_depth.list.RData")
 
 grid_data=as.data.frame(grid_data)
 FVdepth<-cbind(grid_data,FVcom_depth.list[[1]])
 names(FVdepth)[3]<-"AvgDepth"
-write.csv(FVdepth, file="FVdepth.csv")
+write.csv(FVdepth, file="TestScripts/FVCOM/FVdepth.csv")
 #Assuming that you are using the same grid between seasons, the same FVdepth file will apply to both seasons
 
 #### Download temperature data ####
@@ -170,290 +177,110 @@ for (i in 1:length(time_id)){
   temperature_fvcom_data[[i]] <- cbind(longitude, latitude, temp_data)
   colnames(temperature_fvcom_data[[i]]) <- c("lon", "lat", "temperature")
 }
-save(temperature_fvcom_data, file="temperature_data.RData")
+save(temperature_fvcom_data, file="TestScripts/FVCOM/temperature_data.RData")
 
-#load("temperature_data.RData")
+#load("TestScripts/FVCOM/temperature_data.RData")
 
-###Take temp data and interpolate and snap it to "grid_data" grid that was made###
-##Fall
-# Fall 2000- The 1:45 represents the time IDs from the "dates" df (essentially the row #s). In this example, Fall 2000 is 1:45. You will need to change these so that they fit your data
-# These can take a long time, but I recommend going through one by one. If you tell the code to run the whole thing and you make a mistake, you may not know until the end and then you will have to run it again. After each section, take a look at the file and make sure there are values in each cell/no blank rows etc
-TRD_FA00 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 1:45){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)# Make sure this matches your resolution
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_FA00[[i]] <- raster::extract(rast, grid_data)
+#all years to collect
+yrs <- unique(dates$y2)
+sns <- c("FALL","SPRING")
+
+#INSTEAD OF LISTING EACH YEAR & SEASON, LOOP THROUGH UNIQUE YEARS & SEASONS
+
+TRD_all <- list()
+
+for(sn in sns){
+  for(yr in yrs){
+    
+    # #define object as ex TRD_FA09 
+    # assign(paste("TRD_",sn,yr,sep = "") ,list())
+    
+    temp_lst <- list()
+    
+    #pull out year and season you want samples for
+    sub_set <- subset(dates,(y2==yr) & (Season == sn), select=date:index )
+    
+    ind <- sub_set$index #pulling indices 
+    
+    print("max ind is")
+    print(max(ind))
+    
+    lst_idx <- 1
+    
+    for(i in ind){ #go down the list
+      print(i)
+      
+      temp_data <- as.data.frame(temperature_fvcom_data[[i]])
+      rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)# Make sure this matches your resolution
+      rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
+      akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
+      rast <- raster(akima.smooth)
+      temp_lst[[lst_idx]] <- raster::extract(rast, grid_data)
+      
+      lst_idx <- lst_idx + 1
+      
+    }
+    save(temp_lst, file=paste("TestScripts/FVCOM/TRD_",sn,yr,".RData",sep = ""))
+    TRD_all[[paste("TRD_",sn,yr,sep = "")]] <- temp_lst
+  }
+  
 }
 
-save(TRD_FA00, file="TRD_FA00.RData")
 
-
-# Fall 2001
-TRD_FA01 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 46:93){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_FA01[[i]] <- raster::extract(rast, grid_data)
+### Average Temp Data For each year and season## 
+for(sn in sns){
+  for(yr in yrs){
+   
+    assign(paste("MeanTemp",sn,yr,sep = ""), as.data.frame(list(Reduce(`+`, TRD_all[[paste("TRD_",sn,yr,sep = "")]]) / length(TRD_all[[paste("TRD_",sn,yr,sep = "")]]))))
+  
+    temp <- list(Reduce(`+`, TRD_all[[paste("TRD_",sn,yr,sep = "")]]) / length(TRD_all[[paste("TRD_",sn,yr,sep = "")]]))
+    
+    
+    write.csv(temp, file=paste("TestScripts/FVCOM/MeanTemp",sn,yr,".csv",sep = ""))
+    }
 }
-TRD_FA01<- TRD_FA01[-c(1:45)] #need to make sure that you remove the rows associated with the previous year's time IDs or you will get a dataframe with blank rows
-save(TRD_FA01, file="TRD_FA01.RData")
 
-# Fall 2002
-TRD_FA02 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 94:145){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_FA02[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_FA02<- TRD_FA02[-c(1:93)] #keep adding to this
-save(TRD_FA02, file="TRD_FA02.RData")
 
-# Fall 2003
-TRD_FA03 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 146:200){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_FA03[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_FA03<- TRD_FA03[-c(1:145)]
-save(TRD_FA03, file="TRD_FA03.RData")
 
-# Fall 2004
-TRD_FA04 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 201:248){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_FA04[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_FA04<- TRD_FA04[-c(1:200)]
-save(TRD_FA04, file="TRD_FA04.RData")
 
-# Fall 2005
-TRD_FA05 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 249:307){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_FA05[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_FA05<- TRD_FA05[-c(1:248)]
-save(TRD_FA05, file="TRD_FA05.RData")
 
-# Fall 2006
-TRD_FA06 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 308:357){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_FA06[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_FA06<- TRD_FA06[-c(1:307)]
-save(TRD_FA06, file="TRD_FA06.RData")
 
-# Fall 2007
-TRD_FA07 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 358:414){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_FA07[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_FA07<- TRD_FA07[-c(1:357)]
-save(TRD_FA07, file="TRD_FA07.RData")
 
-# Fall 2008
-TRD_FA08 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 415:481){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_FA08[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_FA08<- TRD_FA08[-c(1:414)]
-save(TRD_FA08, file="TRD_FA08.RData")
 
-# Fall 2009
-TRD_FA09 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 482:548){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_FA09[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_FA09<- TRD_FA09[-c(1:481)]
-save(TRD_FA09, file="TRD_FA09.RData")
 
-# Fall 2010
-TRD_FA10 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 549:633){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_FA10[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_FA10<- TRD_FA10[-c(1:548)]
-save(TRD_FA10, file="TRD_FA10.RData")
 
-# Fall 2011
-TRD_FA11 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 634:699){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_FA11[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_FA11<- TRD_FA11[-c(1:633)]
-save(TRD_FA11, file="TRD_FA11.RData")
 
-# Fall 2012
-TRD_FA12 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 700:764){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_FA12[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_FA12<- TRD_FA12[-c(1:699)]
-save(TRD_FA12, file="TRD_FA12.RData")
 
-# Fall 2013
-TRD_FA13 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 765:839){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_FA13[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_FA13<- TRD_FA13[-c(1:764)]
-save(TRD_FA13, file="TRD_FA13.RData")
 
-# Fall 2014
-TRD_FA14 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 840:903){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_FA14[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_FA14<- TRD_FA14[-c(1:839)]
-save(TRD_FA14, file="TRD_FA14.RData")
 
-# Fall 2015
-TRD_FA15 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 904:968){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_FA15[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_FA15<- TRD_FA15[-c(1:903)]
-save(TRD_FA15, file="TRD_FA15.RData")
 
-### Average Temp Data For each year## 
-##Fall
 
-MeanTempfa00<- list(Reduce(`+`, TRD_FA00) / length(TRD_FA00)) ### Results in a single temperature value for each grid location for fall 2000
-MeanTempfa01<- list(Reduce(`+`, TRD_FA01) / length(TRD_FA01))
-MeanTempfa02<- list(Reduce(`+`, TRD_FA02) / length(TRD_FA02))
-MeanTempfa03<- list(Reduce(`+`, TRD_FA03) / length(TRD_FA03))
-MeanTempfa04<- list(Reduce(`+`, TRD_FA04) / length(TRD_FA04))
-MeanTempfa05<- list(Reduce(`+`, TRD_FA05) / length(TRD_FA05))
-MeanTempfa06<- list(Reduce(`+`, TRD_FA06) / length(TRD_FA06))
-MeanTempfa07<- list(Reduce(`+`, TRD_FA07) / length(TRD_FA07))
-MeanTempfa08<- list(Reduce(`+`, TRD_FA08) / length(TRD_FA08))
-MeanTempfa09<- list(Reduce(`+`, TRD_FA09) / length(TRD_FA09))
-MeanTempfa10<- list(Reduce(`+`, TRD_FA10) / length(TRD_FA10))
-MeanTempfa11<- list(Reduce(`+`, TRD_FA11) / length(TRD_FA11))
-MeanTempfa12<- list(Reduce(`+`, TRD_FA12) / length(TRD_FA12))
-MeanTempfa13<- list(Reduce(`+`, TRD_FA13) / length(TRD_FA13))
-MeanTempfa14<- list(Reduce(`+`, TRD_FA14) / length(TRD_FA14))
-MeanTempfa15<- list(Reduce(`+`, TRD_FA15) / length(TRD_FA15))
 
-write.csv(MeanTempfa00, file="MeanTempfa00.csv")
-write.csv(MeanTempfa01, file="MeanTempfa01.csv")
-write.csv(MeanTempfa02, file="MeanTempfa02.csv")
-write.csv(MeanTempfa03, file="MeanTempfa03.csv")
-write.csv(MeanTempfa04, file="MeanTempfa04.csv")
-write.csv(MeanTempfa05, file="MeanTempfa05.csv")
-write.csv(MeanTempfa06, file="MeanTempfa06.csv")
-write.csv(MeanTempfa07, file="MeanTempfa07.csv")
-write.csv(MeanTempfa08, file="MeanTempfa08.csv")
-write.csv(MeanTempfa09, file="MeanTempfa09.csv")
-write.csv(MeanTempfa10, file="MeanTempfa10.csv")
-write.csv(MeanTempfa11, file="MeanTempfa11.csv")
-write.csv(MeanTempfa12, file="MeanTempfa12.csv")
-write.csv(MeanTempfa13, file="MeanTempfa13.csv")
-write.csv(MeanTempfa14, file="MeanTempfa14.csv")
-write.csv(MeanTempfa15, file="MeanTempfa15.csv")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ###Download Salinity Data
@@ -465,7 +292,7 @@ for (i in 1:length(time_id)){
   salinity_fvcom_data[[i]] <- cbind(longitude, latitude, temp_data)
   colnames(salinity_fvcom_data[[i]]) <- c("lon", "lat", "salinity")
 }
-save(salinity_fvcom_data, file="salinity_data.RData")
+save(salinity_fvcom_data, file="TestScripts/FVCOM/salinity_data.RData")
 
 #load("...FVCOM/Fall/salinity_data.RData")
 
@@ -886,8 +713,8 @@ for(i in 1:nrow(dates)){
 ##Depth and grid files are the same as above so you don't need to run those again, but if completing on a different day you may need to re-run and read in a few files
 
 # latitude, longitude (lines 76-84)
-# grid_data=read.csv("grid_data.csv")
-# FVdepth= read.csv("FVdepth.csv")
+# grid_data=read.csv("TestScripts/FVCOM/grid_data.csv")
+# FVdepth= read.csv("TestScripts/FVCOM/FVdepth.csv")
 
 #### Download temperature data ####
 temperature_fvcom_data<-list()
@@ -900,7 +727,7 @@ for (i in 1:length(time_id)){
 }
 save(temperature_fvcom_data, file="temperature_data.RData")
 
-#load("temperature_data.RData")
+#load("TestScripts/FVCOM/temperature_data.RData")
 
 
 ###Spring 2000
