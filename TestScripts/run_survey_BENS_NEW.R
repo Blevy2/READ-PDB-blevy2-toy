@@ -325,12 +325,22 @@ strat_mean_all_spp2 <- vector("list",length(surv_noise)) #4 strata
         mutate(mean.yr.absolute=mean.yr*spp.area, sd.mean.yr.absolute=sd.mean.yr*spp.area,
                CV.absolute=sd.mean.yr.absolute/mean.yr.absolute)
       
+      #need to convert to matrix so can average later
+      strat_mean_all_spp1[[iter]][[sample]] <- data.matrix(strat_mean_all_spp1[[iter]][[sample]])
+      
+     # strat_mean_all_spp1[[iter]][[sample]] <- as.double(as.matrix(strat_mean_all_spp1[[iter]][[sample]]))
+      
       #species 2
       spp.srs.2  <- srs_survey(df=spp, sa=sv.area, str=NULL, ta=1, sppname = "spp2"  )  # if strata=NULL, the function will use the unique strata set found in df
      
       strat_mean_all_spp2[[iter]][[sample]] <- spp.srs.2 %>%
          mutate(mean.yr.absolute=mean.yr*spp.area, sd.mean.yr.absolute=sd.mean.yr*spp.area,
                 CV.absolute=sd.mean.yr.absolute/mean.yr.absolute)
+      
+      #need to convert to matrix so can average later
+      strat_mean_all_spp2[[iter]][[sample]] <- data.matrix(strat_mean_all_spp2[[iter]][[sample]])
+      
+     # strat_mean_all_spp2[[iter]][[sample]] <- as.double(as.matrix(strat_mean_all_spp2[[iter]][[sample]]))
        
     }
     
@@ -338,6 +348,7 @@ strat_mean_all_spp2 <- vector("list",length(surv_noise)) #4 strata
     
   }
   
+
   
 #put them all into single object
 strat_mean_all <- list(strat_mean_all_spp1,strat_mean_all_spp2)
@@ -347,52 +358,40 @@ strat_mean_all <- list(strat_mean_all_spp1,strat_mean_all_spp2)
 
 
 
+  
 
-#STOPPED HERE. SHOULD WORK NOW, BUT CHECK BEFORE GOING FORWARD
-
-#I SHOULD BE READY TO SUMMARIZE ACCROSS ITERATIONS NOW
-
-
-
+###########################################################
+# First, summarize across all samples within each iteration
+###########################################################
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-sum_survey_iter <- list()
+sum_survey_iter <- list(list(),list())
 
 
 for(s in seq(length(strat_mean_all))){ #2 species
   
   for(iter in seq(length(strat_mean_all[[s]]))){
     
+    #find mean across each iteration
     sum_survey_iter[[s]][[iter]] <- Reduce("+", strat_mean_all[[s]][[iter]]) / length( strat_mean_all[[s]][[iter]])
     
-    Reduce("+",survey_results[[i]])/length(survey_results[[i]])
+    #calc standard deviation
+    m<- strat_mean_all[[s]][[iter]] #pull out list for given strata
+    sd_mat <- matrix(apply(sapply(1:length( strat_mean_all[[s]][[1]][[1]]), 
+                                  function(x) unlist(m)[seq(x, length(unlist(m)),
+                                                            length( strat_mean_all[[s]][[1]][[1]]) )]), 2, sd), 
+                     ncol = length( strat_mean_all[[s]][[1]][[1]][1,]))
     
-  }
+    
+    
+    
+    #the sd_mat above is mostly 0 since things dont change. just pull out sample columns 2-5 and 7-9 and append them to previous
+    sum_survey_iter[[s]][[iter]] <- cbind(sum_survey_iter[[s]][[iter]],sd_mat[,2:5],sd_mat[,7:9])
+    
+    colnames(sum_survey_iter[[s]][[iter]]) <- c("year","mean.yr","var.mean.yr","sd.mean.yr","CV","season","mean.yr.absolute","sd.mean.yr.absolute","CV.absolute",
+                                          "SD.sam.mean.yr","SD.sam.var.mean.yr","SD.sam.sd.mean.yr","SD.sam.CV","SD.sam.mean.yr.absolute","SD.sam.sdmean.yr.absolute","SD.sam.CV.absolute")
   
+  }
   
   
 }
@@ -403,15 +402,174 @@ for(s in seq(length(strat_mean_all))){ #2 species
 
 
 
-
-##################################################################################
-#Aggregate results of each sample into single value for each iteration (mean and sd/variance)
-##################################################################################
-
+################################################
+# Second, summarize across all iterations
+################################################
 
 
+sum_survey_iter_final <- list(list(),list())
 
 
+for(s in seq(length(sum_survey_iter))){ #2 species
+  
+
+    #find mean across each iteration
+    sum_survey_iter_final[[s]] <- Reduce("+", sum_survey_iter[[s]]) / length( sum_survey_iter[[s]])
+    
+    #calc standard deviation
+    m<- sum_survey_iter[[s]] #pull out list for given strata
+    sd_mat <- matrix(apply(sapply(1:length( sum_survey_iter[[s]][[1]]), 
+                                  function(x) unlist(m)[seq(x, length(unlist(m)),
+                                                            length( sum_survey_iter[[s]][[1]]) )]), 2, sd), 
+                     ncol = length( sum_survey_iter_final[[s]][1,]))
+    
+    
+    
+    
+    #the sd_mat above is mostly 0 since things dont change. just pull out sample columns 2-5 and 7-9and append them to previous
+    sum_survey_iter_final[[s]] <- cbind(sum_survey_iter[[s]][[iter]],sd_mat[,2:5],sd_mat[,7:9])
+    
+    colnames(sum_survey_iter_final[[s]]) <- c("year","mean.yr","var.mean.yr","sd.mean.yr","CV","season","mean.yr.absolute","sd.mean.yr.absolute","CV.absolute",
+                                                "SD.sam.mean.yr","SD.sam.var.mean.yr","SD.sam.sd.mean.yr","SD.sam.CV","SD.sam.mean.yr.absolute","SD.sam.sdmean.yr.absolute","SD.sam.CV.absolute",
+                                                "SD.iter.mean.yr","SD.iter.var.mean.yr","SD.iter.sd.mean.yr","SD.iter.CV","SD.iter.mean.yr.absolute","SD.iter.sdmean.yr.absolute","SD.iter.CV.absolute")
+    
+    
+}
+
+
+
+
+
+
+
+############################################################
+# Average all survey results to create survey object for res
+# averaging across all original iterations (no noise added)
+############################################################
+
+
+
+
+
+#add a column to each strata_surv that will contain the week to sample from
+
+
+#######################################################
+# FIRST CHUNK IS FOR ALL SAMPLES IN EACH STRATA REMOVED IN SINGLE WEEK
+######################################################
+# S1_wks <- c(13,37)  #strata1 sample weeks- 1st week in each season
+# S2_wks <- c(13,37)  #strata2 sample weeks- 1st week in each season
+# S3_wks <- c(14,38)  #strata3 sample weeks- 2nd week in each season
+# S4_wks <- c(14,38)  #strata4 sample weeks- 2nd week in each season
+# 
+# S1_seq <- rep(c(rep(S1_wks[1],sample_per_sn),rep(S1_wks[2],sample_per_sn)),nyears)
+# S2_seq <- rep(c(rep(S2_wks[1],sample_per_sn),rep(S2_wks[2],sample_per_sn)),nyears) #create sequence that will fit in matrix based on above input
+# S3_seq <- rep(c(rep(S3_wks[1],sample_per_sn),rep(S3_wks[2],sample_per_sn)),nyears)
+# S4_seq <- rep(c(rep(S4_wks[1],sample_per_sn),rep(S4_wks[2],sample_per_sn)),nyears)
+# 
+# strata_surv[[1]]<-cbind(strata_surv[[1]],S1_seq)
+# strata_surv[[2]]<-cbind(strata_surv[[1]],S2_seq) #add the above sequence as new column in sample matrix
+# strata_surv[[3]]<-cbind(strata_surv[[1]],S3_seq)
+# strata_surv[[4]]<-cbind(strata_surv[[1]],S4_seq)
+#################################################
+
+
+strata_surv <- list(list(),list(),list(),list())
+
+
+temp <- matrix(unlist(surv_random$log.mat),ncol=9, nrow=nstrata*strat_samp_tot)
+idx <- 1
+for(i in seq(nstrata)){
+  
+  strata_surv[[i]] <- temp[idx:(idx+strat_samp_tot-1),1:9]
+  
+  idx <- idx + strat_samp_tot
+  # print(idx)
+}
+#pull out each strata survey info and store separately 
+
+#######################################################
+# SECOND CHUNK SPLITS 10 SAMPLES PER STRATA AS 7 IN ONE WEEK 3 IN THE OTHER 
+######################################################
+S1_wks <- c(13,13,13,13,13,13,13,14,14,14,37,37,37,37,37,37,37,38,38,38)  #strata1 sample weeks- 7 in 1st week, 3 in second week in each season
+S2_wks <- c(13,13,13,13,13,13,13,14,14,14,37,37,37,37,37,37,37,38,38,38)  #strata2 sample weeks- 7 in 1st week, 3 in second week in each season
+S3_wks <- c(14,14,14,15,15,15,15,15,15,15,38,38,38,39,39,39,39,39,39,39)  #strata3 sample weeks- 3 in 1st week, 7 in second week in each season
+S4_wks <- c(14,14,14,15,15,15,15,15,15,15,38,38,38,39,39,39,39,39,39,39)  #strata4 sample weeks- 3 in 1st week, 7 in second week in each season
+
+S1_seq <- rep(S1_wks,nyears)
+S2_seq <- rep(S2_wks,nyears) #create sequence that will fit in matrix based on above input
+S3_seq <- rep(S3_wks,nyears)
+S4_seq <- rep(S4_wks,nyears)
+
+#################################################
+
+
+
+strata_surv[[1]]<-cbind(strata_surv[[1]],S1_seq)
+strata_surv[[2]]<-cbind(strata_surv[[2]],S2_seq) #add the above sequence as new column in sample matrix
+strata_surv[[3]]<-cbind(strata_surv[[3]],S3_seq)
+strata_surv[[4]]<-cbind(strata_surv[[4]],S4_seq)
+
+#name columns
+colnames(strata_surv[[1]]) <- c("station_no","x","y","stratum","day","tow","year","spp1","spp2","week")
+colnames(strata_surv[[2]]) <- c("station_no","x","y","stratum","day","tow","year","spp1","spp2","week")
+colnames(strata_surv[[3]]) <- c("station_no","x","y","stratum","day","tow","year","spp1","spp2","week")
+colnames(strata_surv[[4]]) <- c("station_no","x","y","stratum","day","tow","year","spp1","spp2","week")
+
+
+
+# #years are out of whack due to init_survey code. Fix it here
+# NO, THERE WAS AN ERROR WITH RUNNING INIT_SURVEY WITH NY=22
+# for(i in seq(nstrata)){
+#   
+#   strata_surv[[i]][,"year"] <- rep(3:22,each=length(S1_wks))   #skipping first two years
+# }
+
+
+
+
+
+
+#then can just run through list and use indices in matrix to populate
+
+# procedure:
+# pull out given strata
+# run down each strata_surv matrix created above and sample using information in the given matrix
+
+#survey_results <- list("strata 1","strata 2", "strata 3", "strata 4")
+
+all1 <- list()
+all2 <- list()
+all3 <- list()
+all4 <- list()
+
+for(res in seq(length(result))){ #for each simulation result
+  
+  for(s in seq(nstrata)){  #pull out strata
+    
+    for(i in seq(length(strata_surv[[s]][,1]))){ #go down list
+      
+      x <- strata_surv[[s]][i,2]   #x coord in second column
+      y <- strata_surv[[s]][i,3]   #y coord in third column  
+      year <- strata_surv[[s]][i,7] #year in 7th column
+      week <- strata_surv[[s]][i,10]  #appended sample week into 10th column above
+      
+      
+      strata_surv[[s]][i,8] <- result[[res]][["pop_bios"]][[(week+(52*(year-1)))]][["spp1"]][x,y]   #POPULATIONMATRIX$spp1(week+(52*(year-1))[x,y]   #spp1 in col 8
+      strata_surv[[s]][i,9] <- result[[res]][["pop_bios"]][[(week+(52*(year-1)))]][["spp2"]][x,y]   #POPULATIONMATRIX$spp2(week+(52*(year-1))[x,y]   #spp2 in col 9
+      
+    }
+    
+    
+    
+  }
+  #store results
+  all1[[res]] <- strata_surv[[1]]
+  all2[[res]] <- strata_surv[[2]]
+  all3[[res]] <- strata_surv[[3]]
+  all4[[res]] <- strata_surv[[4]]
+  
+}
 
 survey_results <- list("strata1","strata2","strata3","strata4")
 survey_results[[1]] <- all1
@@ -426,6 +584,12 @@ survey_results[[4]] <- all4
 
 
 
+##################################################################################
+#Aggregate results of all survey iterations into single object (mean and sd/variance)
+##################################################################################
+
+
+### FIRST DO IT FOR THE SURVEY RESULTS
 
 #procedure
 #1) pull out given strata with all iteration results 
@@ -463,168 +627,16 @@ log.mat <- rbind(sum_survey_results[[1]],sum_survey_results[[2]],sum_survey_resu
 
 
 
-#################################
-#Plot SD by year/strata SPP1
-#################################
-new_random_survey <- list()
-new_random_survey[[1]] <- log.mat
-#change into a data frame to be used by ggplot
-new_random_survey <-do.call(rbind.data.frame,new_random_survey) #surv_random comes out of BENS_init_survey
 
-plot(new_random_survey$year,
-     new_random_survey$sd_spp1,                       # Draw Base R plot
-     pch = 16,
-     col = new_random_survey$stratum)
 
-legend(1, 4, legend=c("Strata 3","Strata 4","Strata 1","Strata 2"),
-       col=c("green", "blue", "black", "red"), lty=1:2, cex=0.8)
 
 
-#################################
-#Plot SD by year/strata SPP2
-#################################
-new_random_survey <- list()
-new_random_survey[[1]] <- log.mat
-#change into a data frame to be used by ggplot
-new_random_survey <-do.call(rbind.data.frame,new_random_survey) #surv_random comes out of BENS_init_survey
 
-plot(new_random_survey$year,
-     new_random_survey$sd_spp2,                       # Draw Base R plot
-     pch = 16,
-     col = new_random_survey$stratum)
 
-legend(1, 4, legend=c("Strata 3","Strata 4","Strata 1","Strata 2"),
-       col=c("green", "blue", "black", "red"), lty=1:2, cex=0.8)
 
 
 
-
-
-
-
-#################################
-#Plot SD by strata SPP1
-#################################
-new_random_survey <- list()
-new_random_survey[[1]] <- log.mat
-#change into a data frame to be used by ggplot
-new_random_survey <-do.call(rbind.data.frame,new_random_survey) #surv_random comes out of BENS_init_survey
-
-plot(new_random_survey$stratum,
-     new_random_survey$sd_spp1,                       # Draw Base R plot
-     pch = 16,
-     col = new_random_survey$stratum)
-
-legend(1, 4, legend=c("Strata 3","Strata 4","Strata 1","Strata 2"),
-       col=c("green", "blue", "black", "red"), lty=1:2, cex=0.8)
-
-
-
-
-#################################
-#Plot SD by strata SPP2
-#################################
-new_random_survey <- list()
-new_random_survey[[1]] <- log.mat
-#change into a data frame to be used by ggplot
-new_random_survey <-do.call(rbind.data.frame,new_random_survey) #surv_random comes out of BENS_init_survey
-
-plot(new_random_survey$stratum,
-     new_random_survey$sd_spp2,                       # Draw Base R plot
-     pch = 16,
-     col = new_random_survey$stratum)
-
-legend(1, 4, legend=c("Strata 3","Strata 4","Strata 1","Strata 2"),
-       col=c("green", "blue", "black", "red"), lty=1:2, cex=0.8)
-
-
-
-
-
-
-
-#################################
-#Plot SD over time for each strata SPP1
-#################################
-new_random_survey <- list()
-new_random_survey[[1]] <- log.mat
-#change into a data frame to be used by ggplot
-new_random_survey <-do.call(rbind.data.frame,new_random_survey) #surv_random comes out of BENS_init_survey
-
-
-plot(1:1600,
-     new_random_survey$sd_spp1,                       # Draw Base R plot
-     pch = 16,
-     col = new_random_survey$stratum)
-
-legend(1, 4, legend=c("Strata 3","Strata 4","Strata 1","Strata 2"),
-       col=c("green", "blue", "black", "red"), lty=1:2, cex=0.8)
-
-
-
-
-#################################
-#Plot SD over time for each strata SPP2
-#################################
-new_random_survey <- list()
-new_random_survey[[1]] <- log.mat
-#change into a data frame to be used by ggplot
-new_random_survey <-do.call(rbind.data.frame,new_random_survey) #surv_random comes out of BENS_init_survey
-
-
-plot(1:1600,
-     new_random_survey$sd_spp2,                       # Draw Base R plot
-     pch = 16,
-     col = new_random_survey$stratum)
-
-legend(1, 4, legend=c("Strata 3","Strata 4","Strata 1","Strata 2"),
-       col=c("green", "blue", "black", "red"), lty=1:2, cex=0.8)
-
-
-
-
-
-#ADD COLUMN FOR SEASON FOR STRAT MEAN
-
-#season
-S1_sn <- c("SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","FALL","FALL","FALL","FALL","FALL","FALL","FALL","FALL","FALL","FALL")  #weeks 13&14 in spring 37&38 FALL
-S2_sn <- c("SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","FALL","FALL","FALL","FALL","FALL","FALL","FALL","FALL","FALL","FALL")  #weeks 13&14 in spring 37&38 FALL
-S3_sn <- c("SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","FALL","FALL","FALL","FALL","FALL","FALL","FALL","FALL","FALL","FALL")  #weeks 13&14 in spring 37&38 FALL
-S4_sn <- c("SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","FALL","FALL","FALL","FALL","FALL","FALL","FALL","FALL","FALL","FALL")  #weeks 13&14 in spring 37&38 FALL
-
-#sequence for season
-Season <- rep(S1_sn,nyears)
-
-
-sum_survey_results[[1]] <- cbind(sum_survey_results[[1]],Season)
-sum_survey_results[[2]] <- cbind(sum_survey_results[[2]],Season)
-sum_survey_results[[3]] <- cbind(sum_survey_results[[3]],Season)
-sum_survey_results[[4]] <- cbind(sum_survey_results[[4]],Season)
-
-
-#combine back into single log.mat
-log.mat <- rbind(sum_survey_results[[1]],sum_survey_results[[2]],sum_survey_results[[3]],sum_survey_results[[4]])
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### SECOND SUMMARIZE THE POPULATION RESULTS
+### THIRD SUMMARIZE THE POPULATION RESULTS
 
 #procedure for biomat (sum of population) and recmat (recruitment)
 #1) go through each iteration and put individual results in their own list 
