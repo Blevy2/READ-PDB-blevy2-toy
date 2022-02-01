@@ -39,7 +39,7 @@ srs_survey <- function(df, sa, str, ta=1, sppname = NULL  )  {
     select(Season, stratum) %>%
     group_by(Season) %>%
     distinct(stratum) %>% 
-    left_join(sa) %>%
+    left_join(sa, by="stratum") %>%
     summarise(Total=sum(STRATUM_AREA))
   
   #DAY COLUMN IN DF IS CAUSING ISSUES AND NOT NEEDED
@@ -48,7 +48,7 @@ srs_survey <- function(df, sa, str, ta=1, sppname = NULL  )  {
   tmp.tibble <- df %>%
   #  filter(substr(SURVEY, 1, 4) =="NMFS") %>% #STILL DONT THINK I NEED THIS
     group_by(Season) %>%
-    left_join(sa) %>%
+    left_join(sa,by="stratum") %>%
     replace(is.na(.), 0) %>%
     pivot_longer(cols=c(sppname), values_to="OBS_VALUE") %>%  #changing catchwt to obs_value
     select(year, Season, stratum, tow, OBS_VALUE, STRATUM_AREA)
@@ -62,13 +62,15 @@ surv.ind.str <- tmp.tibble %>%
   replace(is.na(.), 0) 
 
 surv.ind.yr <- surv.ind.str %>%
-  left_join(sa) %>%
-  left_join(tmp.total.area) %>%
+  left_join(sa,by="stratum") %>%
+  left_join(tmp.total.area,by="Season") %>%
   mutate(mean.yr.str = (mean.str*STRATUM_AREA/Total), var.mean.yr.str=( (STRATUM_AREA^2/Total^2)*(1-ntows.str/STRATUM_UNITS)*(var.samp.str/ntows.str) ) )%>%
   group_by(year, Season) %>% #INDEX GOING DOWN TO YEAR?
-  summarise(mean.yr = sum(mean.yr.str), var.mean.yr=sum(var.mean.yr.str),N_samples_strat = ntows.str) %>% #SUMMARIZE TO CREAT NEW VARIABLES
-  mutate(sd.mean.yr=sqrt(var.mean.yr), CV=sd.mean.yr/mean.yr)  #MUTATE TO CREATE NEW VARIABLE FROM EXISTING VARIABLE
+  dplyr::summarise(mean.yr = sum(mean.yr.str), var.mean.yr=sum(var.mean.yr.str)) %>% #SUMMARIZE TO CREAT NEW VARIABLES
+  mutate(sd.mean.yr=sqrt(var.mean.yr), CV=sd.mean.yr/mean.yr, season = ifelse(Season=="SPRING",1,2))  #MUTATE TO CREATE NEW VARIABLE FROM EXISTING VARIABLE
 
+  #remove chracter Season so we can summarize with Reduce
+  surv.ind.yr <- subset(surv.ind.yr,select = -c(Season))
 
 return(surv.ind.yr)
 
