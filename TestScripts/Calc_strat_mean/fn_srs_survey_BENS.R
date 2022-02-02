@@ -40,7 +40,7 @@ srs_survey <- function(df, sa, str, ta=1, sppname = NULL  )  {
     group_by(Season) %>%
     distinct(stratum) %>% 
     left_join(sa, by="stratum") %>%
-    summarise(Total=sum(STRATUM_AREA))
+    dplyr::summarise(Total=sum(STRATUM_AREA))
   
   #DAY COLUMN IN DF IS CAUSING ISSUES AND NOT NEEDED
   df <- subset(df,select = -c(day))
