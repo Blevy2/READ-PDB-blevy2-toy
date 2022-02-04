@@ -244,8 +244,8 @@ surv_noise <- vector("list",length(list_all))
 
       
       #adding noise to survey
-      temp[,8] <- sapply(spp1_sam,function(x){rlnorm(1,mean=log(x),sdlog=.75)}) #what should sdlog be?
-      temp[,9] <- sapply(spp2_sam,function(x){rlnorm(1,mean=log(x),sdlog=.75)})
+      temp[,8] <- sapply(spp1_sam,function(x){rlnorm(1,mean=log(x),sdlog=.35)}) #what should sdlog be?
+      temp[,9] <- sapply(spp2_sam,function(x){rlnorm(1,mean=log(x),sdlog=.35)})
       
       
       surv_noise[[iter]][[noise_samp]]  <- temp
@@ -944,7 +944,7 @@ names(Qbreaks_list)  <- c("spp1_pop","spp2_pop","spp1_pop_SD","spp2_pop_SD")
 
 source("R/Bens_plot_pop_spatiotemp.R")
 
-Bens_plot_pop_spatiotemp(results = res, timestep = 'daily',plot_weekly=FALSE,
+Bens_plot_pop_spatiotemp(results = res, timestep = 'daily',plot_weekly=TRUE,
                          plot_monthly = TRUE, save.location = "testfolder", 
                          ColBreaks = NULL)
 #ColBreaks = Qbreaks_list)
