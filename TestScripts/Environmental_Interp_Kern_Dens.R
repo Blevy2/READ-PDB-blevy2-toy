@@ -503,3 +503,58 @@ plot_predict(fish_lrren, cref0 = "EPSG:32632", cref1 = "EPSG:4326",
              lower_lrr = -1,
              upper_lrr = 1)
 
+
+
+#to source a plot_predict where I save output
+#1: load file
+source("TestScripts/plot_predict_BENS.R") #my edited version that saves output
+
+#2: allow the function to call other hidden functions from envi
+environment(plot_predict_BENS) <- asNamespace('envi')
+
+
+
+p<-plot_predict_BENS(fish_lrren, cref0 = "EPSG:32632", cref1 = "EPSG:4326",
+             lower_lrr = -1, #used to be -1 to 1
+             upper_lrr = 1)
+
+
+#rescale output from -1 to 1 to 0 to 1
+
+#first exponentiate log values
+vec <- exp(p$out$v@data@values)
+range(vec,na.rm=T)
+
+#then convert to 0 to 1 range
+vec_01 <-(vec - min(vec,na.rm=T)) / (max(vec,na.rm=T) - min(vec,na.rm=T)) 
+range(vec_01,na.rm=T)
+
+p$out$v@data@values <- vec_01
+
+
+#rescale legend labels and colors
+
+#scale to display
+rbr <- max(vec_01,na.rm=T) - min(vec_01,na.rm=T)
+rbt <- rbr / 4
+rbs <- seq( min(vec_01,na.rm=T),  max(vec_01,na.rm=T), rbt)
+
+#numbers to show
+rbl <- round(rbs, digits = 1)
+
+# Color ramp parameters
+## Colors
+### vector of colors for values below midpoint
+rc1 <- grDevices::colorRampPalette(colors = c(cols[3], cols[2]), space = "Lab")(lowerhalf)
+### vector of colors for values above midpoint
+rc2 <- grDevices::colorRampPalette(colors = c(cols[2], cols[1]), space = "Lab")(upperhalf)
+### compile colors
+rampcols <- c(rc1, rc2)
+
+
+
+graphics::par(pty = "s")
+fields::image.plot(p$out$v, breaks = p$out$breaks, col = p$out$cols, 
+                   axes = TRUE, main = "log relative risk", xlab = "longitude", 
+                   ylab = "latitude", legend.mar = 3.1, axis.args = list(at = rbs, 
+                                                                         las = 0, labels = rbl, cex.axis = 0.67))
