@@ -42,9 +42,9 @@ Catch_Data <- gis[(gis$Year>=2009) & (gis$Year<=2015),]  #Also,format changes in
 Catch_Data$Day <- substr(Catch_Data$TOWDATE,1,2) #2digit day in locations 1-2 of TOWDATE
 
 #extract month and change into number
-month <- substr(Catch_Data$TOWDATE,3,5) #3 letter month abbrev in locations 3-5 of TOWDATE
+month <- substr(Catch_Data$TOWDATE,3,5) #3 letter month abbreviation in locations 3-5 of TOWDATE
 month_match <- c("JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC")
-Catch_Data$Month <- match(month,month_match)
+Catch_Data$Month <- match(month,month_match) #changes character abbreviation into number 1-12
 
 #merge 3 individual date columns into 1
 Catch_Data$Date <- as.Date(with(Catch_Data,paste(Year,Month,Day,sep="-")),"%Y-%m-%d")
@@ -220,53 +220,40 @@ for(sn in sns){
       lst_idx <- lst_idx + 1
       
     }
-    save(temp_lst, file=paste("TestScripts/FVCOM/TRD_",sn,yr,".RData",sep = ""))
+
     TRD_all[[paste("TRD_",sn,yr,sep = "")]] <- temp_lst
   }
   
 }
+    save(TRD_all, file=paste("TestScripts/FVCOM/TRD_all.RData",sep = ""))
 
+    
+    #load previously saved data
 
+# load(paste("TestScripts/FVCOM/TRD_all.RData",sep = ""))
+
+    
 ### Average Temp Data For each year and season## 
+    Mean_Temp_all <- list()
 for(sn in sns){
   for(yr in yrs){
    
     assign(paste("MeanTemp",sn,yr,sep = ""), as.data.frame(list(Reduce(`+`, TRD_all[[paste("TRD_",sn,yr,sep = "")]]) / length(TRD_all[[paste("TRD_",sn,yr,sep = "")]]))))
   
-    temp <- list(Reduce(`+`, TRD_all[[paste("TRD_",sn,yr,sep = "")]]) / length(TRD_all[[paste("TRD_",sn,yr,sep = "")]]))
+    Mean_Temp_all[[paste(sn,yr,sep = "")]] <- as.data.frame(list(Reduce(`+`, TRD_all[[paste("TRD_",sn,yr,sep = "")]]) / length(TRD_all[[paste("TRD_",sn,yr,sep = "")]])))
     
     
-    write.csv(temp, file=paste("TestScripts/FVCOM/MeanTemp",sn,yr,".csv",sep = ""))
+    write.csv(Mean_Temp_all[[paste(sn,yr,sep = "")]], file=paste("TestScripts/FVCOM/MeanTemp",sn,yr,".csv",sep = ""))
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    # #load previously saved data
+    # for(sn in sns){
+    #   for(yr in yrs){
+    #     assign(paste("MeanTemp",sn,yr,sep = ""),   read.csv(file=paste("TestScripts/FVCOM/MeanTemp",sn,yr,".csv",sep = "")))
+    #   
+    #   }
+    # }
 
 
 
@@ -294,378 +281,96 @@ for (i in 1:length(time_id)){
 }
 save(salinity_fvcom_data, file="TestScripts/FVCOM/salinity_data.RData")
 
-#load("...FVCOM/Fall/salinity_data.RData")
+#load("TestScripts/FVCOM/salinity_data.RData")
 
 
-###Take salinity data and interpolate and snap it to "grid_data" grid that was made###
-### Fall
-## Fall 2000
-# the time ID is the same so it should be the same as for your temp. In this case, 1:45 and so on
-SRD_FA00 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 1:45){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_FA00[[i]] <- raster::extract(rast, grid_data)
+
+#INSTEAD OF LISTING EACH YEAR & SEASON, LOOP THROUGH UNIQUE YEARS & SEASONS
+
+SRD_all <- list()
+
+for(sn in sns){
+  for(yr in yrs){
+    
+
+    temp_lst <- list()
+    
+    #pull out year and season you want samples for
+    sub_set <- subset(dates,(y2==yr) & (Season == sn), select=date:index )
+    
+    ind <- sub_set$index #pulling indices 
+    
+    print("max ind is")
+    print(max(ind))
+    
+    lst_idx <- 1
+    
+    for(i in ind){ #go down the list
+      print(i)
+      
+      temp_data <- as.data.frame(salinity_fvcom_data[[i]])
+      rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)# Make sure this matches your resolution
+      rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
+      akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
+      rast <- raster(akima.smooth)
+      temp_lst[[lst_idx]] <- raster::extract(rast, grid_data)
+      
+      lst_idx <- lst_idx + 1
+      
+    }
+    
+    SRD_all[[paste("SRD_",sn,yr,sep = "")]] <- temp_lst
+  }
+  
 }
-save(SRD_FA00, file="SRD_FA00.RData")
+save(SRD_all, file=paste("TestScripts/FVCOM/SRD_all.RData",sep = ""))
 
-###Fall 2001
-SRD_FA01 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 46:93){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_FA01[[i]] <- raster::extract(rast, grid_data)
+
+Mean_Sal_all <- list()
+### Average Salinity Data For each year and season## 
+for(sn in sns){
+  for(yr in yrs){
+    
+    assign(paste("MeanSalinity",sn,yr,sep = ""), as.data.frame(list(Reduce(`+`, SRD_all[[paste("SRD_",sn,yr,sep = "")]]) / length(SRD_all[[paste("SRD_",sn,yr,sep = "")]]))))
+    
+    Mean_Sal_all[paste(sn,yr,sep = "")] <- as.data.frame(list(Reduce(`+`, SRD_all[[paste("SRD_",sn,yr,sep = "")]]) / length(SRD_all[[paste("SRD_",sn,yr,sep = "")]])))
+    
+    
+    write.csv(Mean_Sal_all[[paste(sn,yr,sep = "")]], file=paste("TestScripts/FVCOM/MeanSalinity",sn,yr,".csv",sep = ""))
+  }
 }
-SRD_FA01<- SRD_FA01[-c(1:45)] 
-save(SRD_FA01, file="SRD_FA01.RData")
 
-###Fall 2002
-SRD_FA02 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 94:145){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_FA02[[i]] <- raster::extract(rast, grid_data)
+
+
+# #load previously saved data
+# for(sn in sns){
+#   for(yr in yrs){
+#     assign(paste("MeanSalinity",sn,yr,".csv",sep = ""),   read.csv(file=paste("TestScripts/FVCOM/MeanSalinity",sn,yr,".csv",sep = "")))
+#   
+#   }
+# }
+
+
+
+
+
+#### All FVCOM Files through 2015 as a loop###
+ts_all <- list()
+for(sn in sns){
+  for(yr in yrs){
+    temp <- data.frame(FVdepth)
+    temp$BTemp = as.data.frame(Mean_Temp_all[paste(sn,yr,sep = "")])[,c(1)]
+    temp$Salinity = as.data.frame(Mean_Sal_all[paste(sn,yr,sep = "")])[,c(1)]
+    
+    assign(paste("ts",sn,yr,sep = ""), temp)
+    
+    ts_all[[paste(sn,yr,sep = "")]] <- temp
+    
+    write.csv(temp,file=paste("TestScripts/FVCOM/ts",sn,yr,".csv",sep = ""))
+  }
 }
-SRD_FA02<- SRD_FA02[-c(1:93)]
-save(SRD_FA02, file="SRD_FA02.RData")
-
-###Fall 2003
-SRD_FA03 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 146:200){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_FA03[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_FA03<- SRD_FA03[-c(1:145)]
-save(SRD_FA03, file="SRD_FA03.RData")
-
-###Fall 2004
-SRD_FA04 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 201:248){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_FA04[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_FA04<- SRD_FA04[-c(1:200)]
-save(SRD_FA04, file="SRD_FA04.RData")
-
-###Fall 2005
-SRD_FA05 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 249:307){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_FA05[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_FA05<- SRD_FA05[-c(1:248)]
-save(SRD_FA05, file="SRD_FA05.RData")
-
-###Fall 2006
-SRD_FA06 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 308:357){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_FA06[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_FA06<- SRD_FA06[-c(1:307)]
-save(SRD_FA06, file="SRD_FA06.RData")
-
-###Fall 2007
-SRD_FA07 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 358:414){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_FA07[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_FA07<- SRD_FA07[-c(1:357)]
-save(SRD_FA07, file="SRD_FA07.RData")
-
-###Fall 2008
-SRD_FA08 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 415:481){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_FA08[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_FA08<- SRD_FA08[-c(1:414)]
-save(SRD_FA08, file="SRD_FA08.RData")
-
-###Fall 2009
-SRD_FA09 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 482:548){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_FA09[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_FA09<- SRD_FA09[-c(1:481)]
-save(SRD_FA09, file="SRD_FA09.RData")
-
-###Fall 2010
-SRD_FA10 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 549:633){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_FA10[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_FA10<- SRD_FA10[-c(1:548)]
-save(SRD_FA10, file="SRD_FA10.RData")
 
 
-###Fall 2011
-SRD_FA11 <- list()
-for(i in 634:699){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_FA11[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_FA11<- SRD_FA11[-c(1:633)]
-
-save(SRD_FA11, file="SRD_FA11.RData")
-
-
-### Fall 2012
-SRD_FA12 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 700:764){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_FA12[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_FA12<- SRD_FA12[-c(1:699)]
-save(SRD_FA12, file="SRD_FA12.RData")
-
-
-### Fall 2013
-SRD_FA13 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 765:839){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_FA13[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_FA13<- SRD_FA13[-c(1:764)]
-save(SRD_FA13, file="SRD_FA13.RData")
-
-
-### Fall 2014
-SRD_FA14 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 840:903){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_FA14[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_FA14<- SRD_FA14[-c(1:839)]
-save(SRD_FA14, file="SRD_FA14.RData")
-
-
-### Fall 2015
-SRD_FA15 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 904:968){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_FA15[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_FA15<- SRD_FA15[-c(1:903)]
-save(SRD_FA15, file="SRD_FA15.RData")
-
-# Average for Fall Salinity
-
-MeanSalfa00<- list(Reduce(`+`, SRD_FA00) / length(SRD_FA00))###taking averages of each day during the season at each location
-MeanSalfa01<- list(Reduce(`+`, SRD_FA01) / length(SRD_FA01))
-MeanSalfa02<- list(Reduce(`+`, SRD_FA02) / length(SRD_FA02))
-MeanSalfa03<- list(Reduce(`+`, SRD_FA03) / length(SRD_FA03))
-MeanSalfa04<- list(Reduce(`+`, SRD_FA04) / length(SRD_FA04))
-MeanSalfa05<- list(Reduce(`+`, SRD_FA05) / length(SRD_FA05))
-MeanSalfa06<- list(Reduce(`+`, SRD_FA06) / length(SRD_FA06))
-MeanSalfa07<- list(Reduce(`+`, SRD_FA07) / length(SRD_FA07))
-MeanSalfa08<- list(Reduce(`+`, SRD_FA08) / length(SRD_FA08))
-MeanSalfa09<- list(Reduce(`+`, SRD_FA09) / length(SRD_FA09))
-MeanSalfa10<- list(Reduce(`+`, SRD_FA10) / length(SRD_FA10)) 
-MeanSalfa11<- list(Reduce(`+`, SRD_FA11) / length(SRD_FA11))
-MeanSalfa12<- list(Reduce(`+`, SRD_FA12) / length(SRD_FA12))
-MeanSalfa13<- list(Reduce(`+`, SRD_FA13) / length(SRD_FA13))
-MeanSalfa14<- list(Reduce(`+`, SRD_FA14) / length(SRD_FA14))
-MeanSalfa15<- list(Reduce(`+`, SRD_FA15) / length(SRD_FA15))
-
-write.csv(MeanSalfa00, file="MeanSalfa00.csv")
-write.csv(MeanSalfa01, file="MeanSalfa01.csv")
-write.csv(MeanSalfa02, file="MeanSalfa02.csv")
-write.csv(MeanSalfa03, file="MeanSalfa03.csv")
-write.csv(MeanSalfa04, file="MeanSalfa04.csv")
-write.csv(MeanSalfa05, file="MeanSalfa05.csv")
-write.csv(MeanSalfa06, file="MeanSalfa06.csv")
-write.csv(MeanSalfa07, file="MeanSalfa07.csv")
-write.csv(MeanSalfa08, file="MeanSalfa08.csv")
-write.csv(MeanSalfa09, file="MeanSalfa09.csv")
-write.csv(MeanSalfa10, file="MeanSalfa10.csv")
-write.csv(MeanSalfa11, file="MeanSalfa11.csv")
-write.csv(MeanSalfa12, file="MeanSalfa12.csv")
-write.csv(MeanSalfa13, file="MeanSalfa13.csv")
-write.csv(MeanSalfa14, file="MeanSalfa14.csv")
-write.csv(MeanSalfa15, file="MeanSalfa15.csv")
-
-
-#### Fall FVCOM Files through 2015 ###
-ts2000= data.frame(FVdepth)
-ts2000$BTemp=MeanTempfa00[,c(2)]
-ts2000$Salinity=MeanSalfa01[,c(2)]
-# You can add your sediment file here as well assuming that the coordinates correspond
-write.csv(ts2000, file="ts2000.csv")
-
-ts2001= data.frame(FVdepth)
-ts2001$BTemp=MeanTempfa01[,c(2)]
-ts2001$Salinity=MeanSalfa01[,c(2)]
-write.csv(ts2001, file="ts2001.csv")
-
-ts2002= data.frame(FVdepth)
-ts2002$BTemp=MeanTempfa02[,c(2)]
-ts2002$Salinity=MeanSalfa02[,c(2)]
-write.csv(ts2002, file="ts2002.csv")
-
-ts2003= data.frame(FVdepth)
-ts2003$BTemp=MeanTempfa03[,c(2)]
-ts2003$Salinity=MeanSalfa03[,c(2)]
-write.csv(ts2003, file="ts2003.csv")
-
-ts2004= data.frame(FVdepth)
-ts2004$BTemp=MeanTempfa04[,c(2)]
-ts2004$Salinity=MeanSalfa04[,c(2)]
-write.csv(ts2004, file="ts2004.csv")
-
-ts2005= data.frame(FVdepth)
-ts2005$BTemp=MeanTempfa05[,c(2)]
-ts2005$Salinity=MeanSalfa05[,c(2)]
-write.csv(ts2005, file="ts2005.csv")
-
-ts2006= data.frame(FVdepth)
-ts2006$BTemp=MeanTempfa06[,c(2)]
-ts2006$Salinity=MeanSalfa06[,c(2)]
-write.csv(ts2006, file="ts2006.csv")
-
-ts2007= data.frame(FVdepth)
-ts2007$BTemp=MeanTempfa07[,c(2)]
-ts2007$Salinity=MeanSalfa07[,c(2)]
-write.csv(ts2007, file="ts2007.csv")
-
-ts2008= data.frame(FVdepth)
-ts2008$BTemp=MeanTempfa08[,c(2)]
-ts2008$Salinity=MeanSalfa08[,c(2)]
-write.csv(ts2008, file="ts2008.csv")
-
-ts2009= data.frame(FVdepth)
-ts2009$BTemp=MeanTempfa09[,c(2)]
-ts2009$Salinity=MeanSalfa09[,c(2)]
-write.csv(ts2009, file="ts2009.csv")
-
-ts2010= data.frame(FVdepth)
-ts2010$BTemp=MeanTempfa10[,c(2)]
-ts2010$Salinity=MeanSalfa10[,c(2)]
-write.csv(ts2010, file="ts2010.csv")
-
-ts2011= data.frame(FVdepth)
-ts2011$BTemp=MeanTempfa11[,c(2)]
-ts2011$Salinity=MeanSalfa11[,c(2)]
-write.csv(ts2011, file="ts2011.csv")
-
-
-ts2012= data.frame(FVdepth)
-ts2012$BTemp=MeanTempfa12[,c(2)]
-ts2012$Salinity=MeanSalfa12[,c(2)]
-write.csv(ts2012, file="ts2012.csv")
-
-
-ts2013= data.frame(FVdepth)
-ts2013$BTemp=MeanTempfa13[,c(2)]
-ts2013$Salinity=MeanSalfa13[,c(2)]
-write.csv(ts2013, file="ts2013.csv")
-
-
-ts2014= data.frame(FVdepth)
-ts2014$BTemp=MeanTempfa14[,c(2)]
-ts2014$Salinity=MeanSalfa14[,c(2)]
-write.csv(ts2014, file="ts2014.csv")
-
-
-ts2015= data.frame(FVdepth)
-ts2015$BTemp=MeanTempfa15[,c(2)]
-ts2015$Salinity=MeanSalfa15[,c(2)]
-write.csv(ts2015, file="ts2015.csv")
 
 
 ####Spring####
@@ -1378,10 +1083,38 @@ ts2015$Salinity=MeanSalsp15[,c(2)]
 write.csv(ts2015, file="ts2015.csv")
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #### 2016 & 2017 FVCOM Data ####
 
-##Fall##
 
+
+##Fall##
 dates <- format(c(seq(as.Date("9/1/2016", "%m/%d/%Y"), by=1, len=30), # September 2016. The new organization of data is by month so it is easier to separate this way
                   seq(as.Date("10/1/2016", "%m/%d/%Y"), by=1, len=31),  #October 2016
                   seq(as.Date("10/1/2017", "%m/%d/%Y"), by=1, len=31),
@@ -1490,11 +1223,11 @@ for(i in 1:1){
   rast <- raster(akima.smooth)
   FVcom_depth2016.list[[i]] <- raster::extract(rast, grid_data)
 }
-save(FVcom_depth2016.list, file="FVcom_depth2016.list.RData")
+save(FVcom_depth2016.list, file="TestScripts/FVCOM/FVcom_depth2016.list.RData")
 
-FVdepth2016<-cbind(grid_data[2:3],FVcom_depth2016.list[[1]])
+FVdepth2016<-cbind(grid_data@coords,FVcom_depth2016.list[[1]])
 names(FVdepth2016)[3]<-"AvgDepth"
-save(FVdepth2016, file="FVdepth2016.RData")
+save(FVdepth2016, file="TestScripts/FVCOM/FVdepth2016.RData")
 
 FVcom_depth2017<- data.frame(ncvar_get(nc_open("http://www.smast.umassd.edu:8080/thredds/dodsC/models/fvcom/NECOFS/Archive/Seaplan_33_Hindcast_v1/gom5_201705.nc?h[0:1:136431]")))
 names(FVcom_depth2017) <- "FVcom_depth"
@@ -1512,11 +1245,11 @@ for(i in 1:1){
   rast <- raster(akima.smooth)
   FVcom_depth2017.list[[i]] <- raster::extract(rast, grid_data)
 }
-save(FVcom_depth2017.list, file="FVcom_depth2017.list.RData")
+save(FVcom_depth2017.list, file="TestScripts/FVCOM/FVcom_depth2017.list.RData")
 
-FVdepth2017<-cbind(grid_data[2:3],FVcom_depth2017.list[[1]])
+FVdepth2017<-cbind(grid_data@coords,FVcom_depth2017.list[[1]])
 names(FVdepth2017)[3]<-"AvgDepth"
-save(FVdepth2017, file="FVdepth2017.RData")
+save(FVdepth2017, file="TestScripts/FVCOM/FVdepth2017.RData")
 
 
 ###Download Temperature Data###
@@ -1530,7 +1263,7 @@ for (i in 1:30){ #1:30 because there are 30 days in the month of September
   colnames(sepfvcomtemp2016[[i]]) <- c("lon", "lat", "temperature")
   print(i)
 }
-save(sepfvcomtemp2016, file="sepfvcomtemp2016.RData")
+save(sepfvcomtemp2016, file="TestScripts/FVCOM/sepfvcomtemp2016.RData")
 
 # Oct 2016
 octfvcomtemp2016<-list()
@@ -1541,7 +1274,7 @@ for (i in 1:31){ #1:30 because there are 30 days in the month of April
   colnames(octfvcomtemp2016[[i]]) <- c("lon", "lat", "temperature")
   print(i)
 }
-save(octfvcomtemp2016, file="octfvcomtemp2016.RData")
+save(octfvcomtemp2016, file="TestScripts/FVCOM/octfvcomtemp2016.RData")
 
 
 # Oct 2017
@@ -1553,7 +1286,7 @@ for (i in 1:31){
   colnames(octfvcomtemp2017[[i]]) <- c("lon", "lat", "temperature")
   print(i)
 }
-save(octfvcomtemp2017, file="octfvcomtemp2017.RData")
+save(octfvcomtemp2017, file="TestScripts/FVCOM/octfvcomtemp2017.RData")
 
 # Nov 2017
 novfvcomtemp2017<-list()
@@ -1564,7 +1297,7 @@ for (i in 1:30){
   colnames(novfvcomtemp2017[[i]]) <- c("lon", "lat", "temperature")
   print(i)
 }
-save(novfvcomtemp2017, file="novfvcomtemp2017.RData")
+save(novfvcomtemp2017, file="TestScripts/FVCOM/novfvcomtemp2017.RData")
 
 FL16temp<-append(sepfvcomtemp2016, octfvcomtemp2016, after=30)#use append to combine different months. Don't need to do this if you're only using a single month. Just rename the file. "after 30" because there are 30 days in the first month (september)
 FL17temp<-append(octfvcomtemp2017, novfvcomtemp2017, after=31)
@@ -1581,7 +1314,7 @@ for(i in 1:61){  #Pay  attention to the length of this for loop, it should be as
   rast <- raster(akima.smooth)
   TRD_FL16[[i]] <- raster::extract(rast, grid_data)
 }
-save(TRD_FL16, file="TRD_FL16.RData")
+save(TRD_FL16, file="TestScripts/FVCOM/TRD_FL16.RData")
 
 ###Fall2017
 TRD_FL17 <- list()
@@ -1594,14 +1327,14 @@ for(i in 1:61){
   rast <- raster(akima.smooth)
   TRD_FL17[[i]] <- raster::extract(rast, grid_data)
 }
-save(TRD_FL17, file="TRD_FL17.RData")
+save(TRD_FL17, file="TestScripts/FVCOM/TRD_FL17.RData")
 
 ##Taking average temps ##
 MeanTempfl16<- list(Reduce(`+`, TRD_FL16) / length(TRD_FL16))
 MeanTempfl17<- list(Reduce(`+`, TRD_FL17) / length(TRD_FL17))
 
-write.csv(MeanTempfl16, file="MeanTempfl16.csv")
-write.csv(MeanTempfl17, file="MeanTempfl17.csv")
+write.csv(MeanTempfl16, file="TestScripts/FVCOM/MeanTempfl16.csv")
+write.csv(MeanTempfl17, file="TestScripts/FVCOM/MeanTempfl17.csv")
 
 
 ### Download Salinity Data ###
@@ -1616,7 +1349,7 @@ for (i in 1:30){
   colnames(sepfvcomsal2016[[i]]) <- c("lon", "lat", "salinity")
   print(i)
 }
-save(sepfvcomsal2016, file="sepfvcomsal2016.RData")
+save(sepfvcomsal2016, file="TestScripts/FVCOM/sepfvcomsal2016.RData")
 
 octfvcomsal2016<-list()
 for (i in 1:31){
@@ -1626,7 +1359,7 @@ for (i in 1:31){
   colnames(octfvcomsal2016[[i]]) <- c("lon", "lat", "salinity")
   print(i)
 }
-save(octfvcomsal2016, file="octfvcomsal2016.RData")
+save(octfvcomsal2016, file="TestScripts/FVCOM/octfvcomsal2016.RData")
 
 # Oct 2017
 octfvcomsal2017<-list()
@@ -1637,7 +1370,7 @@ for (i in 1:31){
   colnames(octfvcomsal2017[[i]]) <- c("lon", "lat", "salinity")
   print(i)
 }
-save(octfvcomsal2017, file="octfvcomsal2017.RData")
+save(octfvcomsal2017, file="TestScripts/FVCOM/octfvcomsal2017.RData")
 
 # Nov 2017
 novfvcomsal2017<-list()
@@ -1648,7 +1381,7 @@ for (i in 1:30){
   colnames(novfvcomsal2017[[i]]) <- c("lon", "lat", "salinity")
   print(i)
 }
-save(novfvcomsal2017, file="novfvcomsal2017.RData")
+save(novfvcomsal2017, file="TestScripts/FVCOM/novfvcomsal2017.RData")
 
 FL16sal<- append(sepfvcomsal2016, octfvcomsal2016, after=30)
 FL17sal<- append(octfvcomsal2017, novfvcomsal2017, after=31)
@@ -1666,7 +1399,7 @@ for(i in 1:61){
   rast <- raster(akima.smooth)
   SRD_FL16[[i]] <- raster::extract(rast, grid_data)
 }
-save(SRD_FL16, file="SRD_FL16.RData")
+save(SRD_FL16, file="TestScripts/FVCOM/SRD_FL16.RData")
 
 ###Fall2017
 SRD_FL17 <- list()
@@ -1679,24 +1412,24 @@ for(i in 1:61){
   rast <- raster(akima.smooth)
   SRD_FL17[[i]] <- raster::extract(rast, grid_data)
 }
-save(SRD_FL17, file="SRD_FL17.RData")
+save(SRD_FL17, file="TestScripts/FVCOM/SRD_FL17.RData")
 
 MeanSalfl16<- list(Reduce(`+`, SRD_FL16) / length(SRD_FL16))
 MeanSalfl17<- list(Reduce(`+`, SRD_FL17) / length(SRD_FL17))
 
-write.csv(MeanSalfl16, file="MeanSalfl16.csv")
-write.csv(MeanSalfl17, file="MeanSalfl17.csv")
+write.csv(MeanSalfl16, file="TestScripts/FVCOM/MeanSalfl16.csv")
+write.csv(MeanSalfl17, file="TestScripts/FVCOM/MeanSalfl17.csv")
 
 ts2016= data.frame(FVdepth2016)
 ts2016$BTemp=MeanTempfl16[,c(2)]
 ts2016$Salinity=MeanSalfl16[,c(2)]
 #Add your sediment column
-write.csv(ts2016, file="ts2016.csv")
+write.csv(ts2016, file="TestScripts/FVCOM/ts2016.csv")
 
 ts2017= data.frame(FVdepth2017)
 ts2017$BTemp=MeanTempfl17[,c(2)]
 ts2017$Salinity=MeanSalfl17[,c(2)]
-write.csv(ts2017, file="ts2017.csv")
+write.csv(ts2017, file="TestScripts/FVCOM/ts2017.csv")
 
 
 ##Spring##
@@ -1783,7 +1516,7 @@ for (i in 1:30){
   colnames(aprilfvcomtemp2016[[i]]) <- c("lon", "lat", "temperature")
   print(i)
 }
-save(aprilfvcomtemp2016, file="aprilfvcomtemp2016.RData")
+save(aprilfvcomtemp2016, file="TestScripts/FVCOM/aprilfvcomtemp2016.RData")
 
 # May 2016
 mayfvcomtemp2016<-list()
@@ -1794,7 +1527,7 @@ for (i in 1:31){ #1:30 because there are 30 days in the month of April
   colnames(mayfvcomtemp2016[[i]]) <- c("lon", "lat", "temperature")
   print(i)
 }
-save(mayfvcomtemp2016, file="mayfvcomtemp2016.RData")
+save(mayfvcomtemp2016, file="TestScripts/FVCOM/mayfvcomtemp2016.RData")
 
 # March 2017
 marchfvcomtemp2017<-list()
@@ -1805,7 +1538,7 @@ for (i in 1:31){
   colnames(marchfvcomtemp2017[[i]]) <- c("lon", "lat", "temperature")
   print(i)
 }
-save(marchfvcomtemp2017, file="marchfvcomtemp2017.RData")
+save(marchfvcomtemp2017, file="TestScripts/FVCOM/marchfvcomtemp2017.RData")
 
 # April 2017
 aprilfvcomtemp2017<-list()
@@ -1816,7 +1549,7 @@ for (i in 1:30){
   colnames(aprilfvcomtemp2017[[i]]) <- c("lon", "lat", "temperature")
   print(i)
 }
-save(aprilfvcomtemp2017, file="aprilfvcomtemp2017.RData")
+save(aprilfvcomtemp2017, file="TestScripts/FVCOM/aprilfvcomtemp2017.RData")
 
 # May 2017
 mayfvcomtemp2017<-list()
@@ -1827,7 +1560,7 @@ for (i in 1:31){
   colnames(mayfvcomtemp2017[[i]]) <- c("lon", "lat", "temperature")
   print(i)
 }
-save(mayfvcomtemp2017, file="mayfvcomtemp2017.RData")
+save(mayfvcomtemp2017, file="TestScripts/FVCOM/mayfvcomtemp2017.RData")
 
 SP16temp<- append(aprilfvcomtemp2016, mayfvcomtemp2016, after=30)
 SP17temp<- append(marchfvcomtemp2017, aprilfvcomtemp2017, after=31)# need to append twice since there are 3 months included
@@ -1844,7 +1577,7 @@ for(i in 1:61){
   rast <- raster(akima.smooth)
   TRD_SP16[[i]] <- raster::extract(rast, grid_data)
 }
-save(TRD_SP16, file="TRD_SP16.RData")
+save(TRD_SP16, file="TestScripts/FVCOM/TRD_SP16.RData")
 
 
 ###Spring2017
@@ -1859,7 +1592,7 @@ for(i in 1:92){
   rast <- raster(akima.smooth)
   TRD_SP17[[i]] <- raster::extract(rast, grid_data)
 }
-save(TRD_SP17, file="TRD_SP17.RData")
+save(TRD_SP17, file="TestScripts/FVCOM/TRD_SP17.RData")
 
 
 ###taking averages of each day during the season at each location
@@ -1867,8 +1600,8 @@ save(TRD_SP17, file="TRD_SP17.RData")
 MeanTempsp16<- list(Reduce(`+`, TRD_SP16) / length(TRD_SP16)) 
 MeanTempsp17<- list(Reduce(`+`, TRD_SP17) / length(TRD_SP17)) 
 
-write.csv(MeanTempsp16, file="MeanTempsp16.csv")
-write.csv(MeanTempsp17, file="MeanTempsp17.csv")
+write.csv(MeanTempsp16, file="TestScripts/FVCOM/MeanTempsp16.csv")
+write.csv(MeanTempsp17, file="TestScripts/FVCOM/MeanTempsp17.csv")
 
 #### Download salinity data ####
 
@@ -1881,7 +1614,7 @@ for (i in 1:30){
   colnames(aprilfvcomsal2016[[i]]) <- c("lon", "lat", "salinity")
   print(i)
 }
-save(aprilfvcomsal2016, file="aprilfvcomsal2016.RData")
+save(aprilfvcomsal2016, file="TestScripts/FVCOM/aprilfvcomsal2016.RData")
 
 # May 2016
 mayfvcomsal2016<-list()
@@ -1892,7 +1625,7 @@ for (i in 1:31){
   colnames(mayfvcomsal2016[[i]]) <- c("lon", "lat", "salinity")
   print(i)
 }
-save(mayfvcomsal2016, file="mayfvcomsal2016.RData")
+save(mayfvcomsal2016, file="TestScripts/FVCOM/mayfvcomsal2016.RData")
 
 
 # March 2017
@@ -1904,7 +1637,7 @@ for (i in 1:31){
   colnames(marchfvcomsal2017[[i]]) <- c("lon", "lat", "salinity")
   print(i)
 }
-save(marchfvcomsal2017, file="marchfvcomsal2017.RData")
+save(marchfvcomsal2017, file="TestScripts/FVCOM/marchfvcomsal2017.RData")
 
 # April 2017
 aprilfvcomsal2017<-list()
@@ -1915,7 +1648,7 @@ for (i in 1:30){
   colnames(aprilfvcomsal2017[[i]]) <- c("lon", "lat", "salinity")
   print(i)
 }
-save(aprilfvcomsal2017, file="aprilfvcomsal2017.RData")
+save(aprilfvcomsal2017, file="TestScripts/FVCOM/aprilfvcomsal2017.RData")
 
 # May 2017
 mayfvcomsal2017<-list()
@@ -1926,7 +1659,7 @@ for (i in 1:31){
   colnames(mayfvcomsal2017[[i]]) <- c("lon", "lat", "salinity")
   print(i)
 }
-save(mayfvcomsal2017, file="mayfvcomsal2017.RData")
+save(mayfvcomsal2017, file="TestScripts/FVCOM/mayfvcomsal2017.RData")
 
 SP16sal<-append(aprilfvcomsal2016, mayfvcomsal2016, after = 30)
 SP17sal<-append(marchfvcomsal2017, aprilfvcomsal2017, after = 31)
@@ -1945,7 +1678,7 @@ for(i in 1:61){
   rast <- raster(akima.smooth)
   SRD_SP16[[i]] <- raster::extract(rast, grid_data)
 }
-save(SRD_SP16, file="SRD_SP16.RData")
+save(SRD_SP16, file="TestScripts/FVCOM/SRD_SP16.RData")
 
 
 ###Spring2017
@@ -1960,21 +1693,21 @@ for(i in 1:92){
   rast <- raster(akima.smooth)
   SRD_SP17[[i]] <- raster::extract(rast, grid_data)
 }
-save(SRD_SP17, file="SRD_SP17.RData")
+save(SRD_SP17, file="TestScripts/FVCOM/SRD_SP17.RData")
 
 MeanSalsp16<- list(Reduce(`+`, SRD_SP16) / length(SRD_SP16))
 MeanSalsp17<- list(Reduce(`+`, SRD_SP17) / length(SRD_SP17)) 
 
-write.csv(MeanSalsp16, file="MeanSalsp16.csv")
-write.csv(MeanSalsp17, file="MeanSalsp17.csv")
+write.csv(MeanSalsp16, file="TestScripts/FVCOM/MeanSalsp16.csv")
+write.csv(MeanSalsp17, file="TestScripts/FVCOM/MeanSalsp17.csv")
 
 ts2016= data.frame(FVdepth2016)
-ts2016$BTemp=MeanTempsp16[,c(2)]
-ts2016$Salinity=MeanSalsp16[,c(2)]
+ts2016$BTemp=MeanTempsp16[c(1)]
+ts2016$Salinity=MeanSalsp16[c(1)]
 # add sediment column
-write.csv(ts2016, file="ts2016.csv")
+data.table::fwrite(ts2016, file="TestScripts/FVCOM/ts2016.csv")
 
 ts2017= data.frame(FVdepth2017)
-ts2017$BTemp=MeanTempsp17[,c(2)]
-ts2017$Salinity=MeanSalsp17[,c(2)]
-write.csv(ts2017, file="ts2017.csv")
+ts2017$BTemp=MeanTempsp17[1]
+ts2017$Salinity=MeanSalsp17[1]
+data.table::fwrite(ts2017, file="TestScripts/FVCOM/ts2017.csv")
