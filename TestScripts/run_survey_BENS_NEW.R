@@ -216,6 +216,8 @@ for(i in seq(length(list_all))){
 gc()
 
 
+#BELOW WILL TAKE A SEVERAL MINUTES
+
 
 ####################################################################
 # take each survey from each iteration and create more surveys by adding noise to each
@@ -263,7 +265,7 @@ surv_noise <- vector("list",length(list_all))
 
 
 
-
+#BELOW WILL TAKE MANY MINUTES
 
 
 #NOW WE NEED TO CREATE A STRATIFIED MEAN FROM EACH OF THESE SAMPLES
@@ -306,7 +308,7 @@ strat_mean_all_spp2 <- vector("list",length(surv_noise)) #4 strata
 
 
   for(iter in seq(length(surv_noise))){
-    
+    print(iter)
     for(sample in seq(length(surv_noise[[iter]]))){
       
       spp <- as_tibble(surv_noise[[iter]][[sample]],header=T) #pull out entire survey matrix
