@@ -21,7 +21,7 @@ srs_survey <- function(df, sa, str, ta=1, sppname = NULL  )  {
     
     strata <- df %>%
       #filter(substr(SURVEY, 1, 4) =="NMFS") %>% #DONT THINK I NEED THIS
-      select(Season, stratum) %>%
+      dplyr::select(Season, stratum) %>%
       group_by(Season) %>%
       distinct(stratum) %>%
       nest()
@@ -36,7 +36,7 @@ srs_survey <- function(df, sa, str, ta=1, sppname = NULL  )  {
   # calculate total area for stock-specific strata by season
   tmp.total.area <- df %>%
    # filter(substr(SURVEY, 1, 4) =="NMFS") %>%  #STILL DONT THINK I NEED THIS
-    select(Season, stratum) %>%
+    dplyr::select(Season, stratum) %>%
     group_by(Season) %>%
     distinct(stratum) %>% 
     left_join(sa, by="stratum") %>%
@@ -51,11 +51,11 @@ srs_survey <- function(df, sa, str, ta=1, sppname = NULL  )  {
     left_join(sa,by="stratum") %>%
     replace(is.na(.), 0) %>%
     pivot_longer(cols=c(sppname), values_to="OBS_VALUE") %>%  #changing catchwt to obs_value
-    select(year, Season, stratum, tow, OBS_VALUE, STRATUM_AREA)
+    dplyr::select(year, Season, stratum, tow, OBS_VALUE, STRATUM_AREA)
 
 # Calculate null survey
 surv.ind.str <- tmp.tibble %>%
-  select(year, Season, stratum,  STRATUM_AREA, tow, OBS_VALUE ) %>%
+  dplyr::select(year, Season, stratum,  STRATUM_AREA, tow, OBS_VALUE ) %>%
   arrange(year, Season, stratum, tow) %>%
   group_by(year, Season, stratum )  %>% #INDEX GOING DOWN TO STRATA
   dplyr::summarise(mean.str = mean(as.integer(OBS_VALUE)), var.samp.str=var(OBS_VALUE, na.rm=T), ntows.str = n() ) %>%
