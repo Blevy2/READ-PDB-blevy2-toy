@@ -438,7 +438,10 @@ for(s in seq(length(sum_survey_iter))){ #2 species
     
 }
 
+#write csvs
+write.csv(sum_survey_iter_final[[1]], file=paste("spp1","SRS.csv", sep="."), row.names=F)
 
+write.csv(sum_survey_iter_final[[2]], file=paste("spp2","SRS.csv", sep="."), row.names=F)
 
 
 
