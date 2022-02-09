@@ -26,7 +26,7 @@ plot_pop_summary <- function(results = res, timestep = 'daily', save = FALSE, sa
     res_spp <- lapply(names(results[["pop_summary"]][[x]]), function(x1) {
       x1_res <- tidyr::gather(as.data.frame(t(results[["pop_summary"]][[x]][[x1]])), key = "year", factor_key = T)
       if(x1 == "Bio.mat" | x1 == "Bio.mat.sd") {	res_out <- data.frame("pop" = rep(paste("spp",x, sep = "_"), length.out = nrow(x1_res)), 
-                                                                       "metric" = rep(sapply(strsplit(x1,".",fixed = T),"[",1), length.out = nrow(x1_res)), 
+                                                                       "metric" = x1, 
                                                                        "year" = x1_res$year, 
                                                                        "day" = rep(1:358, length.out = nrow(x1_res)),#changed 362 to 358
                                                                        "julien_day" = seq_len(nrow(x1_res)),
@@ -36,7 +36,7 @@ plot_pop_summary <- function(results = res, timestep = 'daily', save = FALSE, sa
       
       }
       if(x1 == "Rec.mat" | x1 == "Rec.mat.sd") { res_out <- data.frame("pop" = rep(paste("spp",x, sep = "_"), length.out = nrow(x1_res)), 
-                                                                       "metric" = rep(sapply(strsplit(x1,".",fixed = T),"[",1), length.out = nrow(x1_res)), 
+                                                                       "metric" = x1, 
                                                                        "year" = seq_len(nrow(x1_res)), 
                                                                        "day" = rep(1, length.out = nrow(x1_res)),
                                                                        "julien_day" = rep(1, length.out = nrow(x1_res)),
@@ -71,15 +71,25 @@ plot_pop_summary <- function(results = res, timestep = 'daily', save = FALSE, sa
   if(timestep == "annual") {
     require(ggplot2); require(dplyr)
     
-    results_df_an1 <- results_df %>% filter(metric == "Bio", day == 1) %>% 
+    results_df_an1 <- results_df %>% filter(metric == "Bio.mat", day == 1) %>% 
       group_by(pop, metric, year) %>% summarise(data = sum(data))
-    results_df_an2 <- results_df %>% filter(metric != "Bio") %>% 
+    results_df_an2 <- results_df %>% filter(metric != "Bio.mat") %>% 
       group_by(pop, metric, year) %>% summarise(data = sum(data, na.rm = T))
     
     results_df_annual <- rbind(results_df_an1, results_df_an2) 
     
+    #print all
     print(ggplot(results_df_annual, aes(x = year, y = data, group = 2)) + geom_point() + geom_line() + 
             facet_grid(pop ~ metric, scale = "free") + expand_limits(y = 0))
+    
+    #print 3 on same scale
+    print(ggplot(results_df_an2, aes(x = year, y = data, group = 2)) + geom_point() + geom_line() + 
+            facet_grid(pop ~ metric, scale = "free") + expand_limits(y = 0))
+    
+    
+    #plot just population
+    print(ggplot(annual_pop_results, aes(x = year, y = data, group = 2)) + geom_point() + geom_line() + 
+            facet_wrap(~pop, scales = "free_y") + expand_limits(y = 0))
     
     
     
