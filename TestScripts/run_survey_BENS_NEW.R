@@ -958,6 +958,141 @@ Bens_plot_pop_spatiotemp(results = res, timestep = 'daily',plot_weekly=TRUE,
 
 
 
+##################################################
+# calculate and plot error between
+# 
+#1) true model output and survey stratified mean by season
+#
+#2) seasonal stratified mean estimates for given species in given scenario 
+##################################################
+
+
+
+
+
+#copying plot_pop_summary to summarize yearly population estimates
+#assumes we have summarized version of simulations called res
+
+n_spp <- length(res[["pop_summary"]]) 
+res_df <- lapply(seq_len(n_spp), function(x) {
+  res_spp <- lapply(names(res[["pop_summary"]][[x]]), function(x1) {
+    x1_res <- tidyr::gather(as.data.frame(t(res[["pop_summary"]][[x]][[x1]])), key = "year", factor_key = T)
+    if(x1 == "Bio.mat" | x1 == "Bio.mat.sd") {	res_out <- data.frame("pop" = rep(paste("spp",x, sep = "_"), length.out = nrow(x1_res)), 
+                                                                     "metric" = x1, 
+                                                                     "year" = x1_res$year, 
+                                                                     "day" = rep(1:358, length.out = nrow(x1_res)),#changed 362 to 358
+                                                                     "julien_day" = seq_len(nrow(x1_res)),
+                                                                     "data" = x1_res$value) 
+    
+    return(res_out)
+    
+    }
+    if(x1 == "Rec.mat" | x1 == "Rec.mat.sd") { res_out <- data.frame("pop" = rep(paste("spp",x, sep = "_"), length.out = nrow(x1_res)), 
+                                                                     "metric" = x1 , 
+                                                                     "year" = seq_len(nrow(x1_res)), 
+                                                                     "day" = rep(1, length.out = nrow(x1_res)),
+                                                                     "julien_day" = rep(1, length.out = nrow(x1_res)),
+                                                                     "data" = x1_res$value) 
+    
+    return(res_out)
+    
+    }
+    
+  })
+  return(do.call(rbind, res_spp))
+})
+results_df <- do.call(rbind, res_df)
+
+View(results_df)
+
+#bio and bio.sd
+results_df_an1 <- results_df %>% filter(metric == "Bio.mat", day == 1) %>% 
+  group_by(pop, metric, year) %>% summarise(data = sum(data))
+#rec and rec.sd
+results_df_an2 <- results_df %>% filter(metric != "Bio.mat") %>% 
+  group_by(pop, metric, year) %>% summarise(data = sum(data, na.rm = T))
+
+results_df_annual <- rbind(results_df_an1, results_df_an2) 
+
+#plot all 4
+print(ggplot(results_df_annual, aes(x = year, y = data, group = 2)) + geom_point() + geom_line() + 
+        facet_grid(pop ~ metric, scale = "free") + expand_limits(y = 0))
+
+
+annual_pop_results <- results_df %>% filter(metric == "Bio.mat", day == 1) %>% 
+  group_by(pop,year) %>% summarise(data = sum(data))
+
+
+#plot just population
+print(ggplot(annual_pop_results, aes(x = year, y = data, group = 2)) + geom_point() + geom_line() + 
+        facet_wrap(~pop, scales = "free_y") + expand_limits(y = 0))
+
+#print 3 on same scale
+print(ggplot(results_df_an2, aes(x = year, y = data, group = 2)) + geom_point() + geom_line() + 
+        facet_grid(pop ~ metric, scale = "free") + expand_limits(y = 0))
+
+
+
+
+
+
+
+#could read in file from past results
+
+#write csvs
+#read.csv( file="spp1_SRS.csv", row.names=F)
+#read.csv( file="spp2_SRS.csv", row.names=F)
+
+
+
+
+
+
+
+
+#ANNUAL POP BY SPECIES
+spp1_annual <- results_df %>% filter(metric == "Bio.mat", day == 1, pop == "spp_1") %>% 
+  group_by(pop,year) %>% summarise(data = sum(data))
+
+spp2_annual <- results_df %>% filter(metric == "Bio.mat", day == 1, pop == "spp_2") %>% 
+  group_by(pop,year) %>% summarise(data = sum(data))
+
+
+
+#stratified mean calculation by species and season
+srs_spp1_fall <- as.data.frame(sum_survey_iter_final[[1]])[as.data.frame(sum_survey_iter_final[[1]])$season==2,]
+srs_spp1_spring <- as.data.frame(sum_survey_iter_final[[1]])[as.data.frame(sum_survey_iter_final[[1]])$season==1,]
+srs_spp2_fall <- as.data.frame(sum_survey_iter_final[[2]])[as.data.frame(sum_survey_iter_final[[1]])$season==2,]
+srs_spp2_spring <- as.data.frame(sum_survey_iter_final[[2]])[as.data.frame(sum_survey_iter_final[[1]])$season==1,]
+
+
+#calculate errors
+ err_spp1_true_fall <- norm(spp1_annual$data-srs_spp1_fall$mean.yr.absolute,type="2") / norm(spp1_annual$data,type="2")
+
+ err_spp1_true_spring <- norm(spp1_annual$data-srs_spp1_spring$mean.yr.absolute,type="2") / norm(spp1_annual$data,type="2")
+ 
+ 
+ err_spp2_true_fall <- norm(spp2_annual$data-srs_spp2_fall$mean.yr.absolute,type="2") / norm(spp2_annual$data,type="2")
+
+ err_spp2_true_spring <- norm(spp2_annual$data-srs_spp2_spring$mean.yr.absolute,type="2") / norm(spp2_annual$data,type="2")
+ 
+ 
+ err_spp1_fall_spring <- norm(srs_spp1_spring$mean.yr.absolute-srs_spp1_fall$mean.yr.absolute,type="2") / norm(srs_spp1_spring$mean.yr.absolute,type="2")
+ 
+ err_spp2_fall_spring <- norm(srs_spp2_spring$mean.yr.absolute-srs_spp2_fall$mean.yr.absolute,type="2") / norm(srs_spp2_spring$mean.yr.absolute,type="2")
+ 
+ 
+
+ 
+ #trying to plot but needs improvement
+ 
+plot(spp1_annual$data)
+par(new=TRUE)
+plot(srs_spp1_fall$mean.yr.absolute)
+lines(spp1_annual$data)
+lines(srs_spp1_fall$mean.yr.absolute)
+
+
 
 
 
