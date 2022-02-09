@@ -60,28 +60,28 @@ Catch_Data$Date <- as.Date(with(Catch_Data,paste(Year,Month,Day,sep="-")),"%Y-%m
 # # Define the dates in which the survey ran for each season each year. 
 # # "by=" how often you want days... e.g by=2 means you will get data every 2  days 9/6/2000, 9/8/2000, 9/10/2000, etc... I recommend this if you are getting data for many months/years because I have had R crash because it was just too much for it to handle, getting daily data. 
 # # len= defines the range of dates as 9/6 (there are 24 additional days in September) to 10/20 (add one to your last day. 20+1=21))
-# dates <- format(c(seq(as.Date("9/6/2000", "%m/%d/%Y"), by=1, len=24+21), #date range from stations in fall 2000
-#                   seq(as.Date("9/5/2001", "%m/%d/%Y"), by=1, len=25+23), #9/5 to 10/22
-#                   seq(as.Date("9/4/2002", "%m/%d/%Y"), by=1, len=26+26), #9/4 to 10/25 etc
-#                   seq(as.Date("9/7/2003", "%m/%d/%Y"), by=1, len=23+32),
-#                   seq(as.Date("9/10/2004", "%m/%d/%Y"), by=1, len=20+28),
-#                   seq(as.Date("9/7/2005", "%m/%d/%Y"), by=1, len=23+31+5),
-#                   seq(as.Date("9/6/2006", "%m/%d/%Y"), by=1, len=24+26),
-#                   seq(as.Date("9/5/2007", "%m/%d/%Y"), by=1, len=25+32),
-#                   seq(as.Date("9/3/2008", "%m/%d/%Y"), by=1, len=27+31+9),
-#                   seq(as.Date("9/13/2009", "%m/%d/%Y"), by=1, len=17+31+19),
-#                   seq(as.Date("9/9/2010", "%m/%d/%Y"), by=1, len=21+31+30+3),
-#                   seq(as.Date("9/10/2011", "%m/%d/%Y"), by=1, len=20+31+15),
-#                   seq(as.Date("9/7/2012", "%m/%d/%Y"), by=1, len=23+31+11),
-#                   seq(as.Date("9/6/2013", "%m/%d/%Y"), by=1, len=24+31+20),
-#                   seq(as.Date("9/10/2014", "%m/%d/%Y"), by=1, len=20+31+13),
-#                   seq(as.Date("9/2/2015", "%m/%d/%Y"), by=1, len=28+31+6)), format="%m/%d/%Y")
-# 
-# 
-# dates <- as.data.frame(dates)
+dates <- format(c(#seq(as.Date("9/6/2000", "%m/%d/%Y"), by=1, len=24+21), #date range from stations in fall 2000
+                  #seq(as.Date("9/5/2001", "%m/%d/%Y"), by=1, len=25+23), #9/5 to 10/22
+                  #seq(as.Date("9/4/2002", "%m/%d/%Y"), by=1, len=26+26), #9/4 to 10/25 etc
+                  #seq(as.Date("9/7/2003", "%m/%d/%Y"), by=1, len=23+32),
+                  #seq(as.Date("9/10/2004", "%m/%d/%Y"), by=1, len=20+28),
+                  #seq(as.Date("9/7/2005", "%m/%d/%Y"), by=1, len=23+31+5),
+                  #seq(as.Date("9/6/2006", "%m/%d/%Y"), by=1, len=24+26),
+                  #seq(as.Date("9/5/2007", "%m/%d/%Y"), by=1, len=25+32),
+                  #seq(as.Date("9/3/2008", "%m/%d/%Y"), by=1, len=27+31+9),
+                  seq(as.Date("9/13/2009", "%m/%d/%Y"), by=1, len=17+31+19),
+                  seq(as.Date("9/9/2010", "%m/%d/%Y"), by=1, len=21+31+30+3),
+                  seq(as.Date("9/10/2011", "%m/%d/%Y"), by=1, len=20+31+15),
+                  seq(as.Date("9/7/2012", "%m/%d/%Y"), by=1, len=23+31+11),
+                  seq(as.Date("9/6/2013", "%m/%d/%Y"), by=1, len=24+31+20),
+                  seq(as.Date("9/10/2014", "%m/%d/%Y"), by=1, len=20+31+13),
+                  seq(as.Date("9/2/2015", "%m/%d/%Y"), by=1, len=28+31+6)), format="%m/%d/%Y")
+
+
+dates <- as.data.frame(dates)
 
 #INSERT MY DATES INSTEAD OF THE ONES ROBYN PROVIDED
-dates <- as.data.frame(Catch_Data$Date)
+#dates <- as.data.frame(Catch_Data$Date)
 
 
 
@@ -89,17 +89,16 @@ dates <- as.data.frame(Catch_Data$Date)
 #At this point check the "dates" file to ensure that the date ranges for each year are correct
 
 colnames(dates) <- "date"
-dates$y <- unlist(lapply(dates$date, function(x) unlist(strsplit(as.character(x), "-", fixed = TRUE))[1]))
-dates$m <- unlist(lapply(dates$date, function(x) unlist(strsplit(as.character(x), "-", fixed = TRUE))[2]))
-dates$d <- unlist(lapply(dates$date, function(x) unlist(strsplit(as.character(x), "-", fixed = TRUE))[3]))
+dates$y <- unlist(lapply(dates$date, function(x) unlist(strsplit(as.character(x), "/", fixed = TRUE))[3]))
+dates$m <- unlist(lapply(dates$date, function(x) unlist(strsplit(as.character(x), "/", fixed = TRUE))[1]))
+dates$d <- unlist(lapply(dates$date, function(x) unlist(strsplit(as.character(x), "/", fixed = TRUE))[2]))
+dates$modified_julian_date <- julian(as.numeric(dates$m), as.numeric(dates$d), as.numeric(dates$y),c(month = 11, day = 17, year = 1858)) + 0.5
 #RECORD 2 DIGIT YEAR TO SET INDICES LATER
 dates$y2 <- unlist(lapply(dates$y, function(x) paste0(unlist(strsplit(as.character(x),""))[3],unlist(strsplit(as.character(x),""))[4])))
 
 #INDEX TO USE LATER
 dates$index <- seq(length(dates$y))
 
-dates$modified_julian_date <- julian(as.numeric(dates$m), as.numeric(dates$d), as.numeric(dates$y),c(month = 11, day = 17, year = 1858)) + 0.5
-dates$Season <- Catch_Data$SEASON
 
 #### Download FVCOM time ID ####
 fvcom_data <-as.data.frame(read.csv("http://www.smast.umassd.edu:8080/thredds/dodsC/fvcom/hindcasts/30yr_gom3.ascii?time[0:1:342347]"))
@@ -183,13 +182,13 @@ save(temperature_fvcom_data, file="TestScripts/FVCOM/temperature_data.RData")
 
 #all years to collect
 yrs <- unique(dates$y2)
-sns <- c("FALL","SPRING")
+#sns <- c("FALL","SPRING")
 
 #INSTEAD OF LISTING EACH YEAR & SEASON, LOOP THROUGH UNIQUE YEARS & SEASONS
 
 TRD_all <- list()
 
-for(sn in sns){
+#for(sn in sns){
   for(yr in yrs){
     
     # #define object as ex TRD_FA09 
@@ -198,7 +197,7 @@ for(sn in sns){
     temp_lst <- list()
     
     #pull out year and season you want samples for
-    sub_set <- subset(dates,(y2==yr) & (Season == sn), select=date:index )
+    sub_set <- subset(dates,y2==yr, select=date:index )
     
     ind <- sub_set$index #pulling indices 
     
@@ -221,11 +220,11 @@ for(sn in sns){
       
     }
 
-    TRD_all[[paste("TRD_",sn,yr,sep = "")]] <- temp_lst
+    TRD_all[[paste("TRD_FALL",yr,sep = "")]] <- temp_lst
   }
   
-}
-    save(TRD_all, file=paste("TestScripts/FVCOM/TRD_all.RData",sep = ""))
+#}
+    save(TRD_all, file=paste("TestScripts/FVCOM/Fall09_15_TRD_all.RData",sep = ""))
 
     
     #load previously saved data
@@ -235,17 +234,17 @@ for(sn in sns){
     
 ### Average Temp Data For each year and season## 
     Mean_Temp_all <- list()
-for(sn in sns){
+#for(sn in sns){
   for(yr in yrs){
    
-    assign(paste("MeanTemp",sn,yr,sep = ""), as.data.frame(list(Reduce(`+`, TRD_all[[paste("TRD_",sn,yr,sep = "")]]) / length(TRD_all[[paste("TRD_",sn,yr,sep = "")]]))))
+    assign(paste("MeanTemp_FALL",yr,sep = ""), as.data.frame(list(Reduce(`+`, TRD_all[[paste("TRD_FALL",yr,sep = "")]]) / length(TRD_all[[paste("TRD_FALL",yr,sep = "")]]))))
   
-    Mean_Temp_all[[paste(sn,yr,sep = "")]] <- as.data.frame(list(Reduce(`+`, TRD_all[[paste("TRD_",sn,yr,sep = "")]]) / length(TRD_all[[paste("TRD_",sn,yr,sep = "")]])))
+    Mean_Temp_all[[paste("FALL",yr,sep = "")]] <- as.data.frame(list(Reduce(`+`, TRD_all[[paste("TRD_FALL",yr,sep = "")]]) / length(TRD_all[[paste("TRD_FALL",yr,sep = "")]])))
     
     
-    write.csv(Mean_Temp_all[[paste(sn,yr,sep = "")]], file=paste("TestScripts/FVCOM/MeanTemp",sn,yr,".csv",sep = ""))
+    write.csv(Mean_Temp_all[[paste("FALL",yr,sep = "")]], file=paste("TestScripts/FVCOM/MeanTemp_FALL",yr,".csv",sep = ""))
     }
-}
+#}
 
     # #load previously saved data
     # for(sn in sns){
@@ -279,7 +278,7 @@ for (i in 1:length(time_id)){
   salinity_fvcom_data[[i]] <- cbind(longitude, latitude, temp_data)
   colnames(salinity_fvcom_data[[i]]) <- c("lon", "lat", "salinity")
 }
-save(salinity_fvcom_data, file="TestScripts/FVCOM/salinity_data.RData")
+save(salinity_fvcom_data, file="TestScripts/FVCOM/salinity_data_Fall09_15.RData")
 
 #load("TestScripts/FVCOM/salinity_data.RData")
 
@@ -289,14 +288,14 @@ save(salinity_fvcom_data, file="TestScripts/FVCOM/salinity_data.RData")
 
 SRD_all <- list()
 
-for(sn in sns){
+#for(sn in sns){
   for(yr in yrs){
     
 
     temp_lst <- list()
     
     #pull out year and season you want samples for
-    sub_set <- subset(dates,(y2==yr) & (Season == sn), select=date:index )
+    sub_set <- subset(dates,y2==yr, select=date:index )
     
     ind <- sub_set$index #pulling indices 
     
@@ -319,26 +318,26 @@ for(sn in sns){
       
     }
     
-    SRD_all[[paste("SRD_",sn,yr,sep = "")]] <- temp_lst
+    SRD_all[[paste("SRD_FALL",yr,sep = "")]] <- temp_lst
   }
   
-}
-save(SRD_all, file=paste("TestScripts/FVCOM/SRD_all.RData",sep = ""))
+#}
+save(SRD_all, file=paste("TestScripts/FVCOM/Fall09_15_SRD_all.RData",sep = ""))
 
 
 Mean_Sal_all <- list()
 ### Average Salinity Data For each year and season## 
-for(sn in sns){
+#for(sn in sns){
   for(yr in yrs){
     
-    assign(paste("MeanSalinity",sn,yr,sep = ""), as.data.frame(list(Reduce(`+`, SRD_all[[paste("SRD_",sn,yr,sep = "")]]) / length(SRD_all[[paste("SRD_",sn,yr,sep = "")]]))))
+    assign(paste("MeanSalinity_FALL",yr,sep = ""), as.data.frame(list(Reduce(`+`, SRD_all[[paste("SRD_FALL",yr,sep = "")]]) / length(SRD_all[[paste("SRD_FALL",yr,sep = "")]]))))
     
-    Mean_Sal_all[paste(sn,yr,sep = "")] <- as.data.frame(list(Reduce(`+`, SRD_all[[paste("SRD_",sn,yr,sep = "")]]) / length(SRD_all[[paste("SRD_",sn,yr,sep = "")]])))
+    Mean_Sal_all[paste("FALL",yr,sep = "")] <- as.data.frame(list(Reduce(`+`, SRD_all[[paste("SRD_FALL",yr,sep = "")]]) / length(SRD_all[[paste("SRD_FALL",yr,sep = "")]])))
     
     
-    write.csv(Mean_Sal_all[[paste(sn,yr,sep = "")]], file=paste("TestScripts/FVCOM/MeanSalinity",sn,yr,".csv",sep = ""))
+    write.csv(Mean_Sal_all[[paste("FALL",yr,sep = "")]], file=paste("TestScripts/FVCOM/MeanSalinity_FALL",yr,".csv",sep = ""))
   }
-}
+#}
 
 
 
@@ -356,36 +355,31 @@ for(sn in sns){
 
 #### All FVCOM Files through 2015 as a loop###
 ts_all <- list()
-for(sn in sns){
+#for(sn in sns){
   for(yr in yrs){
     temp <- data.frame(FVdepth)
-    temp$BTemp = as.data.frame(Mean_Temp_all[paste(sn,yr,sep = "")])[,c(1)]
-    temp$Salinity = as.data.frame(Mean_Sal_all[paste(sn,yr,sep = "")])[,c(1)]
+    temp$BTemp = as.data.frame(Mean_Temp_all[paste("FALL",yr,sep = "")])[,c(1)]
+    temp$Salinity = as.data.frame(Mean_Sal_all[paste("FALL",yr,sep = "")])[,c(1)]
     
-    assign(paste("ts",sn,yr,sep = ""), temp)
+    assign(paste("tsFALL",yr,sep = ""), temp)
     
-    ts_all[[paste(sn,yr,sep = "")]] <- temp
+    ts_all[[paste("FALL",yr,sep = "")]] <- temp
     
-    write.csv(temp,file=paste("TestScripts/FVCOM/ts",sn,yr,".csv",sep = ""))
+    write.csv(temp,file=paste("TestScripts/FVCOM/tsFALL",yr,".csv",sep = ""))
   }
-}
+#}
 
+
+
+
+#STOPPED SECOND UPDATE HERE
 
 
 
 ####Spring####
 ## Be sure to switch working directories to "Spring" or any files with the same name (example: "temperature_fvcom_data") will be overwritten
 
-dates <- format(c(seq(as.Date("3/16/2000", "%m/%d/%Y"), by=1, len=15+30+4), # spring 2000
-                  seq(as.Date("2/28/2001", "%m/%d/%Y"), by=1, len=1+31+30), 
-                  seq(as.Date("3/6/2002", "%m/%d/%Y"), by=1, len=25+25), 
-                  seq(as.Date("3/6/2003", "%m/%d/%Y"), by=1, len=25+28), 
-                  seq(as.Date("3/3/2004", "%m/%d/%Y"), by=1, len=28+22), 
-                  seq(as.Date("3/4/2005", "%m/%d/%Y"), by=1, len=27+22),
-                  seq(as.Date("3/8/2006", "%m/%d/%Y"), by=1, len=23+20),
-                  seq(as.Date("3/8/2007", "%m/%d/%Y"), by=1, len=23+28),
-                  seq(as.Date("3/7/2008", "%m/%d/%Y"), by=1, len=24+30+4),
-                  seq(as.Date("2/28/2009", "%m/%d/%Y"), by=1, len=1+31+30+8),
+dates <- format(c(seq(as.Date("2/28/2009", "%m/%d/%Y"), by=1, len=1+31+30+8),
                   seq(as.Date("2/28/2010", "%m/%d/%Y"), by=1, len=1+31+30+1),
                   seq(as.Date("3/3/2011", "%m/%d/%Y"), by=1, len=28+30+11),
                   seq(as.Date("2/29/2012", "%m/%d/%Y"), by=1, len=1+31+30+3),
