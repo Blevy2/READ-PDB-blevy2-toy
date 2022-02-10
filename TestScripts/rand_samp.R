@@ -64,7 +64,8 @@ ggplot(df, aes(x=sampid, y=esamp)) +
   geom_ribbon(aes(ymin=ecilow, ymax=ecihigh), fill="red", alpha=0.3) +
   geom_abline(intercept = sumpop, color="blue") +
   ggtitle(paste0(propwithinci, "% of samples had true sumpop within CI")) +
-  theme_bw()
+  theme_bw()+
+  ylim(-2.5e5,2.5e5)
 
 # the two plots show the mean estimate is basically unbiases, even with small sample size and lots of zeros, but CIs are large
 
