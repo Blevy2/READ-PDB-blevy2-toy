@@ -112,7 +112,7 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 	  for(i in seq(1:length(strata_num))){
 	    
 	    if(strata_num[i] == unique_numbers[j]){
-	      strata_index[i]<-index[strata_num[i]] 
+	      strata_index[i]<-index[strata_num[i]] +1
 	      index[strata_num[i]]<-index[strata_num[i]]+1
 	      
 	      
@@ -148,6 +148,8 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 #	print(length(index[j]))
 #	View(index)
 	    #find index for each sample
+#	    print(range(my_sample))
+#	    print(j)
 	    for(i in seq(1:length(my_sample))){
 	    coords <- c(coords,which(strata_index_list[[j]]==my_sample[i]))
 
@@ -202,7 +204,7 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 
 	  }
     
-View(x)
+#View(x)
 
 	##########################
 	## set up RANDOM survey log matrix
