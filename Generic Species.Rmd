@@ -4,7 +4,6 @@ output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Simple MixFishSim Example}
 %\VignetteEngine{knitr::rmarkdown}
-\usepackage[utf8]{inputenc}
 editor_options: 
   chunk_output_type: console
 ---
@@ -119,6 +118,30 @@ spp.ctrl = list(
 )
 
 
+#defining strata coordinates
+#number of rows and columns to define (assume want n equal sized strata)
+nrows <- 4
+ncols <- 4
+
+#of the form  c(x1, x2, y1, y2) THESE ARE BOUNDARIES OF STRATA VALUES
+# xs are rows ys columns
+strata_num <- 1
+stratas <- list()
+
+ for(r in seq(nrows)){
+   
+   for(c in seq(ncols)){
+  
+   stratas[[paste("strata",strata_num,sep="")]] = c( (r-1)*(sim$idx[["nrows"]]/nrows)+1, (r)*(sim$idx[["nrows"]]/nrows) , (c-1)*(sim$idx[["ncols"]]/ncols)+1  , (c)*(sim$idx[["ncols"]]/ncols) ) 
+  
+    strata_num <- strata_num +1  
+    
+  }
+  
+}
+
+
+
 hab <- BENS_create_hab(sim_init = sim, 
                        spp.ctrl = spp.ctrl,
                        
@@ -132,22 +155,14 @@ hab <- BENS_create_hab(sim_init = sim,
                            'area2' = c(70,90,50,60)
                          )),
                        spwn_mult = 10,#THIS DOES NOT CHANGE ANYTHING. MUST CHANGE VALUE AT TOP OF BENS_CREATE_HAB 
-                       plot.dist = TRUE, 
+                       plot.dist = F, 
                        plot.file = "testfolder",
                        
                        
                        #created this new part defining strata
-                       
-                       strata = list(                              #Form: upper left, upper right, lower left, lower right
-                         "strata1" = c(1,sim$idx[["nrows"]]/2,1,sim$idx[["ncols"]]/2),   #of the form  c(x1, x2, y1, y2) THESE ARE BOUNDARIES OF STRATA VALUES
-                         
-                         "strata2" = c(1,sim$idx[["nrows"]]/2,sim$idx[["ncols"]]/2+1,sim$idx[["ncols"]]),
-                         
-                         "strata3" = c(sim$idx[["nrows"]]/2 + 1,sim$idx[["nrows"]], 1 ,sim$idx[["ncols"]]/2),
-                         
-                         "strata4" = c(sim$idx[["nrows"]]/2 + 1,sim$idx[["nrows"]],sim$idx[["ncols"]]/2 +1 , sim$idx[["ncols"]])
+                      strata = stratas
+
                        )
-)
 
 
 #print(hab)
@@ -397,6 +412,15 @@ run_simulation <- function(x){
   assignInNamespace("go_fish", go_fish_Bens, ns = "MixFishSim")
   
   
+    source("R/RcppExports_Bens.R")
+  
+    #to source a new move_population where I edited to skips most things:
+  #1: load file
+  Rcpp::sourceCpp("src/Movement_Bens.cpp") #my edited version that skips most things
+  #2: allow the function to call other hidden functions from mixfishsim 
+  environment(move_population_Bens) <- asNamespace('MixFishSim')
+  #3: replace move_population with go_fish_Bens in the MixFishSim package
+  assignInNamespace("move_population", move_population_Bens, ns = "MixFishSim")
   
   
   
@@ -477,7 +501,7 @@ and all the results are saved in the output from the run_sim function.
 ## Biological
 source("R/plot_pop_summary.R")
 p1 <- plot_pop_summary(results = res,
-                       timestep = "daily",
+                       timestep = "annual",
                        save = FALSE, 
                        save.location = NULL
 )
