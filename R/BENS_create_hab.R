@@ -48,7 +48,7 @@ print(spwn_mult)
 	ncols <- idx[["ncols"]]
 	nrows <- idx[["nrows"]]
 
-	RandomFields::RFopti==ons(spConform = FALSE) # faster and only returns the matrix of values
+	RandomFields::RFoptions(spConform = FALSE) # faster and only returns the matrix of values
 	set.seed(seed)
 
 	# Checks
@@ -157,7 +157,7 @@ spwn <- matrix(rep(0.5, nrows * ncols), nc = ncols)
 	}
 
 	# Plot
-	if(spawn_areas$plot.dist == TRUE & !is.null(spawn_areas)) {
+	if(plot.dist == TRUE & !is.null(spawn_areas)) {
 	  print("plottingggggg spawn hab")
 	png(filename = paste0(spawn_areas$plot.file,'/','habitat_spwn','.png'), width = 800, height = 800)
 	plot_habitat(spwn_hab)
