@@ -16,7 +16,7 @@ source("R/BENS_init_survey.R")
 
 #setup catch log
 #MAY NEED TO RUN A FEW TIMES TO GET MATRIX THAT IS CORRECT SIZE
-surv_random <- BENS_init_survey(sim_init = sim,design = 'random_station', n_stations = 80, #this is total per year (20 in each of 4 strata)
+surv_random <- BENS_init_survey(sim_init = sim,design = 'random_station', n_stations = 320, #this is total per year (20 in each of 4 strata)
                                 start_day = 1, stations_per_day = 1, Qs = c("spp1" = 0.1, "spp2"= 0.2),
                                 strata_coords = hab$strata, strata_num = hab$stratas, 
                                 years_cut = 2 #if running 22 years, remove first 2 years 
@@ -44,7 +44,7 @@ sample_per_sn <- 10   #samples per season per strata
 
 n_spp <- 2     #number of species
 
-nstrata <- 4   #number of strata
+nstrata <- 16   #number of strata
 
 strat_samp_tot <- 400 #total number of samples to collect in each strata over entire simulation
 
@@ -124,19 +124,33 @@ Season <- rep(S1_sn,nyears)
 
 
 
+# JUST 4 STRATA
+# strata_surv[[1]]<-cbind(strata_surv[[1]],S1_seq,Season)
+# strata_surv[[2]]<-cbind(strata_surv[[2]],S2_seq,Season) #add the above sequence as new column in sample matrix
+# strata_surv[[3]]<-cbind(strata_surv[[3]],S3_seq,Season)
+# strata_surv[[4]]<-cbind(strata_surv[[4]],S4_seq,Season)
+# 
+# #name columns
+# colnames(strata_surv[[1]]) <- c("station_no","x","y","stratum","day","tow","year","spp1","spp2","week","Season")
+# colnames(strata_surv[[2]]) <- c("station_no","x","y","stratum","day","tow","year","spp1","spp2","week","Season")
+# colnames(strata_surv[[3]]) <- c("station_no","x","y","stratum","day","tow","year","spp1","spp2","week","Season")
+# colnames(strata_surv[[4]]) <- c("station_no","x","y","stratum","day","tow","year","spp1","spp2","week","Season")
+# 
 
-strata_surv[[1]]<-cbind(strata_surv[[1]],S1_seq,Season)
-strata_surv[[2]]<-cbind(strata_surv[[2]],S2_seq,Season) #add the above sequence as new column in sample matrix
-strata_surv[[3]]<-cbind(strata_surv[[3]],S3_seq,Season)
-strata_surv[[4]]<-cbind(strata_surv[[4]],S4_seq,Season)
 
-#name columns
-colnames(strata_surv[[1]]) <- c("station_no","x","y","stratum","day","tow","year","spp1","spp2","week","Season")
-colnames(strata_surv[[2]]) <- c("station_no","x","y","stratum","day","tow","year","spp1","spp2","week","Season")
-colnames(strata_surv[[3]]) <- c("station_no","x","y","stratum","day","tow","year","spp1","spp2","week","Season")
-colnames(strata_surv[[4]]) <- c("station_no","x","y","stratum","day","tow","year","spp1","spp2","week","Season")
-
-
+for(i in seq(nstrata)){
+  if(i<=8){
+    strata_surv[[i]]<-cbind(strata_surv[[i]],S1_seq,Season)
+    
+  }
+  if(i>=9){
+    strata_surv[[i]]<-cbind(strata_surv[[i]],S3_seq,Season)
+    
+  }
+  colnames(strata_surv[[i]]) <- c("station_no","x","y","stratum","day","tow","year","spp1","spp2","week","Season")
+  
+  
+}
 
 # #years are out of whack due to init_survey code. Fix it here
 # NO, THERE WAS AN ERROR WITH RUNNING INIT_SURVEY WITH NY=22
@@ -158,10 +172,13 @@ colnames(strata_surv[[4]]) <- c("station_no","x","y","stratum","day","tow","year
 
 #survey_results <- list("strata 1","strata 2", "strata 3", "strata 4")
 
-all1 <- list()
-all2 <- list()
-all3 <- list()
-all4 <- list()
+list_all <- vector("list",length(result))
+
+for(i in seq(nstrata)){
+  assign(paste("all",i,sep=""),list())
+  
+}
+
 
 for(res in seq(length(result))){ #for each simulation result
   
@@ -184,10 +201,14 @@ for(res in seq(length(result))){ #for each simulation result
     
   }
   #store results
-  all1[[res]] <- strata_surv[[1]]
-  all2[[res]] <- strata_surv[[2]]
-  all3[[res]] <- strata_surv[[3]]
-  all4[[res]] <- strata_surv[[4]]
+  
+  
+  for(i in seq(nstrata)){
+    assign(paste("all",i,sep=""),strata_surv[[i]])
+    
+    
+  }
+  
   
 }
 
@@ -196,7 +217,7 @@ for(res in seq(length(result))){ #for each simulation result
 
 
 #store above in list to sort throug below
-list_all <- vector("list",length(all1))
+list_all <- vector("list",length(result))
 
 
 #PUT ALL RESULTS INTO SINGLE LIST FOR EACH ITERATION. 
@@ -204,9 +225,11 @@ list_all <- vector("list",length(all1))
 
 for(i in seq(length(list_all))){
   
-  list_all[[i]] <-rbind(all1[[i]],all2[[i]],all3[[i]],all4[[i]])
+  for(s in seq(nstrata)){
     
+    list_all[[i]] <-rbind(list_all[[i]],get(paste0("all",s,sep="")))
     
+  }
 }
 
 
@@ -235,33 +258,33 @@ surv_noise <- vector("list",length(list_all))
 
 
 
- 
-  for(iter in seq(length(list_all))){ #go down each iteration
-      temp <- list_all[[iter]]
-      
-      spp1_sam <- as.numeric(temp[,8])   #spp1 sample in column 8 
-      spp2_sam <- as.numeric(temp[,9])   #spp1 sample in column 9
-    for(noise_samp in seq(samp_per_iter)){   #add noise to each survey from each iteration samp_per_iter times
-    
 
-      
-      #adding noise to survey
-      temp[,8] <- sapply(spp1_sam,function(x){rlnorm(1,mean=log(x),sdlog=.35)}) #what should sdlog be?
-      temp[,9] <- sapply(spp2_sam,function(x){rlnorm(1,mean=log(x),sdlog=.35)})
-      
-      
-      surv_noise[[iter]][[noise_samp]]  <- temp
+for(iter in seq(length(list_all))){ #go down each iteration
+  temp <- list_all[[iter]]
+  
+  spp1_sam <- as.numeric(temp[,8])   #spp1 sample in column 8 
+  spp2_sam <- as.numeric(temp[,9])   #spp1 sample in column 9
+  for(noise_samp in seq(samp_per_iter)){   #add noise to each survey from each iteration samp_per_iter times
     
-    }
-      
+    
+    
+    #adding noise to survey
+    temp[,8] <- sapply(spp1_sam,function(x){rlnorm(1,mean=log(x),sdlog=.35)}) #what should sdlog be?
+    temp[,9] <- sapply(spp2_sam,function(x){rlnorm(1,mean=log(x),sdlog=.35)})
+    
+    
+    surv_noise[[iter]][[noise_samp]]  <- temp
+    
   }
   
+}
+
 
 
 #surv_noise is a list with the following layers
 #1- each strata
-  #2- each iteration
-    #3- noise added to each iteration
+#2- each iteration
+#3- noise added to each iteration
 
 
 
@@ -307,51 +330,51 @@ strat_mean_all_spp2 <- vector("list",length(surv_noise)) #4 strata
 
 
 
-  for(iter in seq(length(surv_noise))){
-    print(iter)
-    for(sample in seq(length(surv_noise[[iter]]))){
-      
-      spp <- as_tibble(surv_noise[[iter]][[sample]],header=T) #pull out entire survey matrix
-      
-      # get total area of stock ====
-      spp.strata <- unique(spp$stratum)
-      spp.area <- sum(sv.area$STRATUM_AREA[sv.area$stratum %in% spp.strata]) #TOTAL AREA OF ALL STRATA
-      
-      
-      # calculate SRS estimates ====
-      
-      #species 1
-      spp.srs.1 <- srs_survey(df=spp, sa=sv.area, str=NULL, ta=1, sppname = "spp1"  )  # if strata=NULL, the function will use the unique strata set found in df
-      
-      strat_mean_all_spp1[[iter]][[sample]] <- spp.srs.1 %>%
-        mutate(mean.yr.absolute=mean.yr*spp.area, sd.mean.yr.absolute=sd.mean.yr*spp.area,
-               CV.absolute=sd.mean.yr.absolute/mean.yr.absolute)
-      
-      #need to convert to matrix so can average later
-      strat_mean_all_spp1[[iter]][[sample]] <- data.matrix(strat_mean_all_spp1[[iter]][[sample]])
-      
-     # strat_mean_all_spp1[[iter]][[sample]] <- as.double(as.matrix(strat_mean_all_spp1[[iter]][[sample]]))
-      
-      #species 2
-      spp.srs.2  <- srs_survey(df=spp, sa=sv.area, str=NULL, ta=1, sppname = "spp2"  )  # if strata=NULL, the function will use the unique strata set found in df
-     
-      strat_mean_all_spp2[[iter]][[sample]] <- spp.srs.2 %>%
-         mutate(mean.yr.absolute=mean.yr*spp.area, sd.mean.yr.absolute=sd.mean.yr*spp.area,
-                CV.absolute=sd.mean.yr.absolute/mean.yr.absolute)
-      
-      #need to convert to matrix so can average later
-      strat_mean_all_spp2[[iter]][[sample]] <- data.matrix(strat_mean_all_spp2[[iter]][[sample]])
-      
-     # strat_mean_all_spp2[[iter]][[sample]] <- as.double(as.matrix(strat_mean_all_spp2[[iter]][[sample]]))
-       
-    }
+for(iter in seq(length(surv_noise))){
+  print(iter)
+  for(sample in seq(length(surv_noise[[iter]]))){
+    
+    spp <- as_tibble(surv_noise[[iter]][[sample]],header=T) #pull out entire survey matrix
+    
+    # get total area of stock ====
+    spp.strata <- unique(spp$stratum)
+    spp.area <- sum(sv.area$STRATUM_AREA[sv.area$stratum %in% spp.strata]) #TOTAL AREA OF ALL STRATA
     
     
+    # calculate SRS estimates ====
+    
+    #species 1
+    spp.srs.1 <- srs_survey(df=spp, sa=sv.area, str=NULL, ta=1, sppname = "spp1"  )  # if strata=NULL, the function will use the unique strata set found in df
+    
+    strat_mean_all_spp1[[iter]][[sample]] <- spp.srs.1 %>%
+      mutate(mean.yr.absolute=mean.yr*spp.area, sd.mean.yr.absolute=sd.mean.yr*spp.area,
+             CV.absolute=sd.mean.yr.absolute/mean.yr.absolute)
+    
+    #need to convert to matrix so can average later
+    strat_mean_all_spp1[[iter]][[sample]] <- data.matrix(strat_mean_all_spp1[[iter]][[sample]])
+    
+    # strat_mean_all_spp1[[iter]][[sample]] <- as.double(as.matrix(strat_mean_all_spp1[[iter]][[sample]]))
+    
+    #species 2
+    spp.srs.2  <- srs_survey(df=spp, sa=sv.area, str=NULL, ta=1, sppname = "spp2"  )  # if strata=NULL, the function will use the unique strata set found in df
+    
+    strat_mean_all_spp2[[iter]][[sample]] <- spp.srs.2 %>%
+      mutate(mean.yr.absolute=mean.yr*spp.area, sd.mean.yr.absolute=sd.mean.yr*spp.area,
+             CV.absolute=sd.mean.yr.absolute/mean.yr.absolute)
+    
+    #need to convert to matrix so can average later
+    strat_mean_all_spp2[[iter]][[sample]] <- data.matrix(strat_mean_all_spp2[[iter]][[sample]])
+    
+    # strat_mean_all_spp2[[iter]][[sample]] <- as.double(as.matrix(strat_mean_all_spp2[[iter]][[sample]]))
     
   }
   
-
   
+  
+}
+
+
+
 #put them all into single object
 strat_mean_all <- list(strat_mean_all_spp1,strat_mean_all_spp2)
 
@@ -360,7 +383,7 @@ strat_mean_all <- list(strat_mean_all_spp1,strat_mean_all_spp2)
 
 
 
-  
+
 
 ###########################################################
 # First, summarize across all samples within each iteration
@@ -391,8 +414,8 @@ for(s in seq(length(strat_mean_all))){ #2 species
     sum_survey_iter[[s]][[iter]] <- cbind(sum_survey_iter[[s]][[iter]],sd_mat[,2:5],sd_mat[,7:9])
     
     colnames(sum_survey_iter[[s]][[iter]]) <- c("year","mean.yr","var.mean.yr","sd.mean.yr","CV","season","mean.yr.absolute","sd.mean.yr.absolute","CV.absolute",
-                                          "SD.sam.mean.yr","SD.sam.var.mean.yr","SD.sam.sd.mean.yr","SD.sam.CV","SD.sam.mean.yr.absolute","SD.sam.sdmean.yr.absolute","SD.sam.CV.absolute")
-  
+                                                "SD.sam.mean.yr","SD.sam.var.mean.yr","SD.sam.sd.mean.yr","SD.sam.CV","SD.sam.mean.yr.absolute","SD.sam.sdmean.yr.absolute","SD.sam.CV.absolute")
+    
   }
   
   
@@ -414,28 +437,28 @@ sum_survey_iter_final <- list(list(),list())
 
 for(s in seq(length(sum_survey_iter))){ #2 species
   
-
-    #find mean across each iteration
-    sum_survey_iter_final[[s]] <- Reduce("+", sum_survey_iter[[s]]) / length( sum_survey_iter[[s]])
-    
-    #calc standard deviation
-    m<- sum_survey_iter[[s]] #pull out list for given strata
-    sd_mat <- matrix(apply(sapply(1:length( sum_survey_iter[[s]][[1]]), 
-                                  function(x) unlist(m)[seq(x, length(unlist(m)),
-                                                            length( sum_survey_iter[[s]][[1]]) )]), 2, sd), 
-                     ncol = length( sum_survey_iter_final[[s]][1,]))
-    
-    
-    
-    
-    #the sd_mat above is mostly 0 since things dont change. just pull out sample columns 2-5 and 7-9and append them to previous
-    sum_survey_iter_final[[s]] <- cbind(sum_survey_iter[[s]][[iter]],sd_mat[,2:5],sd_mat[,7:9])
-    
-    colnames(sum_survey_iter_final[[s]]) <- c("year","mean.yr","var.mean.yr","sd.mean.yr","CV","season","mean.yr.absolute","sd.mean.yr.absolute","CV.absolute",
-                                                "SD.sam.mean.yr","SD.sam.var.mean.yr","SD.sam.sd.mean.yr","SD.sam.CV","SD.sam.mean.yr.absolute","SD.sam.sdmean.yr.absolute","SD.sam.CV.absolute",
-                                                "SD.iter.mean.yr","SD.iter.var.mean.yr","SD.iter.sd.mean.yr","SD.iter.CV","SD.iter.mean.yr.absolute","SD.iter.sdmean.yr.absolute","SD.iter.CV.absolute")
-    
-    
+  
+  #find mean across each iteration
+  sum_survey_iter_final[[s]] <- Reduce("+", sum_survey_iter[[s]]) / length( sum_survey_iter[[s]])
+  
+  #calc standard deviation
+  m<- sum_survey_iter[[s]] #pull out list for given strata
+  sd_mat <- matrix(apply(sapply(1:length( sum_survey_iter[[s]][[1]]), 
+                                function(x) unlist(m)[seq(x, length(unlist(m)),
+                                                          length( sum_survey_iter[[s]][[1]]) )]), 2, sd), 
+                   ncol = length( sum_survey_iter_final[[s]][1,]))
+  
+  
+  
+  
+  #the sd_mat above is mostly 0 since things dont change. just pull out sample columns 2-5 and 7-9and append them to previous
+  sum_survey_iter_final[[s]] <- cbind(sum_survey_iter[[s]][[iter]],sd_mat[,2:5],sd_mat[,7:9])
+  
+  colnames(sum_survey_iter_final[[s]]) <- c("year","mean.yr","var.mean.yr","sd.mean.yr","CV","season","mean.yr.absolute","sd.mean.yr.absolute","CV.absolute",
+                                            "SD.sam.mean.yr","SD.sam.var.mean.yr","SD.sam.sd.mean.yr","SD.sam.CV","SD.sam.mean.yr.absolute","SD.sam.sdmean.yr.absolute","SD.sam.CV.absolute",
+                                            "SD.iter.mean.yr","SD.iter.var.mean.yr","SD.iter.sd.mean.yr","SD.iter.CV","SD.iter.mean.yr.absolute","SD.iter.sdmean.yr.absolute","SD.iter.CV.absolute")
+  
+  
 }
 
 #write csvs
@@ -1067,25 +1090,25 @@ srs_spp2_spring <- as.data.frame(sum_survey_iter_final[[2]])[as.data.frame(sum_s
 
 
 #calculate errors
- err_spp1_true_fall <- norm(spp1_annual$data-srs_spp1_fall$mean.yr.absolute,type="2") / norm(spp1_annual$data,type="2")
+err_spp1_true_fall <- norm(spp1_annual$data-srs_spp1_fall$mean.yr.absolute,type="2") / norm(spp1_annual$data,type="2")
 
- err_spp1_true_spring <- norm(spp1_annual$data-srs_spp1_spring$mean.yr.absolute,type="2") / norm(spp1_annual$data,type="2")
- 
- 
- err_spp2_true_fall <- norm(spp2_annual$data-srs_spp2_fall$mean.yr.absolute,type="2") / norm(spp2_annual$data,type="2")
+err_spp1_true_spring <- norm(spp1_annual$data-srs_spp1_spring$mean.yr.absolute,type="2") / norm(spp1_annual$data,type="2")
 
- err_spp2_true_spring <- norm(spp2_annual$data-srs_spp2_spring$mean.yr.absolute,type="2") / norm(spp2_annual$data,type="2")
- 
- 
- err_spp1_fall_spring <- norm(srs_spp1_spring$mean.yr.absolute-srs_spp1_fall$mean.yr.absolute,type="2") / norm(srs_spp1_spring$mean.yr.absolute,type="2")
- 
- err_spp2_fall_spring <- norm(srs_spp2_spring$mean.yr.absolute-srs_spp2_fall$mean.yr.absolute,type="2") / norm(srs_spp2_spring$mean.yr.absolute,type="2")
- 
- 
 
- 
- #trying to plot but needs improvement
- 
+err_spp2_true_fall <- norm(spp2_annual$data-srs_spp2_fall$mean.yr.absolute,type="2") / norm(spp2_annual$data,type="2")
+
+err_spp2_true_spring <- norm(spp2_annual$data-srs_spp2_spring$mean.yr.absolute,type="2") / norm(spp2_annual$data,type="2")
+
+
+err_spp1_fall_spring <- norm(srs_spp1_spring$mean.yr.absolute-srs_spp1_fall$mean.yr.absolute,type="2") / norm(srs_spp1_spring$mean.yr.absolute,type="2")
+
+err_spp2_fall_spring <- norm(srs_spp2_spring$mean.yr.absolute-srs_spp2_fall$mean.yr.absolute,type="2") / norm(srs_spp2_spring$mean.yr.absolute,type="2")
+
+
+
+
+#trying to plot but needs improvement
+
 plot(spp1_annual$data)
 par(new=TRUE)
 plot(srs_spp1_fall$mean.yr.absolute)
