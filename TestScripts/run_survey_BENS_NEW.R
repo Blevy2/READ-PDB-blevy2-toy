@@ -311,9 +311,9 @@ source("TestScripts/Calc_strat_mean/fn_srs_survey_BENS.R")
 
 
 
-#DEFINE INDIVIDUAL STRATUM AREAS IN SIMILAR MANNER AS ABOVE
-stratum <- c(1,2,3,4)
-STRATUM_AREA <- c(2500,2500,2500,2500) #100x100 grid so each corner has area 2500
+#DEFINE INDIVIDUAL STRATUM AREAS 
+stratum <- seq(nstrata)
+STRATUM_AREA <- rep(10000/nstrata,nstrata) #100x100 grid so each corner has area 2500
 sv.area <- as_tibble(data.frame(stratum,STRATUM_AREA))
 
 
