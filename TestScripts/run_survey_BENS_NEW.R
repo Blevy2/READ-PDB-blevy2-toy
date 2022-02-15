@@ -206,7 +206,7 @@ for(res in seq(length(result))){ #for each simulation result
   for(i in seq(nstrata)){
     assign(paste("all",i,sep=""),strata_surv[[i]])
     
-    
+    list_all[[res]] <-rbind(list_all[[res]],strata_surv[[i]])
   }
   
   
@@ -214,23 +214,6 @@ for(res in seq(length(result))){ #for each simulation result
 
 
 
-
-
-#store above in list to sort throug below
-list_all <- vector("list",length(result))
-
-
-#PUT ALL RESULTS INTO SINGLE LIST FOR EACH ITERATION. 
-#EACH INDIVIDUAL ENTRY WILL CONTAIN ALL SAMPLES FROM ALL STRATA
-
-for(i in seq(length(list_all))){
-  
-  for(s in seq(nstrata)){
-    
-    list_all[[i]] <-rbind(list_all[[i]],get(paste0("all",s,sep="")))
-    
-  }
-}
 
 
 
