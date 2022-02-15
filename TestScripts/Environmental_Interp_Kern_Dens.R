@@ -210,6 +210,8 @@ GB_strata_idx <- match(GB_strata_num,strata.areas@data[["STRATUMA"]])
 #define GB strata as own object
 GB_strata <- strata.areas[GB_strata_idx,]
 
+#can create single outter layer to clip with
+GB_strata_singlePoly <- unionSpatialPolygons(GB_strata,GB_strata@data$SET_)
 
 
 
@@ -262,14 +264,35 @@ plot(median_sed_thick_NN)
 median_sed_thick_IDW <-  raster('C:\\Users\\benjamin.levy\\Desktop\\NOAA\\GIS_Stuff\\NOAA_Maps\\Median_Sediment_Size_(ecstdb2014)\\med_sdsze_IDW_Method\\Med_SdSze_IDW')
 plot(median_sed_thick_IDW)
 
+#DEPTH FROM FVCOM DATA
+depth_GB_ras <- readRDS(file="TestScripts/FVCOM_GB/depth_GB.RDS")
 
-#clip data to desired area
+
+
+
+
+
+
+
+#STOPPED HERE TRYING TO GET SEDIMENT AND DEPTH TO HAVE SAVE RESOLUTION
+
+
+#make resolutions match
+#extent(median_sed_thick_IDW) <- extent(depth_GB_ras)
+res(median_sed_thick_IDW) <- res(depth_GB_ras)
+depth_GB_ras@crs@projargs <- median_sed_thick_IDW@crs@projargs
+
+#clip data to desired area using either
+#1) crop (for full extent. will create rectangle)
+#2) mask will cut to polygon
+
 bathy_ras <-crop(bathy_ras,GB_strata)
-sediment_ras_num <- crop(sediment_ras_num,GB_strata)
-sedmient_ras_categ <- crop(sediment_ras_categ,GB_strata)
-sediment_thick_ras <- crop(sediment_thick_ras,GB_strata)
-median_sed_thick_NN <- crop(median_sed_thick_NN,GB_strata)
-median_sed_thick_IDW <- crop(median_sed_thick_IDW,GB_strata)
+#sediment_ras_num <- crop(sediment_ras_num,GB_strata)
+#sedmient_ras_categ <- crop(sediment_ras_categ,GB_strata)
+#sediment_thick_ras <- crop(sediment_thick_ras,GB_strata)
+median_sed_thick_NN <- raster::mask(median_sed_thick_NN,GB_strata_singlePoly)
+median_sed_thick_IDW <- raster::mask(median_sed_thick_IDW,GB_strata_singlePoly)
+depth_GB_ras <- raster::mask(depth_GB_ras,GB_strata_singlePoly)
 
 plot(bathy_ras)
 plot(GB_strata,add=T)
