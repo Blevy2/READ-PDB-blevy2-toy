@@ -53,21 +53,26 @@ plot_predict_BENS <- function (input, plot_cols = c("#8B3A3A", "#CCCCCC", "#0000
                                                             alpha/2, 1 - alpha/2, Inf), right = FALSE)
   
   library(envi)
-  rrp <- div_plot(input = predict_risk_raster, cols = plot_cols[1:3], 
+  rrp <- envi:::div_plot(input = predict_risk_raster, cols = plot_cols[1:3], 
                   midpoint = 0, thresh_low = lower_lrr, thresh_up = upper_lrr, 
                   digits = digits)
-  View(rrp$v)
-  print(class(rrp$v))
-  View(rrp$v@data@values)
- print(class(rrp$v@data@values))
-  
+ #  View(rrp$v)
+ #  print(class(rrp$v))
+ #  View(rrp$v@data@values)
+ # print(class(rrp$v@data@values))
+ #  
   
   graphics::par(pty = "s")
-  p1 <- fields::image.plot(rrp$v, breaks = rrp$breaks, col = rrp$cols, 
-                           axes = TRUE, main = "log relative risk", xlab = "longitude", 
-                           ylab = "latitude", legend.mar = 3.1, axis.args = list(at = rrp$at, 
-                                                                                 las = 0, labels = rrp$labels, cex.axis = 0.67))
-  if (!is.null(naband_reclass)) {
+p1 <- fields::image.plot(rrp$v, breaks = rrp$breaks, col = rrp$cols,
+                          axes = TRUE, main = "log relative risk", xlab = "longitude",
+                         ylab = "latitude", legend.mar = 3.1, axis.args = list(at = rrp$at,
+                                                                              las = 0, labels = rrp$labels, cex.axis = 0.67))
+
+
+  p3 <-plot(predict_risk_raster)
+  
+
+if (!is.null(naband_reclass)) {
     raster::image(naband_reclass, col = plot_cols[4], add = TRUE)
   }
   if (all(raster::values(reclass_tol)[!is.na(raster::values(reclass_tol))] == 
@@ -83,6 +88,7 @@ plot_predict_BENS <- function (input, plot_cols = c("#8B3A3A", "#CCCCCC", "#0000
     atp <- c(1.33, 2, 2.67)
     labp <- c("presence", "insignificant", "absence")
   }
+  
   p2 <- fields::image.plot(reclass_tol, breaks = brp, col = pcols, 
                            axes = TRUE, main = paste("significant p-values\nalpha =", 
                                                      formatC(alpha, format = "e", digits = 2), sep = " "), 
@@ -95,3 +101,4 @@ plot_predict_BENS <- function (input, plot_cols = c("#8B3A3A", "#CCCCCC", "#0000
   plot_predict_BENS_output <- list(out = rrp)
   
 }
+
