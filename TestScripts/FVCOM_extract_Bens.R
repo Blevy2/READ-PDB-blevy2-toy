@@ -53,45 +53,63 @@ Catch_Data$Date <- as.Date(with(Catch_Data,paste(Year,Month,Day,sep="-")),"%Y-%m
 
 #### Grid time ID#### 
 
-# You will complete one season at a time (assuming your survey runs for >1 season per year)
-# Make sure that you are in a working directory specifically for the season in which you are running the analysis (...FVCOM/Fall/), some of the files will have the same names for different seasons (unless you change them) and you don't want to overwrite them and lose your work
+#COMBINE FALL AND SPRING DATES INTO SINGLE OBJECT
+
 
 ##Fall
 # # Define the dates in which the survey ran for each season each year. 
 # # "by=" how often you want days... e.g by=2 means you will get data every 2  days 9/6/2000, 9/8/2000, 9/10/2000, etc... I recommend this if you are getting data for many months/years because I have had R crash because it was just too much for it to handle, getting daily data. 
 # # len= defines the range of dates as 9/6 (there are 24 additional days in September) to 10/20 (add one to your last day. 20+1=21))
-# dates <- format(c(seq(as.Date("9/6/2000", "%m/%d/%Y"), by=1, len=24+21), #date range from stations in fall 2000
-#                   seq(as.Date("9/5/2001", "%m/%d/%Y"), by=1, len=25+23), #9/5 to 10/22
-#                   seq(as.Date("9/4/2002", "%m/%d/%Y"), by=1, len=26+26), #9/4 to 10/25 etc
-#                   seq(as.Date("9/7/2003", "%m/%d/%Y"), by=1, len=23+32),
-#                   seq(as.Date("9/10/2004", "%m/%d/%Y"), by=1, len=20+28),
-#                   seq(as.Date("9/7/2005", "%m/%d/%Y"), by=1, len=23+31+5),
-#                   seq(as.Date("9/6/2006", "%m/%d/%Y"), by=1, len=24+26),
-#                   seq(as.Date("9/5/2007", "%m/%d/%Y"), by=1, len=25+32),
-#                   seq(as.Date("9/3/2008", "%m/%d/%Y"), by=1, len=27+31+9),
-#                   seq(as.Date("9/13/2009", "%m/%d/%Y"), by=1, len=17+31+19),
-#                   seq(as.Date("9/9/2010", "%m/%d/%Y"), by=1, len=21+31+30+3),
-#                   seq(as.Date("9/10/2011", "%m/%d/%Y"), by=1, len=20+31+15),
-#                   seq(as.Date("9/7/2012", "%m/%d/%Y"), by=1, len=23+31+11),
-#                   seq(as.Date("9/6/2013", "%m/%d/%Y"), by=1, len=24+31+20),
-#                   seq(as.Date("9/10/2014", "%m/%d/%Y"), by=1, len=20+31+13),
-#                   seq(as.Date("9/2/2015", "%m/%d/%Y"), by=1, len=28+31+6)), format="%m/%d/%Y")
-# 
-# 
-# dates <- as.data.frame(dates)
+dates_fall <- format(c(#seq(as.Date("9/6/2000", "%m/%d/%Y"), by=1, len=24+21), #date range from stations in fall 2000
+  #seq(as.Date("9/5/2001", "%m/%d/%Y"), by=1, len=25+23), #9/5 to 10/22
+  #seq(as.Date("9/4/2002", "%m/%d/%Y"), by=1, len=26+26), #9/4 to 10/25 etc
+  #seq(as.Date("9/7/2003", "%m/%d/%Y"), by=1, len=23+32),
+  #seq(as.Date("9/10/2004", "%m/%d/%Y"), by=1, len=20+28),
+  #seq(as.Date("9/7/2005", "%m/%d/%Y"), by=1, len=23+31+5),
+  #seq(as.Date("9/6/2006", "%m/%d/%Y"), by=1, len=24+26),
+  #seq(as.Date("9/5/2007", "%m/%d/%Y"), by=1, len=25+32),
+  #seq(as.Date("9/3/2008", "%m/%d/%Y"), by=1, len=27+31+9),
+  seq(as.Date("9/13/2009", "%m/%d/%Y"), by=1, len=17+31+19),
+  seq(as.Date("9/9/2010", "%m/%d/%Y"), by=1, len=21+31+30+3),
+  seq(as.Date("9/10/2011", "%m/%d/%Y"), by=1, len=20+31+15),
+  seq(as.Date("9/7/2012", "%m/%d/%Y"), by=1, len=23+31+11),
+  seq(as.Date("9/6/2013", "%m/%d/%Y"), by=1, len=24+31+20),
+  seq(as.Date("9/10/2014", "%m/%d/%Y"), by=1, len=20+31+13),
+  seq(as.Date("9/2/2015", "%m/%d/%Y"), by=1, len=28+31+6)), format="%m/%d/%Y")
 
-#INSERT MY DATES INSTEAD OF THE ONES ROBYN PROVIDED
-dates <- as.data.frame(Catch_Data$Date)
+dates_fall <- as.data.frame(dates_fall)
+colnames(dates_fall) <- "date"
+
+dates_fall$Season <- rep("FALL",length(dates_fall[,1])) #add season label
+
+
+dates_spring <- format(c(seq(as.Date("2/28/2009", "%m/%d/%Y"), by=1, len=1+31+30+8),
+                    seq(as.Date("2/28/2010", "%m/%d/%Y"), by=1, len=1+31+30+1),
+                    seq(as.Date("3/3/2011", "%m/%d/%Y"), by=1, len=28+30+11),
+                    seq(as.Date("2/29/2012", "%m/%d/%Y"), by=1, len=1+31+30+3),
+                    seq(as.Date("3/15/2013", "%m/%d/%Y"), by=1, len=16+30+9),
+                    seq(as.Date("3/31/2014", "%m/%d/%Y"), by=1, len=1+30+31),
+                    seq(as.Date("3/14/2015", "%m/%d/%Y"), by=1, len=17+30+7)), format="%m/%d/%Y") 
+
+dates_spring <- as.data.frame(dates_spring)
+colnames(dates_spring) <- "date"
+
+dates_spring$Season <- rep("SPRING",length(dates_spring[,1]))
+
+dates <- as.data.frame(rbind(dates_fall,dates_spring))
+
+
 
 
 
 
 #At this point check the "dates" file to ensure that the date ranges for each year are correct
 
-colnames(dates) <- "date"
-dates$y <- unlist(lapply(dates$date, function(x) unlist(strsplit(as.character(x), "-", fixed = TRUE))[1]))
-dates$m <- unlist(lapply(dates$date, function(x) unlist(strsplit(as.character(x), "-", fixed = TRUE))[2]))
-dates$d <- unlist(lapply(dates$date, function(x) unlist(strsplit(as.character(x), "-", fixed = TRUE))[3]))
+
+dates$y <- unlist(lapply(dates$date, function(x) unlist(strsplit(as.character(x), "/", fixed = TRUE))[3]))
+dates$m <- unlist(lapply(dates$date, function(x) unlist(strsplit(as.character(x), "/", fixed = TRUE))[1]))
+dates$d <- unlist(lapply(dates$date, function(x) unlist(strsplit(as.character(x), "/", fixed = TRUE))[2]))
+dates$modified_julian_date <- julian(as.numeric(dates$m), as.numeric(dates$d), as.numeric(dates$y),c(month = 11, day = 17, year = 1858)) + 0.5
 #RECORD 2 DIGIT YEAR TO SET INDICES LATER
 dates$y2 <- unlist(lapply(dates$y, function(x) paste0(unlist(strsplit(as.character(x),""))[3],unlist(strsplit(as.character(x),""))[4])))
 
@@ -99,7 +117,6 @@ dates$y2 <- unlist(lapply(dates$y, function(x) paste0(unlist(strsplit(as.charact
 dates$index <- seq(length(dates$y))
 
 dates$modified_julian_date <- julian(as.numeric(dates$m), as.numeric(dates$d), as.numeric(dates$y),c(month = 11, day = 17, year = 1858)) + 0.5
-dates$Season <- Catch_Data$SEASON
 
 #### Download FVCOM time ID ####
 fvcom_data <-as.data.frame(read.csv("http://www.smast.umassd.edu:8080/thredds/dodsC/fvcom/hindcasts/30yr_gom3.ascii?time[0:1:342347]"))
@@ -127,12 +144,82 @@ latitude <- as.numeric(as.character(latitude))
 longitude <- as.numeric(as.character(longitude))
 
 
+#DEFININIG STRATAS TO USE AS BOUNDING BOX FOR GRID
+strata.dir <- "C:\\Users\\benjamin.levy\\Desktop\\NOAA\\GIS_Stuff\\" # strata shape files in this directory
+
+# get the shapefiles
+strata.areas <- readOGR(paste(strata.dir,"Survey_strata", sep="")) #readShapePoly is deprecated; use rgdal::readOGR or sf::st_read 
+
+#GEORGES BANK STRATA
+#from FIGURE 1 in "history of bottom trawl" documnet from Chris, we see that GB has code that starts with 01 and ends with 0. The 2 numbers between are for the strata number
+#from FIGURE 5 in "Stock Assessment of Georges Bank Yellowtail Flounder for 2017" by Christopher M. Legault, we see GB has strata numbers 13-22
+#so thats 01130, 01140,...,01220
+#after plotting it seems like it goes to 25 so I added 3 more strata
+
+GB_strata_num <- c("01130","01140","01150","01160","01170","01180","01190","01200","01210","01220","01230","01240","01250")
+#pull out indices corresponding to GB strata
+GB_strata_idx <- match(GB_strata_num,strata.areas@data[["STRATUMA"]])
+#plot them
+plot(strata.areas[GB_strata_idx,])
+#define GB strata as own object
+GB_strata <- strata.areas[GB_strata_idx,]
+
+
+#GULF OF MAINE STRATA
+#from stockeff documentation on white hake
+#https://nova.nefsc.noaa.gov/ADIOS_dev2/pub/stockeff/index.php?product=survey_information&module=survey&species_itis=164732&stock_abbrev=UNIT&sex_type=NONE
+
+# GOM_strata_num <- c(	"01210", "01220", "01230", "01240", "01250", "01260", "01270", "01280", "01290", "01300", "01360", "01370", "01380", "01390", "01400")
+# #pull out indices 
+# GOM_strata_idx <- match(GOM_strata_num,strata.areas@data[["STRATUMA"]])
+# #plot them
+# plot(strata.areas[GOM_strata_idx,])
+# #define GB strata as own object
+# GOM_strata <- strata.areas[GOM_strata_idx,]
+# 
+# 
+# 
+# #MID ATLANTIC. LOTS OF DIFFERENCES HERE. I USED BLACK SEA BASS WINTER SURVEY FOR THESE
+# #https://nova.nefsc.noaa.gov/ADIOS_dev2/pub/stockeff/index.php?product=survey_information&module=survey&species_itis=167687&stock_abbrev=UNIT&sex_type=NONE
+# MA_strata_num <- c("01010", "01020", "01030", "01040", "01050", "01060", "01070", "01100", "01110", "01140", "01610", "01620", "01630", "01640", "01650", "01660", 
+#                    "01670", "01680", "01690", "01700", "01710", "01720", "01730", "01740", "01750", "01760", "03020", "03030", "03040", "03050", "03060", "03070", 
+#                    "03080", "03090", "03100", "03110", "03120", "03130", "03140", "03150", "03160", "03170", "03180", "03190", "03200", "03210", "03220", "03230", 
+#                    "03240", "03250", "03260", "03270", "03280", "03290", "03300", "03310", "03320", "03330", "03340", "03350", "03360", "03370", "03380", "03390", 
+#                    "03400", "03410", "03420", "03430", "03440", "03450", "03460")
+# #pull out indices 
+# MA_strata_idx <- match(MA_strata_num,strata.areas@data[["STRATUMA"]])
+# #remove NAs
+# MA_strata_idx <- MA_strata_idx[!is.na(MA_strata_idx)]
+# #plot them
+# plot(strata.areas[MA_strata_idx,])
+# #define GB strata as own object
+# MA_strata <- strata.areas[MA_strata_idx,]
+
+
+# method from robyn based on survey observations
+# #### Grid location####
+# # Can also define specific lat and lon coordinates that you want to map instead of based on survey
+# start_x <- min(Catch_Data$Longitude)
+# end_x <- max(Catch_Data$Longitude)
+# start_y <-  min(Catch_Data$Latitude)
+# end_y <- max(Catch_Data$Latitude)
+# my_mesh=expand.grid(seq(start_x, end_x, by=0.01), seq(start_y, end_y, by=0.01)) #making a grid of every lat/lon combination to the 0.01 degree, can chose alternative resolution, but I wouldn't recommend any finer-scale
+# coordinates(my_mesh) <- ~Var1 + Var2
+# grid_data <-as.data.frame(my_mesh@coords)
+# colnames(grid_data) <-c("lon", "lat")
+# write.csv(grid_data, file="TestScripts/FVCOM/grid_data.csv")
+
+
+#MAY WANT TO FIX START_X END_X ETC BASED ON BOUNDING BOX OF GIVEN STRATA WE WANT TO MODEL IN (EX GEORGES BANK, GULF OF MAIN)
+
+str <- GB_strata#choose strata to use
+
 #### Grid location#### 
 # Can also define specific lat and lon coordinates that you want to map instead of based on survey
-start_x <- min(Catch_Data$Longitude)
-end_x <- max(Catch_Data$Longitude)
-start_y <-  min(Catch_Data$Latitude)
-end_y <- max(Catch_Data$Latitude)
+start_x <- bbox(str)[[1]]
+end_x <- bbox(str)[[3]]
+start_y <- bbox(str)[[2]]
+end_y <- bbox(str)[[4]]
 my_mesh=expand.grid(seq(start_x, end_x, by=0.01), seq(start_y, end_y, by=0.01)) #making a grid of every lat/lon combination to the 0.01 degree, can chose alternative resolution, but I wouldn't recommend any finer-scale
 coordinates(my_mesh) <- ~Var1 + Var2
 grid_data <-as.data.frame(my_mesh@coords)
@@ -246,6 +333,8 @@ for(sn in sns){
     write.csv(Mean_Temp_all[[paste(sn,yr,sep = "")]], file=paste("TestScripts/FVCOM/MeanTemp",sn,yr,".csv",sep = ""))
   }
 }
+
+save(Mean_Temp_all, file=paste("TestScripts/FVCOM/Mean_Temp_all.RData",sep = ""))
 
 # #load previously saved data
 # for(sn in sns){
@@ -369,723 +458,6 @@ for(sn in sns){
     write.csv(temp,file=paste("TestScripts/FVCOM/ts",sn,yr,".csv",sep = ""))
   }
 }
-
-
-
-
-####Spring####
-## Be sure to switch working directories to "Spring" or any files with the same name (example: "temperature_fvcom_data") will be overwritten
-
-dates <- format(c(seq(as.Date("3/16/2000", "%m/%d/%Y"), by=1, len=15+30+4), # spring 2000
-                  seq(as.Date("2/28/2001", "%m/%d/%Y"), by=1, len=1+31+30), 
-                  seq(as.Date("3/6/2002", "%m/%d/%Y"), by=1, len=25+25), 
-                  seq(as.Date("3/6/2003", "%m/%d/%Y"), by=1, len=25+28), 
-                  seq(as.Date("3/3/2004", "%m/%d/%Y"), by=1, len=28+22), 
-                  seq(as.Date("3/4/2005", "%m/%d/%Y"), by=1, len=27+22),
-                  seq(as.Date("3/8/2006", "%m/%d/%Y"), by=1, len=23+20),
-                  seq(as.Date("3/8/2007", "%m/%d/%Y"), by=1, len=23+28),
-                  seq(as.Date("3/7/2008", "%m/%d/%Y"), by=1, len=24+30+4),
-                  seq(as.Date("2/28/2009", "%m/%d/%Y"), by=1, len=1+31+30+8),
-                  seq(as.Date("2/28/2010", "%m/%d/%Y"), by=1, len=1+31+30+1),
-                  seq(as.Date("3/3/2011", "%m/%d/%Y"), by=1, len=28+30+11),
-                  seq(as.Date("2/29/2012", "%m/%d/%Y"), by=1, len=1+31+30+3),
-                  seq(as.Date("3/15/2013", "%m/%d/%Y"), by=1, len=16+30+9),
-                  seq(as.Date("3/31/2014", "%m/%d/%Y"), by=1, len=1+30+31),
-                  seq(as.Date("3/14/2015", "%m/%d/%Y"), by=1, len=17+30+7)), format="%m/%d/%Y") 
-
-dates <- as.data.frame(dates)
-colnames(dates) <- "date"
-dates$y <- unlist(lapply(dates$date, function(x) unlist(strsplit(as.character(x), "/", fixed = TRUE))[3]))
-dates$m <- unlist(lapply(dates$date, function(x) unlist(strsplit(as.character(x), "/", fixed = TRUE))[1]))
-dates$d <- unlist(lapply(dates$date, function(x) unlist(strsplit(as.character(x), "/", fixed = TRUE))[2]))
-dates$modified_julian_date <- julian(as.numeric(dates$m), as.numeric(dates$d), as.numeric(dates$y),c(month = 11, day = 17, year = 1858)) + 0.5
-
-#### Download FVCOM time ID ####
-fvcom_data <-as.data.frame(read.csv("http://www.smast.umassd.edu:8080/thredds/dodsC/fvcom/hindcasts/30yr_gom3.ascii?time[0:1:342347]"))
-fvcom_time <- as.data.frame(fvcom_data$Dataset..[5:nrow(fvcom_data)])
-names(fvcom_time) <-"modified_julian_date"
-fvcom_time$modified_julian_date <- as.numeric(as.character(fvcom_time$modified_julian_date))
-fvcom_time$id <- 0:(nrow(fvcom_time)-1)
-
-#### Match time ####
-time_id <- c()
-for(i in 1:nrow(dates)){
-  temp <- fvcom_time$id[which(round(fvcom_time$modified_julian_date,2)==round(dates$modified_julian_date[i],2))]
-  if(length(temp)==0) time_id[i] <- NA
-  else time_id[i] <- temp
-} 
-
-##Depth and grid files are the same as above so you don't need to run those again, but if completing on a different day you may need to re-run and read in a few files
-
-# latitude, longitude (lines 76-84)
-# grid_data=read.csv("TestScripts/FVCOM/grid_data.csv")
-# FVdepth= read.csv("TestScripts/FVCOM/FVdepth.csv")
-
-#### Download temperature data ####
-temperature_fvcom_data<-list()
-for (i in 1:length(time_id)){
-  print(i)
-  temp_data <- read.csv(paste("http://www.smast.umassd.edu:8080/thredds/dodsC/fvcom/hindcasts/30yr_gom3.ascii?temp[", time_id[i], ":1:", time_id[i], "][44:1:44][0:1:48450]", sep=""))
-  temp_data <- as.numeric(as.character(temp_data[(6: nrow(temp_data)),1]))
-  temperature_fvcom_data[[i]] <- cbind(longitude, latitude, temp_data)
-  colnames(temperature_fvcom_data[[i]]) <- c("lon", "lat", "temperature")
-}
-save(temperature_fvcom_data, file="temperature_data.RData")
-
-#load("TestScripts/FVCOM/temperature_data.RData")
-
-
-###Spring 2000
-TRD_SP00 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 1:49){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_SP00[[i]] <- raster::extract(rast, grid_data)
-}
-save(TRD_SP00, file="TRD_SP00.RData")
-
-###Spring 2001
-TRD_SP01 <- list()
-for(i in 50:111){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_SP01[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_SP01<- TRD_SP01[-c(1:49)]
-save(TRD_SP01, file="TRD_SP01.RData")
-
-###Spring 2002
-TRD_SP02 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 112:161){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_SP02[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_SP02<- TRD_SP02[-c(1:111)]
-save(TRD_SP02, file="TRD_SP02.RData")
-
-#Spring 2003
-TRD_SP03 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 162:214){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_SP03[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_SP03<- TRD_SP03[-c(1:161)]
-save(TRD_SP03, file="TRD_SP03.RData")
-
-###Spring 2004
-TRD_SP04 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 215:264){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_SP04[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_SP04<- TRD_SP04[-c(1:214)]
-save(TRD_SP04, file="TRD_SP04.RData")
-
-###Spring 2005
-TRD_SP05 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 265:313){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_SP05[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_SP05<- TRD_SP05[-c(1:264)]
-save(TRD_SP05, file="TRD_SP05.RData")
-
-###Spring 2006
-TRD_SP06 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 314:356){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_SP06[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_SP06<- TRD_SP06[-c(1:313)]
-save(TRD_SP06, file="TRD_SP06.RData")
-
-#2007
-TRD_SP07 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 357:407){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_SP07[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_SP07<- TRD_SP07[-c(1:356)]
-save(TRD_SP07, file="TRD_SP07.RData")
-
-#2008
-TRD_SP08 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 408:465){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_SP08[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_SP08<- TRD_SP08[-c(1:407)]
-save(TRD_SP08, file="TRD_SP08.RData")
-
-#2009
-TRD_SP09 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 466:535){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_SP09[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_SP09<- TRD_SP09[-c(1:465)]
-save(TRD_SP09, file="TRD_SP09.RData")
-
-#2010
-TRD_SP10 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 536:598){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_SP10[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_SP10<- TRD_SP10[-c(1:535)]
-save(TRD_SP10, file="TRD_SP10.RData")
-
-#2011
-TRD_SP11 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 599:667){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_SP11[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_SP11<- TRD_SP11[-c(1:598)]
-save(TRD_SP11, file="TRD_SP11.RData")
-
-#2012
-TRD_SP12 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 668:732){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_SP12[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_SP12<- TRD_SP12[-c(1:667)]
-save(TRD_SP12, file="TRD_SP12.RData")
-
-#2013
-TRD_SP13 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 733:787){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_SP13[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_SP13<- TRD_SP13[-c(1:732)]
-save(TRD_SP13, file="TRD_SP13.RData")
-
-#2014
-TRD_SP14 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 788:849){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_SP14[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_SP14<- TRD_SP14[-c(1:787)]
-save(TRD_SP14, file="TRD_SP14.RData")
-
-#2015
-TRD_SP15 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 850:903){
-  print(i)
-  temp_data <- as.data.frame(temperature_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, temperature, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  TRD_SP15[[i]] <- raster::extract(rast, grid_data)
-}
-TRD_SP15<- TRD_SP15[-c(1:849)]
-save(TRD_SP15, file="TRD_SP15.RData")
-
-
-MeanTempsp00<- list(Reduce(`+`, TRD_SP00) / length(TRD_SP00)) ###taking averages of each day during the season at each location
-MeanTempsp01<- list(Reduce(`+`, TRD_SP01) / length(TRD_SP01))
-MeanTempsp02<- list(Reduce(`+`, TRD_SP02) / length(TRD_SP02))
-MeanTempsp03<- list(Reduce(`+`, TRD_SP03) / length(TRD_SP03))
-MeanTempsp04<- list(Reduce(`+`, TRD_SP04) / length(TRD_SP04))
-MeanTempsp05<- list(Reduce(`+`, TRD_SP05) / length(TRD_SP05))
-MeanTempsp06<- list(Reduce(`+`, TRD_SP06) / length(TRD_SP06))
-MeanTempsp07<- list(Reduce(`+`, TRD_SP07) / length(TRD_SP07))
-MeanTempsp08<- list(Reduce(`+`, TRD_SP08) / length(TRD_SP08))
-MeanTempsp09<- list(Reduce(`+`, TRD_SP09) / length(TRD_SP09))
-MeanTempsp10<- list(Reduce(`+`, TRD_SP10) / length(TRD_SP10))
-MeanTempsp11<- list(Reduce(`+`, TRD_SP11) / length(TRD_SP11))
-MeanTempsp12<- list(Reduce(`+`, TRD_SP12) / length(TRD_SP12))
-MeanTempsp13<- list(Reduce(`+`, TRD_SP13) / length(TRD_SP13))
-MeanTempsp14<- list(Reduce(`+`, TRD_SP14) / length(TRD_SP14))
-MeanTempsp15<- list(Reduce(`+`, TRD_SP15) / length(TRD_SP15))
-
-write.csv(MeanTempsp00, file="MeanTempsp00.csv")
-write.csv(MeanTempsp01, file="MeanTempsp01.csv")
-write.csv(MeanTempsp02, file="MeanTempsp02.csv")
-write.csv(MeanTempsp03, file="MeanTempsp03.csv")
-write.csv(MeanTempsp04, file="MeanTempsp04.csv")
-write.csv(MeanTempsp05, file="MeanTempsp05.csv")
-write.csv(MeanTempsp06, file="MeanTempsp06.csv")
-write.csv(MeanTempsp07, file="MeanTempsp07.csv")
-write.csv(MeanTempsp08, file="MeanTempsp08.csv")
-write.csv(MeanTempsp09, file="MeanTempsp09.csv")
-write.csv(MeanTempsp10, file="MeanTempsp10.csv")
-write.csv(MeanTempsp11, file="MeanTempsp11.csv")
-write.csv(MeanTempsp12, file="MeanTempsp12.csv")
-write.csv(MeanTempsp13, file="MeanTempsp13.csv")
-write.csv(MeanTempsp14, file="MeanTempsp14.csv")
-write.csv(MeanTempsp15, file="MeanTempsp15.csv")
-
-
-###Download Salinity Data###
-salinity_fvcom_data<-list()
-for (i in 1:length(time_id)){
-  print(i)
-  temp_data <- read.csv(paste("http://www.smast.umassd.edu:8080/thredds/dodsC/fvcom/hindcasts/30yr_gom3.ascii?salinity[", time_id[i], ":1:", time_id[i], "][44:1:44][0:1:48450]", sep=""))
-  temp_data <- as.numeric(as.character(temp_data[(6: nrow(temp_data)),1]))
-  salinity_fvcom_data[[i]] <- cbind(longitude, latitude, temp_data)
-  colnames(salinity_fvcom_data[[i]]) <- c("lon", "lat", "salinity")
-}
-save(salinity_fvcom_data, file="salinity_data.RData")
-
-#load("salinity_data.RData")
-
-###Spring2000.
-SRD_SP00 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 1:49){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_SP00[[i]] <- raster::extract(rast, grid_data)
-}
-save(SRD_SP00, file="SRD_SP00.RData")
-
-###Spring2001
-SRD_SP01 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 50:111){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_SP01[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_SP01<- SRD_SP01[-c(1:49)]
-save(SRD_SP01, file="SRD_SP01.RData")
-
-###Spring2002
-SRD_SP02 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 112:161){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_SP02[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_SP02<- SRD_SP02[-c(1:111)]
-save(SRD_SP02, file="SRD_SP02.RData")
-
-###Spring2003
-SRD_SP03 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 162:214){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_SP03[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_SP03<- SRD_SP03[-c(1:161)]
-save(SRD_SP03, file="SRD_SP03.RData")
-
-###Spring2004
-SRD_SP04 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 215:264){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_SP04[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_SP04<- SRD_SP04[-c(1:214)]
-save(SRD_SP04, file="SRD_SP04.RData")
-
-###Spring2005
-SRD_SP05 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 265:313){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_SP05[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_SP05<- SRD_SP05[-c(1:264)]
-save(SRD_SP05, file="SRD_SP05.RData")
-
-###Spring2006
-SRD_SP06 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 314:356){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_SP06[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_SP06<- SRD_SP06[-c(1:313)]
-save(SRD_SP06, file="SRD_SP06.RData")
-
-###Spring2007
-SRD_SP07 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 357:407){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_SP07[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_SP07<- SRD_SP07[-c(1:356)]
-save(SRD_SP07, file="SRD_SP07.RData")
-
-###Spring2008
-SRD_SP08 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 408:465){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_SP08[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_SP08<- SRD_SP08[-c(1:407)]
-save(SRD_SP08, file="SRD_SP08.RData")
-
-###Spring2009
-SRD_SP09 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 466:535){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_SP09[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_SP09<- SRD_SP09[-c(1:465)]
-save(SRD_SP09, file="SRD_SP09.RData")
-
-###Spring2010
-SRD_SP10 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 536:598){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_SP10[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_SP10<- SRD_SP10[-c(1:535)]
-save(SRD_SP10, file="SRD_SP10.RData")
-
-
-###Spring 2011
-SRD_SP11 <- list()
-for(i in 599:667){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_SP11[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_SP11<- SRD_SP11[-c(1:598)]
-save(SRD_SP11, file="SRD_SP11.RData")
-
-
-### Spring 2012
-SRD_SP12 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 668:732){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_FA12[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_SP12<- SRD_SP12[-c(1:667)]
-save(SRD_SP12, file="SRD_SP12.RData")
-
-
-### Spring 2013
-SRD_SP13 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 733:787){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_SP13[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_SP13<- SRD_SP13[-c(1:732)]
-save(SRD_SP13, file="SRD_SP13.RData")
-
-
-### Spring 2014
-SRD_SP14 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 788:849){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_SP14[[i]] <- raster::extract(rast, grid_data)
-}
-SRD_SP14<- SRD_SP14[-c(1:787)]
-save(SRD_SP14, file="SRD_SP14.RData")
-
-
-### Spring 2015
-SRD_SP15 <- list()
-coordinates(grid_data) <- ~lon + lat
-for(i in 850:903){
-  print(i)
-  temp_data <- as.data.frame(salinity_fvcom_data[[i]])
-  rast_col <- ceiling((range(temp_data$lon)[2]-range(temp_data$lon)[1])/0.01)
-  rast_row <- ceiling((range(temp_data$lat)[2]-range(temp_data$lat)[1])/0.01)
-  akima.smooth <- with(temp_data, interp(lon, lat, salinity, nx=rast_col, ny=rast_row))
-  rast <- raster(akima.smooth)
-  SRD_SP15[[i]] <- raster::extract(rast, grid_data)
-}
-SRD-SP15<- SRD_SP15[-c(1:849)]
-save(SRD-SP15, file="SRD_SP15.RData")
-
-
-##Average Spring Salinity
-MeanSalsp00<- list(Reduce(`+`, SRD_SP00) / length(SRD_SP00))###taking averages of each day during the season at each location
-MeanSalsp01<- list(Reduce(`+`, SRD_SP01) / length(SRD_SP01))
-MeanSalsp02<- list(Reduce(`+`, SRD_SP02) / length(SRD_SP02))
-MeanSalsp03<- list(Reduce(`+`, SRD_SP03) / length(SRD_SP03))
-MeanSalsp04<- list(Reduce(`+`, SRD_SP04) / length(SRD_SP04))
-MeanSalsp05<- list(Reduce(`+`, SRD_SP05) / length(SRD_SP05))
-MeanSalsp06<- list(Reduce(`+`, SRD_SP06) / length(SRD_SP06))
-MeanSalsp07<- list(Reduce(`+`, SRD_SP07) / length(SRD_SP07))
-MeanSalsp08<- list(Reduce(`+`, SRD_SP08) / length(SRD_SP08))
-MeanSalsp09<- list(Reduce(`+`, SRD_SP09) / length(SRD_SP09))
-MeanSalsp10<- list(Reduce(`+`, SRD_SP10) / length(SRD_SP10)) 
-MeanSalsp11<- list(Reduce(`+`, SRD_SP11) / length(SRD_SP11))
-MeanSalsp12<- list(Reduce(`+`, SRD_SP12) / length(SRD_SP12))
-MeanSalsp13<- list(Reduce(`+`, SRD_SP13) / length(SRD_SP13))
-MeanSalsp14<- list(Reduce(`+`, SRD_SP14) / length(SRD_SP14))
-MeanSalsp15<- list(Reduce(`+`, SRD_SP15) / length(SRD_SP15))
-
-write.csv(MeanSalsp00, file="MeanSalsp00.csv")
-write.csv(MeanSalsp01, file="MeanSalsp01.csv")
-write.csv(MeanSalsp02, file="MeanSalsp02.csv")
-write.csv(MeanSalsp03, file="MeanSalsp03.csv")
-write.csv(MeanSalsp04, file="MeanSalsp04.csv")
-write.csv(MeanSalsp05, file="MeanSalsp05.csv")
-write.csv(MeanSalsp06, file="MeanSalsp06.csv")
-write.csv(MeanSalsp07, file="MeanSalsp07.csv")
-write.csv(MeanSalsp08, file="MeanSalsp08.csv")
-write.csv(MeanSalsp09, file="MeanSalsp09.csv")
-write.csv(MeanSalsp10, file="MeanSalsp10.csv")
-write.csv(MeanSalsp11, file="MeanSalsp11.csv")
-write.csv(MeanSalsp12, file="MeanSalsp12.csv")
-write.csv(MeanSalsp13, file="MeanSalsp13.csv")
-write.csv(MeanSalsp14, file="MeanSalsp14.csv")
-write.csv(MeanSalsp15, file="MeanSalsp15.csv")
-
-##Spring FVCOM files through 2015
-ts2000= data.frame(FVdepth)
-ts2000$BTemp=MeanTempsp00[,c(2)]
-ts2000$Salinity=MeanSalsp00[,c(2)]
-write.csv(ts2000, file="ts2000.csv")
-
-ts2001= data.frame(FVdepth)
-ts2001$BTemp=MeanTempsp01[,c(2)]
-ts2001$Salinity=MeanSalsp01[,c(2)]
-write.csv(ts2001, file="ts2001.csv")
-
-ts2002= data.frame(FVdepth)
-ts2002$BTemp=MeanTempsp02[,c(2)]
-ts2002$Salinity=MeanSalsp02[,c(2)]
-write.csv(ts2002, file="ts2002.csv")
-
-ts2003= data.frame(FVdepth)
-ts2003$BTemp=MeanTempsp03[,c(2)]
-ts2003$Salinity=MeanSalsp03[,c(2)]
-write.csv(ts2003, file="ts2003.csv")
-
-ts2004= data.frame(FVdepth)
-ts2004$BTemp=MeanTempsp04[,c(2)]
-ts2004$Salinity=MeanSalsp04[,c(2)]
-write.csv(ts2004, file="ts2004.csv")
-
-ts2005= data.frame(FVdepth)
-ts2005$BTemp=MeanTempsp05[,c(2)]
-ts2005$Salinity=MeanSalsp05[,c(2)]
-write.csv(ts2005, file="ts2005.csv")
-
-ts2006= data.frame(FVdepth)
-ts2006$BTemp=MeanTempsp06[,c(2)]
-ts2006$Salinity=MeanSalsp06[,c(2)]
-write.csv(ts2006, file="ts2006.csv")
-
-ts2007= data.frame(FVdepth)
-ts2007$BTemp=MeanTempsp07[,c(2)]
-ts2007$Salinity=MeanSalsp07[,c(2)]
-write.csv(ts2007, file="ts2007.csv")
-
-ts2008= data.frame(FVdepth)
-ts2008$BTemp=MeanTempsp08[,c(2)]
-ts2008$Salinity=MeanSalsp08[,c(2)]
-write.csv(ts2008, file="ts2008.csv")
-
-ts2009= data.frame(FVdepth)
-ts2009$BTemp=MeanTempsp09[,c(2)]
-ts2009$Salinity=MeanSalsp09[,c(2)]
-write.csv(ts2009, file="ts2009.csv")
-
-ts2010= data.frame(FVdepth)
-ts2010$BTemp=MeanTempsp10[,c(2)]
-ts2010$Salinity=MeanSalsp10[,c(2)]
-write.csv(ts2010, file="ts2010.csv")
-
-ts2011= data.frame(FVdepth)
-ts2011$BTemp=MeanTempsp11[,c(2)]
-ts2011$Salinity=MeanSalsp11[,c(2)]
-write.csv(ts2011, file="ts2011.csv")
-
-ts2012= data.frame(FVdepth)
-ts2012$BTemp=MeanTempsp12[,c(2)]
-ts2012$Salinity=MeanSalsp12[,c(2)]
-write.csv(ts2012, file="ts2012.csv")
-
-ts2013= data.frame(FVdepth)
-ts2013$BTemp=MeanTempsp13[,c(2)]
-ts2013$Salinity=MeanSalsp13[,c(2)]
-write.csv(ts2013, file="ts2013.csv")
-
-ts2014= data.frame(FVdepth)
-ts2014$BTemp=MeanTempsp14[,c(2)]
-ts2014$Salinity=MeanSalsp14[,c(2)]
-write.csv(ts2014, file="ts2014.csv")
-
-ts2015= data.frame(FVdepth)
-ts2015$BTemp=MeanTempsp15[,c(2)]
-ts2015$Salinity=MeanSalsp15[,c(2)]
-write.csv(ts2015, file="ts2015.csv")
-
-
-
-
-
 
 
 
