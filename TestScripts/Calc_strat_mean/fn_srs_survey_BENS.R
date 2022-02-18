@@ -56,7 +56,7 @@ srs_survey <- function(df, sa, str, ta=1, sppname = NULL  )  {
 # Calculate null survey
 surv.ind.str <- tmp.tibble %>%
   dplyr::select(year, Season, stratum,  STRATUM_AREA, tow, OBS_VALUE ) %>%
-  arrange(year, Season, stratum, tow) %>%
+  dplyr::arrange(as.numeric(year), Season, stratum, tow) %>%
   group_by(year, Season, stratum )  %>% #INDEX GOING DOWN TO STRATA
   dplyr::summarise(mean.str = mean(as.integer(OBS_VALUE)), var.samp.str=var(OBS_VALUE, na.rm=T), ntows.str = n() ) %>%
   replace(is.na(.), 0) 
