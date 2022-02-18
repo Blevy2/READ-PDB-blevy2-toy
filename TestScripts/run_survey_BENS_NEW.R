@@ -319,6 +319,8 @@ for(iter in seq(length(surv_noise))){
     
     spp <- as_tibble(surv_noise[[iter]][[sample]],header=T) #pull out entire survey matrix
     
+    spp$year <- as.numeric(spp$year)
+    
     # get total area of stock ====
     spp.strata <- unique(spp$stratum)
     spp.area <- sum(sv.area$STRATUM_AREA[sv.area$stratum %in% spp.strata]) #TOTAL AREA OF ALL STRATA
