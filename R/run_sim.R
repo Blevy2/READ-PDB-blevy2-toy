@@ -96,7 +96,7 @@ run_sim <- function(MoveProb = NULL, MoveProb_spwn = NULL, sim_init = NULL, pop_
   
   MoveProb_spwn <- lapply(paste0("spp", seq_len(n_spp)), function(s) { move_prob_Lst(lambda = pop_init[["dem_params"]][[s]][["lambda"]], hab = hab_init[["spwn_hab"]][[s]])})
   
-  View(MoveProb)
+  #View(MoveProb)
   # print(range(MoveProb[[1]]))
   # 
   # print(range(MoveProb[[2]]))
@@ -113,8 +113,10 @@ run_sim <- function(MoveProb = NULL, MoveProb_spwn = NULL, sim_init = NULL, pop_
    
   })
   
- # print(nonzero_idx)
+  names(nonzero_idx) <- paste("spp",seq(sim_init[["idx"]][["n.spp"]]), sep ="")
   
+ View(nonzero_idx)
+  end
   #  View(MoveProb)
   #   View(MoveProb_spwn)
   

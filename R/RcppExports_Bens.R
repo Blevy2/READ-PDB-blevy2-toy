@@ -77,6 +77,10 @@ move_prob_Lst <- function(lambda, hab) {
 #'
 #' @export
 move_population <- function(moveProp, StartPop) {
-    .Call('_MixFishSim_move_population_Bens', PACKAGE = 'MixFishSim', moveProp, StartPop)
+    .Call('_MixFishSim_move_population', PACKAGE = 'MixFishSim', moveProp, StartPop)
 }
 
+
+move_population_Bens <- function(moveProp, StartPop, Nzero_row, Nzero_col) {
+  .Call('_MixFishSim_move_population_Bens', PACKAGE = 'MixFishSim', moveProp, StartPop, Nzero_row, Nzero_col)
+}
