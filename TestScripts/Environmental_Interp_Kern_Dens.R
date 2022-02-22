@@ -476,9 +476,11 @@ spatstat.geom::marks(presence) <- data.frame("presence" = rep(1, presence$n), #a
 #spatstat.geom::marks(presence)$bathy <-  bathy_im[presence] #adds covariate values for presence locations
 #spatstat.geom::marks(presence)$sediment <- sediment_im[presence]
 #spatstat.geom::marks(presence)$sediment_thick <- sediment_thick_im[presence]
+spatstat.geom::marks(presence)$depth <-  depth_GB_im[presence] #adds covariate values for presence locations
+
 spatstat.geom::marks(presence)$median_sed <- median_sed_thick_NN_im[presence]
 spatstat.geom::marks(presence)$median_sed <- median_sed_thick_IDW_im[presence]
-spatstat.geom::marks(presence)$depth <-  depth_GB_im[presence] #adds covariate values for presence locations
+
 
 
 
@@ -503,9 +505,11 @@ spatstat.geom::marks(absence) <- data.frame("presence" = rep(0, absence$n),
 #spatstat.geom::marks(absence)$ sediment <- sediment_im[absence]
 #spatstat.geom::marks(absence)$ sediment_thick <- sediment_thick_im[absence]
 
+spatstat.geom::marks(absence)$depth <-  depth_GB_im[absence] #adds covariate values for presence locations
+
 spatstat.geom::marks(absence)$median_sed <- median_sed_thick_NN_im[absence]
 spatstat.geom::marks(absence)$median_sed <- median_sed_thick_IDW_im[absence]
-spatstat.geom::marks(absence)$depth <-  depth_GB_im[absence] #adds covariate values for presence locations
+
 
 
 
@@ -540,7 +544,7 @@ obs_locs <- obs_locs[ , c(6, 2, 3, 1, 4, 5)] #reorders columns so they are in co
 
 
 #Extract the prediction locations within the study area from one of the covariates.
-
+#depth_GB_clip <- raster::mask(depth_GB_ras,GB_strata_singlePoly)
 predict_locs <- data.frame(raster::rasterToPoints(depth_GB_ras))  #adds column called layer with depth
 
 #predict_locs <- data.frame(raster::rasterToPoints(bathy_ras))  #adds column called layer with bathymetry
@@ -607,7 +611,7 @@ fish_lrren <- lrren_Bens(obs_locs = obs_locs,
                     predict_locs = predict_locs,
                     predict = TRUE,
                     cv = FALSE, #if true get error foreach::foreach comb not defined
-                    adapt=T,
+                    #adapt=T,
                     #balance = TRUE)
                     #conserve = TRUE #Logical. If TRUE (the default), the ecological niche will be estimated within a concave hull around the locations in obs_locs. If FALSE, the ecological niche will be estimated within a concave hull around the locations in predict_locs.
 )
@@ -628,13 +632,13 @@ p<-plot_predict_BENS(fish_lrren, cref0 = "EPSG:32632", cref1 = "EPSG:4326",
              lower_lrr = -1, #used to be -1 to 1
              upper_lrr = 1)
 
-#choose one. both from plot_predict_BENS
-p$out<-predict_risk_raster
-p$out<-rrp$v
+#choose one. both from plot_predict_BENS. DONT NEED NOW THAT FIXED COLUMN ORDER
+#p$out<-predict_risk_raster
+#p$out<-rrp$v
 #rescale output from -1 to 1 to 0 to 1
 
 #first exponentiate log values
-vec <- exp(p$out@data@values)
+vec <- exp(p$out$v@data@values)
 range(vec,na.rm=T)
 
 #maybe converts to correct interval?

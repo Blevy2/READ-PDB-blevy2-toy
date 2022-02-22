@@ -69,7 +69,7 @@ p1 <- fields::image.plot(rrp$v, breaks = rrp$breaks, col = rrp$cols,
                                                                               las = 0, labels = rrp$labels, cex.axis = 0.67))
 
 
-  p3 <-plot(predict_risk_raster)
+ # p3 <-plot(predict_risk_raster)
   
 
 if (!is.null(naband_reclass)) {
