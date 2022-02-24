@@ -32,7 +32,7 @@
 #' demographic parameters for each population
 
 #' @examples init_pop(sim_init = sim_init, Bio = c("spp1" = 1e6, "spp2" = 2e5), hab = list(spp1 = matrix(nc = 10,
-#' runif(10*10)), spp2 = matrix(nc = 10, runif(10*10)), lambda = c("spp1" =
+#'# runif(10*10)), lambda = c("spp1" =
 #' 0.2, "spp2" = 0.3), init_move_steps = 10), rec_params = list("spp1" =
 #' c("model" = "BH", "a" = 10, "b" = 50, "cv" = 0.2), "spp2" = c("model" = "BH",
 #' "a" = 1, "b" = 8, "cv" = 0.2)), rec_wk = list("spp1" = 13:16, "spp2" =
@@ -42,7 +42,7 @@
 
 #' @export
 
-init_pop_Bens <- function(sim_init = sim_init, Bio = NULL, hab = NULL, start_cell = NULL, lambda = NULL, init_move_steps = 10, rec_params = NULL, rec_wk = NULL, spwn_wk = NULL, M = NULL, K = NULL, cores = 3) {
+init_pop_Bens <- function(nz = NULL,sim_init = sim_init, Bio = NULL, hab = NULL, start_cell = NULL, lambda = NULL, init_move_steps = 10, rec_params = NULL, rec_wk = NULL, spwn_wk = NULL, M = NULL, K = NULL, cores = 3) {
 
 # extract the indices
 idx <- sim_init[["idx"]]
@@ -62,11 +62,16 @@ Pop <- lapply(names(Bio), function(x) {
 		      # 1. Move probabilities
 
 		      MoveProp <- move_prob_Lst(lambda = lambda[[x]], hab = hab[[x]])
-
+          
+		      #1b. pull out nonzero indices
+		      NZi <- nz[[x]]
+		     # View(nz)
+		      View(NZi)
 		      # 2. Apply move n times
 
 		      for (i in seq(init_move_steps)) {
-		      PopIn <- move_population(moveProp = MoveProp, StartPop = PopIn)
+		      PopIn <- move_population_Bens(moveProp = MoveProp, StartPop = PopIn,       
+		                               Nzero_vals = NZi)
 		      PopIn <- Reduce("+", PopIn)
 		      }
 

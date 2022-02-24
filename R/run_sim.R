@@ -115,8 +115,8 @@ run_sim <- function(MoveProb = NULL, MoveProb_spwn = NULL, sim_init = NULL, pop_
   
   names(nonzero_idx) <- paste("spp",seq(sim_init[["idx"]][["n.spp"]]), sep ="")
   
- View(nonzero_idx)
-  end
+# View(nonzero_idx)
+
   #  View(MoveProb)
   #   View(MoveProb_spwn)
   

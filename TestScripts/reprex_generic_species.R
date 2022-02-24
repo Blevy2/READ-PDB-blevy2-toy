@@ -16,8 +16,36 @@ hab <- readRDS(file="C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/R
 
 
 
-source("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/R/init_pop_Bens.R")
+#read in new move_population file
 
+Rcpp::sourceCpp("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/src/Movement.cpp") #my edited version 
+
+source("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/R/RcppExports.R")
+#to source a new move_population where I edited to skips most things:
+#1: load file
+
+#2: allow the function to call other hidden functions from mixfishsim 
+environment(move_population_Bens) <- asNamespace('MixFishSim')
+#3: replace move_population with move_population_Bens in the MixFishSim package
+assignInNamespace("move_population", move_population_Bens, ns = "MixFishSim")
+
+
+
+
+
+
+#CALULATE INDICES OF NONZERO VALUES IN HAB TO PASS TO MOVE_POPULAITON DURING MOVEMENT
+nonzero_idx <- lapply(paste0("spp", seq_len(sim$idx[["n.spp"]])), function(s) {
+  
+  which(hab[["hab"]][[s]] !=0 , arr.ind=T)
+  
+})
+
+names(nonzero_idx) <- paste("spp",seq_len(sim$idx[["n.spp"]]), sep ="")
+
+
+
+source("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/R/init_pop_Bens.R")
 
 
 #decreasing population settings
@@ -30,8 +58,9 @@ Pop <- init_pop_Bens(sim_init = sim, Bio = c("spp1" = 4e5, "spp2" = 10e5), #thes
                      rec_wk = list("spp1" = 15:18, "spp2" = 15:18),
                      spwn_wk = list("spp1" = 15:18, "spp2" = 15:18),
                      M = c("spp1" = 0.275, "spp2" = 0.225), 
-                     K = c("spp1" = 0.3, "spp2" = 0.3) #all the same for now
-)
+                     K = c("spp1" = 0.3, "spp2" = 0.3),
+                      nz = nonzero_idx) #all the same for now
+
 
 load("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/20 year moveCov matrices/Final/Final Bens Method/Constant_temp_22yr.RData")
 
@@ -67,16 +96,6 @@ assignInNamespace("go_fish", go_fish_Bens, ns = "MixFishSim")
 
 
 
-#to source a new move_population where I edited to skips most things:
-#1: load file
-Rcpp::sourceCpp("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/src/Movement.cpp") #my edited version 
-#2: allow the function to call other hidden functions from mixfishsim 
-environment(move_population_Bens) <- asNamespace('MixFishSim')
-#3: replace move_population with move_population_Bens in the MixFishSim package
-assignInNamespace("move_population", move_population_Bens, ns = "MixFishSim")
-
-
-source("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/R/RcppExports.R")
 
 
 

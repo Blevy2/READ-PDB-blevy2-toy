@@ -175,7 +175,7 @@ List move_prob_Lst(double lambda, NumericMatrix hab) {
 //'
 //' @export
 // [[Rcpp::export]]
-List move_population_Bens(List moveProp, NumericMatrix StartPop, NumericVector Nzero_row, NumericVector Nzero_col) {
+List move_population(List moveProp, NumericMatrix StartPop, NumericMatrix Nzero_vals) {
   
   // Define matrix size
   int nrow = StartPop.nrow();
@@ -183,7 +183,7 @@ List move_population_Bens(List moveProp, NumericMatrix StartPop, NumericVector N
   int n = ncol * nrow;
   
   // ONLY LOOP THROUGH CELLS WITH NONZERO VALUES
-  int nNonzero = Nzero_row.length(); //number of nonzero indices for given species
+  int nNonzero = Nzero_vals.nrow(); //number of nonzero indices for given species
   
   
   // Define the output
@@ -212,7 +212,7 @@ List move_population_Bens(List moveProp, NumericMatrix StartPop, NumericVector N
           
           
           // Allocate cell pop to the new pop matrix
-          outPop(Nzero_row(i),Nzero_col(i)) = Props(Nzero_row(i),Nzero_col(i)) * CellPop;
+          outPop(Nzero_vals(i,1),Nzero_vals(i,2)) = Props(Nzero_vals(i,1),Nzero_vals(i,2)) * CellPop;
           // std::cout << Props(i,j) << std::endl;
           
         }
