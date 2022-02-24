@@ -72,9 +72,9 @@ plot_pop_summary <- function(results = res, timestep = 'daily', save = FALSE, sa
     require(ggplot2); require(dplyr)
     
     results_df_an1 <- results_df %>% filter(metric == "Bio.mat", day == 1) %>% 
-      group_by(pop, metric, year) %>% summarise(data = sum(data))
+      group_by(pop, metric, year) 
     results_df_an2 <- results_df %>% filter(metric != "Bio.mat") %>% 
-      group_by(pop, metric, year) %>% summarise(data = sum(data, na.rm = T))
+      group_by(pop, metric, year) 
     
     results_df_annual <- rbind(results_df_an1, results_df_an2) 
     

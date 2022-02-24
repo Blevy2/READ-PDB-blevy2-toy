@@ -18,17 +18,28 @@ all_data_spp2 <- read_csv(here("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-b
 
 #CHOOSE JUST ONE OF THE FOLLOWING
 #constant pop, constant temp
-data_spp1 <- read_csv(here("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/Results/ConstPop_ConstTemp", "spp1_SRS.csv"))
-data_spp2 <- read_csv(here("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/Results/ConstPop_ConstTemp", "spp2_SRS.csv"))
+#data_spp1 <- read_csv(file="Results/ConstPop_ConstTemp/spp1_SRS_16strata.csv")
+#data_spp2 <- read_csv(file="Results/ConstPop_ConstTemp/spp2_SRS_16strata.csv")
 
 #constant pop, increasing temp
-#data_spp1 <- read_csv(here("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/Results/ConstPop_IncrTemp", "spp1.Generic._SRS_from_Rcode.csv"))
-#data_spp2 <- read_csv(here("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/Results/ConstPop_IncrTemp", "spp2.Generic._SRS_from_Rcode.csv"))
+#data_spp1 <- read_csv(file="Results/ConstPop_IncrTemp/spp1_SRS_16strata.csv")
+#data_spp2 <- read_csv(file="Results/ConstPop_IncrTemp/spp2_SRS_16strata.csv")
 
 #increasing pop, constant temp
-data_spp1 <- read_csv(here("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/Results/IncrPop_ConstTemp", "spp1.Generic._SRS_from_Rcode.csv"))
-data_spp2 <- read_csv(here("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/Results/IncrPop_ConstTemp", "spp2.Generic._SRS_from_Rcode.csv"))
+#data_spp1 <- read_csv(here("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/Results/IncrPop_ConstTemp", "spp1.Generic._SRS_from_Rcode.csv"))
+#data_spp2 <- read_csv(here("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/Results/IncrPop_ConstTemp", "spp2.Generic._SRS_from_Rcode.csv"))
 
+#increasing pop, increasing temp
+# data_spp1 <- read_csv(file="Results/IncrPop_IncrTemp/spp1_SRS_16strata.csv")
+# data_spp2 <- read_csv(file="Results/IncrPop_IncrTemp/spp2_SRS_16strata.csv")
+
+# #decreasing pop, constant temp
+# data_spp1 <- read_csv(file="Results/DecrPop_ConstTemp/spp1_SRS_16strata.csv")
+# data_spp2 <- read_csv(file="Results/DecrPop_ConstTemp/spp2_SRS_16strata.csv")
+
+#decreasing pop, increasing temp
+data_spp1 <- read_csv(file="Results/DecrPop_IncrTemp/spp1_SRS_16strata.csv")
+data_spp2 <- read_csv(file="Results/DecrPop_IncrTemp/spp2_SRS_16strata.csv")
 
 #names(data_spp1)
 #head(data)
