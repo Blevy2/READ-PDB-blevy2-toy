@@ -236,7 +236,6 @@ plot(Sediment_poly)
 
 
 
-
 #ABOVE ARE POLYGONS. I CHANGED TO RASTERS IN ARCMAP AND LOAD THEM INSTEAD
 
   #BATHYMETRY   (OLD)
@@ -269,6 +268,55 @@ depth_GB_ras <- readRDS(file="TestScripts/FVCOM_GB/depth_GB.RDS")
 plot(depth_GB_ras)
 
 
+#TRYING TO INTERPOLATE SEDIMENT DATA HERE
+#following form https://www.youtube.com/watch?v=93_JSqQ3aG4&t=363s
+#download sediment point data
+library(gstat)
+sed_pts <- readOGR("C:\\Users\\benjamin.levy\\Desktop\\NOAA\\GIS_Stuff\\NOAA_Maps\\ecstdb2014")
+
+#subset data using bbox of GB_strata
+lon_min<-GB_strata_singlePoly@bbox[1]
+lon_max<-GB_strata_singlePoly@bbox[3]
+lat_min<-GB_strata_singlePoly@bbox[2]
+lat_max<-GB_strata_singlePoly@bbox[4]
+
+sed_pts <- sed_pts[(sed_pts$LONGITUDE>=lon_min) & (sed_pts$LONGITUDE<=lon_max) & (sed_pts$LATITUDE>=lat_min) & (sed_pts$LATITUDE<=lat_max),]
+
+#replace -9999 values with NA
+#sed_pts$MEDIAN[sed_pts$MEDIAN==-9999] <- NA
+
+#delete rows with -9999 entries
+sed_pts <- sed_pts[(sed_pts$MEDIAN!=-9999),]
+
+sed_ptsdf <- as.data.frame(sed_pts)
+
+#setup raster to use
+grid <- as(depth_GB_ras,"SpatialPixels")
+proj4string(grid) = proj4string(sed_pts)
+
+crs(grid)<-crs(sed_pts) #need to have same CRS
+
+idw = gstat::idw(formula=MEDIAN~1, locations = sed_pts, newdata= grid)
+
+idwdf <- as.data.frame(idw)
+
+
+
+#plot results with points
+ggplot()+
+  geom_tile(data = idwdf, aes(x = x, y = y, fill = var1.pred))+
+  geom_point(data = sed_ptsdf, aes(x = coords.x1, y = coords.x2, color = MEDIAN),
+             shape = 4)+
+  scale_fill_gradientn(colors = terrain.colors(10))+
+  theme_bw()
+
+#plot results without points
+ggplot()+
+  geom_tile(data = idwdf, aes(x = x, y = y, fill = var1.pred))+
+  scale_fill_gradientn(colors = terrain.colors(10))+
+  theme_bw()
+
+median_sed_thick_IDW <- raster(idw)
 
 
 
@@ -320,7 +368,7 @@ plot(GB_strata,add=T)
 #sediment_im <- as.im(sediment_ras_num) #CHANGE FROM CATEGORICAL TO NUMERICAL HERE
 #sediment_thick_im <- as.im(sediment_thick_ras)
 median_sed_thick_IDW_im <- as.im(median_sed_thick_IDW)
-median_sed_thick_NN_im <- as.im(median_sed_thick_NN)
+#median_sed_thick_NN_im <- as.im(median_sed_thick_NN)
 depth_GB_im <- as.im(depth_GB_ras)
 
 
@@ -329,7 +377,7 @@ depth_GB_im <- as.im(depth_GB_ras)
 #sediment_im$v <- scale(sediment_im)
 #sediment_thick_im$v <- scale(sediment_thick_im)
 median_sed_thick_IDW_im$v <- scale(median_sed_thick_IDW_im)
-median_sed_thick_NN_im$v <- scale(median_sed_thick_NN_im)
+#median_sed_thick_NN_im$v <- scale(median_sed_thick_NN_im)
 depth_GB_im$v <- scale(depth_GB_im)
 
 #old (wrong?) way
@@ -341,7 +389,7 @@ depth_GB_im$v <- scale(depth_GB_im)
 #sediment_ras_num <- raster::raster(sediment_im)
 #sediment_thick_ras <- raster::raster(sediment_thick_im)
 median_sed_thick_IDW_ras <- raster::raster(median_sed_thick_IDW_im)
-median_sed_thick_NN_ras <- raster::raster(median_sed_thick_NN_im)
+#median_sed_thick_NN_ras <- raster::raster(median_sed_thick_NN_im)
 depth_GB_ras <- raster::raster(depth_GB_im)
 
 
@@ -478,7 +526,7 @@ spatstat.geom::marks(presence) <- data.frame("presence" = rep(1, presence$n), #a
 #spatstat.geom::marks(presence)$sediment_thick <- sediment_thick_im[presence]
 spatstat.geom::marks(presence)$depth <-  depth_GB_im[presence] #adds covariate values for presence locations
 
-spatstat.geom::marks(presence)$median_sed <- median_sed_thick_NN_im[presence]
+#spatstat.geom::marks(presence)$median_sed <- median_sed_thick_NN_im[presence]
 spatstat.geom::marks(presence)$median_sed <- median_sed_thick_IDW_im[presence]
 
 
@@ -507,7 +555,7 @@ spatstat.geom::marks(absence) <- data.frame("presence" = rep(0, absence$n),
 
 spatstat.geom::marks(absence)$depth <-  depth_GB_im[absence] #adds covariate values for presence locations
 
-spatstat.geom::marks(absence)$median_sed <- median_sed_thick_NN_im[absence]
+#spatstat.geom::marks(absence)$median_sed <- median_sed_thick_NN_im[absence]
 spatstat.geom::marks(absence)$median_sed <- median_sed_thick_IDW_im[absence]
 
 
@@ -550,7 +598,7 @@ predict_locs <- data.frame(raster::rasterToPoints(depth_GB_ras))  #adds column c
 #predict_locs <- data.frame(raster::rasterToPoints(bathy_ras))  #adds column called layer with bathymetry
 #predict_locs$layer2 <- raster::extract(sediment_ras_num, predict_locs[, 1:2]) #adds column called layer2 with sediment number
 #predict_locs$layer2 <- raster::extract(sediment_thick_ras, predict_locs[, 1:2]) #adds column called layer2 with sediment number
-predict_locs$layer2 <- raster::extract(median_sed_thick_NN_ras, predict_locs[, 1:2]) #adds column called layer2 with sediment number
+#predict_locs$layer2 <- raster::extract(median_sed_thick_NN_ras, predict_locs[, 1:2]) #adds column called layer2 with sediment number
 predict_locs$layer2 <- raster::extract(median_sed_thick_IDW_ras, predict_locs[, 1:2]) #adds column called layer2 with sediment number
 
 
@@ -567,7 +615,7 @@ fish_lrren <- lrren(obs_locs = obs_locs,
                     predict_locs = predict_locs,
                     predict = TRUE,
                     cv = TRUE,
-                   # adapt=T,
+                   adapt=T
                     #balance = TRUE)
                     #conserve = TRUE #Logical. If TRUE (the default), the ecological niche will be estimated within a concave hull around the locations in obs_locs. If FALSE, the ecological niche will be estimated within a concave hull around the locations in predict_locs.
 )
@@ -602,19 +650,19 @@ plot_predict(fish_lrren, cref0 = "EPSG:32632", cref1 = "EPSG:4326",
 
 
 
-
-
-#Trying my own lrren function that uses adapt=T option
-source("TestScripts/lrren_BENS.R")
-
-fish_lrren <- lrren_Bens(obs_locs = obs_locs,
-                    predict_locs = predict_locs,
-                    predict = TRUE,
-                    cv = FALSE, #if true get error foreach::foreach comb not defined
-                    #adapt=T,
-                    #balance = TRUE)
-                    #conserve = TRUE #Logical. If TRUE (the default), the ecological niche will be estimated within a concave hull around the locations in obs_locs. If FALSE, the ecological niche will be estimated within a concave hull around the locations in predict_locs.
-)
+# 
+# 
+# #Trying my own lrren function that uses adapt=T option
+# source("TestScripts/lrren_BENS.R")
+# 
+# fish_lrren <- lrren_Bens(obs_locs = obs_locs,
+#                     predict_locs = predict_locs,
+#                     predict = TRUE,
+#                     cv = FALSE, #if true get error foreach::foreach comb not defined
+#                     #adapt=T,
+#                     #balance = TRUE)
+#                     #conserve = TRUE #Logical. If TRUE (the default), the ecological niche will be estimated within a concave hull around the locations in obs_locs. If FALSE, the ecological niche will be estimated within a concave hull around the locations in predict_locs.
+# )
 
 
 
@@ -631,6 +679,20 @@ environment(plot_predict_BENS) <- asNamespace('envi')
 p<-plot_predict_BENS(fish_lrren, cref0 = "EPSG:32632", cref1 = "EPSG:4326",
              lower_lrr = -1, #used to be -1 to 1
              upper_lrr = 1)
+
+
+#alter extent of output to match correct extent
+extent(p$out$v)<-extent(p$PR)
+
+#taken from plot_predict
+#p$out = rrp
+graphics::par(pty = "s")
+fields::image.plot(p$out$v, breaks = p$out$breaks, col = p$out$cols,
+                         axes = TRUE, main = "log relative risk", xlab = "longitude",
+                         ylab = "latitude", legend.mar = 3.1, axis.args = list(at = p$out$at,
+                                                                               las = 0, labels = p$out$labels, cex.axis = 0.67))
+
+
 
 #choose one. both from plot_predict_BENS. DONT NEED NOW THAT FIXED COLUMN ORDER
 #p$out<-predict_risk_raster
@@ -663,10 +725,13 @@ rbs <- seq( min(vec_01,na.rm=T),  max(vec_01,na.rm=T), rbt)
 #numbers to show
 rbl <- round(rbs, digits = 1)
 
+out <- p$out$v
 
-midpoint<-0
+midpoint<-0.5
 lowerhalf <- length(out[out < midpoint & !is.na(out)]) # values below 0
 upperhalf <- length(out[out > midpoint & !is.na(out)]) # values above 0
+min_absolute_value <- min(out[is.finite(out)], na.rm = TRUE) # minimum absolute value of raster
+max_absolute_value <- max(out[is.finite(out)], na.rm = TRUE) # maximum absolute value of raster
 
 # Color ramp parameters
 ## Colors
@@ -678,14 +743,19 @@ rc2 <- grDevices::colorRampPalette(colors = c(cols[2], cols[1]), space = "Lab")(
 ### compile colors
 rampcols <- c(rc1, rc2)
 
+## Breaks
+### vector of breaks for values below midpoint
+rb1 <- seq(min_absolute_value, midpoint, length.out = lowerhalf + 1)
+### vector of breaks for values above midpoint
+rb2 <- seq(midpoint, max_absolute_value, length.out = upperhalf + 1)[-1]
+### compile breaks
+rampbreaks <- c(rb1, rb2)
 
 
 graphics::par(pty = "s")
 
-#fix extent
-p$out$v@extent <- GB_strata_ras@extent
 
-fields::image.plot(p$out$v, breaks = p$out$breaks, col = p$out$cols, 
+fields::image.plot(p$out$v, breaks = rampbreaks, col = rampcols, 
                    axes = TRUE, main = "log relative risk", xlab = "longitude", 
                    ylab = "latitude", legend.mar = 3.1, axis.args = list(at = rbs, 
                                                                          las = 0, labels = rbl, cex.axis = 0.67))
@@ -695,6 +765,46 @@ fields::image.plot(p$out$v, breaks = p$out$breaks, col = p$out$cols,
 
 final_ras <- raster::mask(p$out$v,GB_strata_singlePoly)
 
+
+
+
+####################################################
+#Replace NA values with average of 5x5 window
+#following https://gis.stackexchange.com/questions/181011/fill-the-gaps-using-nearest-neighbors/181030
+####################################################
+
+#Function to replace the focal value with the mean of a 3x3 window if NA. If the window size increases the index value [i] needs to change as well (eg., for a 5x5 window the index would be 13).
+fill.na <- function(x, i=13) {    #for 3x3 us i= 5 and matrix(1,3,3)
+  if( is.na(x)[i] ) {             #for 5x5 use i=13 and matrix(1,5,5)
+    return( round(mean(x, na.rm=TRUE),0) )
+  } else {
+    return( x[i] )#should never enter this part but if it does this ensures nothing will happen
+  }
+}  
+
+#apply function to original raster JUST ONCE
+r2 <- raster::focal(final_ras, w = matrix(1,5,5), fun = fill.na, 
+                    pad = F, NAonly =TRUE )
+
+#then apply function to new raster additional times as needed to fill in strata
+r2 <- raster::focal(r2, w = matrix(1,5,5), fun = fill.na, 
+                    pad = F, NAonly =TRUE )
+
+plot(r2)
+plot(GB_strata,add=T)
+
+
+
+#once satisfied, replace old raster and mask to strata
+final_ras <- raster::mask(r2,GB_strata)
+
+plot(final_ras)
+plot(GB_strata,add=T)
+
+
+
+#AFTER RASTER IS SET, DEFINE AS MATRIX TO USE IN MODEL
+
 final_matrix <- as.matrix(final_ras)
 
 #turn matrix for plotting
@@ -702,3 +812,16 @@ rotate <- function(x) t(apply(x, 2, rev))
 final_matrix_turned <- rotate(final_matrix)
 par(mar=c(1,1,1,1))
 fields::image.plot(final_matrix_turned)
+
+
+#see how many zero and nonzero values there are
+sum(colSums(final_matrix==0,na.rm = T)) #zero
+sum(colSums(final_matrix>0,na.rm = T)) #nonzero
+length(final_matrix[,1])*length(final_matrix[1,]) #total cells including NAs
+
+
+#save
+saveRDS(final_matrix,file="TestScripts/Habitat_plots/YellowtailFlounder_Unweighted_AdaptTrue")
+
+
+

@@ -70,8 +70,10 @@ Pop <- lapply(names(Bio), function(x) {
 		      # 2. Apply move n times
 
 		      for (i in seq(init_move_steps)) {
-		      PopIn <- move_population_Bens(moveProp = MoveProp, StartPop = PopIn,       
-		                               Nzero_vals = NZi)
+		     # PopIn <- move_population(moveProp = MoveProp, StartPop = PopIn,       
+		      #                         Nzero_vals = NZi)
+		        PopIn <- move_population(moveProp = MoveProp, StartPop = PopIn)  
+		        
 		      PopIn <- Reduce("+", PopIn)
 		      }
 

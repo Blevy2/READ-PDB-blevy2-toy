@@ -166,20 +166,20 @@ for(i in seq(steps)){
 
 
     #week 1 is 1st week january
-    #temp decreases until week 5 (increases again starting week 6)
-    #temp increases through week 30 (decreases again starting week 31)
+    #temp decreases until week 14 (increases again starting week 15)
+    #temp increases through week 41 (decreases again starting week 42)
     
-    #run for 5 weeks, start stretching from week 6 through week 30 then raise up remainin points by difference between stretchd week 30 and original week 30
+    #run for 14 weeks, start stretching from week 15 hrough week 41 then raise up remainin points by difference between stretchd week 41 and original week 41
     
     
     #decrease
-    if(i <= 5){
+    if(i <= 14){
       new_moveCov[["cov.matrix"]][[i]] <- Good_moveCov[["cov.matrix"]][[i]]
       
     }
     
     #increase/stretch
-    if( (i >= 6)  & (i <= 30 ) ){
+    if( (i >= 15)  & (i <= 41 ) ){
       new_moveCov[["cov.matrix"]][[i]] <- inc*Good_moveCov[["cov.matrix"]][[i]]
         }
     
@@ -187,16 +187,16 @@ for(i in seq(steps)){
   
   
   #after creating first stretched sequence, see how far first and last mean values are
-  if(i==31){
+  if(i==42){
 
     #rasie up by this amount
-    diff <- mean(as.vector(as.matrix(new_moveCov[["cov.matrix"]][[30]])),na.rm=T)-mean(as.vector(as.matrix(Good_moveCov[["cov.matrix"]][[31]])),na.rm=T)
+    diff <- mean(as.vector(as.matrix(new_moveCov[["cov.matrix"]][[41]])),na.rm=T)-mean(as.vector(as.matrix(Good_moveCov[["cov.matrix"]][[42]])),na.rm=T)
        
   }
   
   #finish off the first year
   
-  if((i >=31) & (i<=52)){
+  if((i >=42) & (i<=52)){
     
     new_moveCov[["cov.matrix"]][[i]] <- diff+Good_moveCov[["cov.matrix"]][[i]]
     
@@ -280,6 +280,7 @@ for(i in seq(steps)){
 }
 plot(wk_meantemp)
 plot(wk_meantemp[1:60])
+plot(wk_meantemp[1:52])
 plot(wk_mintemp)
 plot(wk_maxtemp)
 plot(yr_meantemp)
@@ -289,7 +290,7 @@ min(yr_meantemp)
 max(yr_meantemp)
 
 max(yr_meantemp)-min(yr_meantemp)
-
+mo
 
 
 ##################################################################
@@ -440,7 +441,7 @@ Good_moveCov <- all_moveCov  #to be used below
 #take initial yearly run and extend it so that temp growth over time is 5 degrees
 
 
-#moveCov <- list()
+moveCov <- list()
 steps <- 52*20 #total months
 inc <- 1 #percent increase each year (IE, NONE)
 new_moveCov <- list()
@@ -450,6 +451,13 @@ for(i in seq(steps)){
   
   
   
+  
+  #week 1 is 1st week january
+  #temp decreases until week 14 (increases again starting week 15)
+  #temp increases through week 41 (decreases again starting week 42)
+  
+  #run for 14 weeks, start stretching from week 15 hrough week 41 then raise up remainin points by difference between stretchd week 41 and original week 41
+  
   #week 1 is 1st week january
   #temp decreases until week 5 (increases again starting week 6)
   #temp increases through week 30 (decreases again starting week 31)
@@ -458,21 +466,21 @@ for(i in seq(steps)){
   
   
   #decrease
-  if(i <= 5){
-    new_moveCov[["cov.matrix"]][[i]] <- Good_moveCov[[i]]
+  if(i <= 14){
+    new_moveCov[["cov.matrix"]][[i]] <- Good_moveCov[["cov.matrix"]][[i]]
     
   }
   
   #increase/stretch
-  if( (i >= 6)  & (i <= 30 ) ){
-    new_moveCov[["cov.matrix"]][[i]] <- inc*Good_moveCov[[i]]
+  if( (i >= 15)  & (i <= 41 ) ){
+    new_moveCov[["cov.matrix"]][[i]] <- inc*Good_moveCov[["cov.matrix"]][[i]]
   }
   
   
   
   
   #after creating first stretched sequence, see how far first and last mean values are
-  if(i==31){
+  if(i==42){
     
     #rasie up by this amount
     diff <- 0
@@ -481,9 +489,9 @@ for(i in seq(steps)){
   
   #finish off the first year
   
-  if((i >=31) & (i<=52)){
+  if((i >=42) & (i<=52)){
     
-    new_moveCov[["cov.matrix"]][[i]] <- diff+Good_moveCov[[i]]
+    new_moveCov[["cov.matrix"]][[i]] <- diff+Good_moveCov[["cov.matrix"]][[i]]
     
   }
   

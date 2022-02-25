@@ -27,7 +27,7 @@ source("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/R/RcppExports.
 #2: allow the function to call other hidden functions from mixfishsim 
 environment(move_population_Bens) <- asNamespace('MixFishSim')
 #3: replace move_population with move_population_Bens in the MixFishSim package
-assignInNamespace("move_population", move_population_Bens, ns = "MixFishSim")
+assignInNamespace("move_population", move_population, ns = "MixFishSim")
 
 
 

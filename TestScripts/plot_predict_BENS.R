@@ -98,7 +98,7 @@ if (!is.null(naband_reclass)) {
     raster::image(naband_reclass, col = plot_cols[4], add = TRUE)
   }
   
-  plot_predict_BENS_output <- list(out = rrp)
+  plot_predict_BENS_output <- list(out = rrp, predict_risk_ras = predict_risk_raster, PR=predict_risk)
   
 }
 
