@@ -16,12 +16,37 @@ source("R/BENS_init_survey.R")
 
 #setup catch log
 #MAY NEED TO RUN A FEW TIMES TO GET MATRIX THAT IS CORRECT SIZE
-surv_random <- BENS_init_survey(sim_init = sim,design = 'random_station', n_stations = 320, #this is total per year (20 in each of 4 strata)
+
+#16 equal sized strata (n_stations same in each)
+nstat <-  rep(20,16) #this is total samples per year per strata (20 in each strata or 10 per season)
+surv_random <- BENS_init_survey(sim_init = sim,design = 'random_station', n_stations = nstat, 
                                 start_day = 1, stations_per_day = 1, Qs = c("spp1" = 0.1, "spp2"= 0.2),
                                 strata_coords = hab$strata, strata_num = hab$stratas, 
                                 years_cut = 2 #if running 22 years, remove first 2 years 
 )
 
+#random sized stratas
+#first distribute total yearly samples by strata size (used to be 320 for 16 strata. That is 20 per year or 10 per season each)
+tsamp <- 320
+nstat_noround <- vector()
+nstat <- vector()
+for(i in seq(length(hab$strata))){
+  
+  nstat_noround[i] <- (sum(hab$stratas[hab$stratas==i]) / sum(hab$stratas[hab$stratas>0])) * tsamp
+  
+  ifelse(nstat_noround[i]<1, nstat[i] <- ceiling(nstat_noround[i]), nstat[i] <- floor(nstat_noround[i]))
+  
+}
+
+sum(nstat) #figure out sum
+
+#remove or add extra to large values in nstat. MAKE SURE THERE IS AT LEAST 2 PER STRATA IN NSTAT (IE, ONE SAMPLE PER SEASON)
+
+surv_random <- BENS_init_survey(sim_init = sim,design = 'random_station', n_stations = nstat, #this is total per year in each  strata
+                                start_day = 1, stations_per_day = 1, Qs = c("spp1" = 0.1, "spp2"= 0.2),
+                                strata_coords = hab$strata, strata_num = hab$stratas, 
+                                years_cut = 2 #if running 22 years, remove first 2 years 
+)
 
 
 #use first 4 columns of surv_random$log.mat as a basis for this sampling
@@ -46,23 +71,25 @@ n_spp <- 2     #number of species
 
 nstrata <- 16   #number of strata
 
-strat_samp_tot <- 400 #total number of samples to collect in each strata over entire simulation
-
 nyears <- 20 #number of simulation years
 
 years_cut <- 2 #number of extra years cut off the front
+
+strat_samp_tot <- nstat*nyears #total number of samples to collect in each strata over entire simulation
+#(number of stations in each strata per year) * (number of years)
+              
 
 
 strata_surv <- list()
 #pull out each strata survey info and store separately  
 
-temp <- matrix(unlist(surv_random$log.mat),ncol=9, nrow=nstrata*strat_samp_tot)
+temp <- matrix(unlist(surv_random$log.mat),ncol=9, nrow=sum(strat_samp_tot))
 idx <- 1
 for(i in seq(nstrata)){
   
-  strata_surv[[i]] <- temp[idx:(idx+strat_samp_tot-1),1:9]
+  strata_surv[[i]] <- temp[idx:(idx+strat_samp_tot[i]-1),1:9]
   
-  idx <- idx + strat_samp_tot
+  idx <- idx + strat_samp_tot[i]
   # print(idx)
 }
 
@@ -109,8 +136,6 @@ S4_seq <- rep(S4_wks,nyears)
 
 #################################################
 
-
-
 #ADD COLUMN FOR SEASON FOR STRAT MEAN
 
 #season
@@ -121,6 +146,7 @@ S1_sn <- c("SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRING","SPRIN
 
 #sequence for season
 Season <- rep(S1_sn,nyears)
+
 
 
 
@@ -161,6 +187,60 @@ for(i in seq(nstrata)){
 
 
 
+##########################################################################
+#SETTING UP SEASON AND WEEKS FOR RANDOM NUMBER OF SAMPLES PER STRATA
+#WILL EQUALLY DIVIDE SAMPLES BETWEEN SPRING AND FALL. IF ODD WILL SEND TO FALL
+##########################################################################
+spring_wks <-c(13,14)
+fall_wks <- c(37,38)
+
+for(i in seq(nstrata)){
+
+#total number of samples per year in given strata
+s <- nstat[i]
+  
+  
+  
+  #fix number of samples per season
+  ifelse(s%%2==0, {s_samps = s/2
+                  f_samps = s/2},
+                  {s_samps = floor(s/2)
+                   f_samps = ceiling(s/2)})
+  
+  
+  #(special case) if just sampling once in one of the seasons, only use first week in each season
+  if(f_samps ==1){ swks = rep(c(spring_wks[1],fall_wks[1]),nyears)
+                  Season = rep(c("SPRING","FALL"),nyears)}
+  
+  if(s_samps==1 & f_samps ==2){ swks = rep(c(spring_wks[1],fall_wks[1],fall_wks[2]),nyears)
+                               Season = rep(c("SPRING","FALL","FALL"),nyears)}
+  
+  
+  if(s_samps>=2 & f_samps >=2){
+  #if sampling more than once per season, fix number of samples per week within season
+      ifelse(f_samps%%2==0, {f_samps_wk1 = f_samps/2
+                            f_samps_wk2 = f_samps/2},
+                           {f_samps_wk1 = floor(f_samps/2)
+                           f_samps_wk2 = ceiling(f_samps/2)})
+  
+    ifelse(s_samps%%2==0, {s_samps_wk1 = s_samps/2
+                          s_samps_wk2 = s_samps/2},
+                          {s_samps_wk1 = floor(s_samps/2)
+                           s_samps_wk2 = ceiling(s_samps/2)})
+              
+    #if sampling more than once per season, repeat 
+              swks = rep(c(rep(spring_wks[1],s_samps_wk1),rep(spring_wks[2],s_samps_wk2),rep(fall_wks[1],f_samps_wk1),rep(fall_wks[2],f_samps_wk2)),nyears)
+            Season = rep(c(rep("SPRING",s_samps_wk1),rep("SPRING",s_samps_wk2),rep("FALL",f_samps_wk1),rep("FALL",f_samps_wk2)),nyears)
+    }
+ 
+ # print(swks)
+
+    strata_surv[[i]] <- cbind(strata_surv[[i]],swks,Season)
+    colnames(strata_surv[[i]]) <- c("station_no","x","y","stratum","day","tow","year","spp1","spp2","week","Season")
+    
+}
+
+
 
 
 
@@ -186,10 +266,10 @@ for(res in seq(length(result))){ #for each simulation result
     
     for(i in seq(length(strata_surv[[s]][,1]))){ #go down list
       
-      x <- as.numeric(strata_surv[[s]][i,2])   #x coord in second column
-      y <- as.numeric(strata_surv[[s]][i,3])   #y coord in third column  
-      year <- as.numeric(strata_surv[[s]][i,7]) #year in 7th column
-      week <- as.numeric(strata_surv[[s]][i,10])  #appended sample week into 10th column above
+      x <- as.numeric(strata_surv[[s]][i,"x"])   #x coord in second column
+      y <- as.numeric(strata_surv[[s]][i,"y"])   #y coord in third column  
+      year <- as.numeric(strata_surv[[s]][i,"year"]) #year in 7th column
+      week <- as.numeric(strata_surv[[s]][i,"week"])  #appended sample week into 10th column above
       
       
       strata_surv[[s]][i,8] <- result[[res]][["pop_bios"]][[(week+(52*(year-1)))]][["spp1"]][x,y]   #POPULATIONMATRIX$spp1(week+(52*(year-1))[x,y]   #spp1 in col 8
@@ -296,7 +376,9 @@ source("TestScripts/Calc_strat_mean/fn_srs_survey_BENS.R")
 
 #DEFINE INDIVIDUAL STRATUM AREAS 
 stratum <- seq(nstrata)
-STRATUM_AREA <- rep(10000/nstrata,nstrata) #100x100 grid so each corner has area 2500
+
+STRATUM_AREA <- surv_random$cells_per_strata # old way: rep(10000/nstrata,nstrata) #100x100 grid so each corner has area 2500
+
 sv.area <- as_tibble(data.frame(stratum,STRATUM_AREA))
 
 
@@ -316,6 +398,9 @@ strat_mean_all_spp2 <- vector("list",length(surv_noise)) #4 strata
 for(iter in seq(length(surv_noise))){
   print(iter)
   for(sample in seq(length(surv_noise[[iter]]))){
+    
+    #if any NA columns make them zero
+    surv_noise[[iter]][[sample]][is.na(surv_noise[[iter]][[sample]])]=0
     
     spp <- as_tibble(surv_noise[[iter]][[sample]],header=T) #pull out entire survey matrix
     
@@ -447,8 +532,8 @@ for(s in seq(length(sum_survey_iter))){ #2 species
 }
 
 #write csvs
-write.csv(sum_survey_iter_final[[1]], file="spp1_SRS_16strata.csv", row.names=F)
-write.csv(sum_survey_iter_final[[2]], file="spp2_SRS_16strata.csv", row.names=F)
+write.csv(sum_survey_iter_final[[1]], file="spp1_SRS_16Randomstrata_option1_IncTemp.csv", row.names=F)
+write.csv(sum_survey_iter_final[[2]], file="spp2_SRS_16Randomstrata_option1_IncTemp.csv", row.names=F)
 
 
 
@@ -489,13 +574,13 @@ write.csv(sum_survey_iter_final[[2]], file="spp2_SRS_16strata.csv", row.names=F)
 strata_surv <- list(list(),list(),list(),list())
 
 
-temp <- matrix(unlist(surv_random$log.mat),ncol=9, nrow=nstrata*strat_samp_tot)
+temp <- matrix(unlist(surv_random$log.mat),ncol=9, nrow=sum(strat_samp_tot))
 idx <- 1
 for(i in seq(nstrata)){
   
-  strata_surv[[i]] <- temp[idx:(idx+strat_samp_tot-1),1:9]
+  strata_surv[[i]] <- temp[idx:(idx+strat_samp_tot[i]-1),1:9]
   
-  idx <- idx + strat_samp_tot
+  idx <- idx + strat_samp_tot[i]
   # print(idx)
 }
 #pull out each strata survey info and store separately 

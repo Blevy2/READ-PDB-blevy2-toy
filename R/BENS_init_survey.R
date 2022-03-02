@@ -135,12 +135,16 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 	  
 	  #while you do keep track of strata number
 	  str_num <-vector()
-	  
+	  	   yrs <- vector()
 	  for(j in unique_numbers){
-	    
+	    print(j)
 	    #index[j] is how many total stations there are in each strata
 	    #currently dividing total number of samples evening among each strata
-	    my_sample <- sample(index[j],n_stations*(sim_init[["idx"]][["ny"]]-years_cut)/length(strata_index_list),replace = FALSE)
+	    
+	   ifelse(index[j]>=(n_stations[[j]]*(sim_init[["idx"]][["ny"]]-years_cut)),
+	                     {my_sample <- sample(index[j],n_stations[[j]]*(sim_init[["idx"]][["ny"]]-years_cut),replace = FALSE)},
+	                     {print("not enough sampling locations. sampling this strata with replacement")
+	                     my_sample <- sample(index[j],n_stations[[j]]*(sim_init[["idx"]][["ny"]]-years_cut),replace = TRUE)})
 #	print("max/min is")
 #	print(max(my_sample))
 #	print(min(my_sample))
@@ -150,13 +154,20 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 	    #find index for each sample
 #	    print(range(my_sample))
 #	    print(j)
-	    for(i in seq(1:length(my_sample))){
+	   
+
+	   nsamps <- length(my_sample)
+	 #  print(nsamps)
+	    for(i in seq(1:nsamps)){
 	    coords <- c(coords,which(strata_index_list[[j]]==my_sample[i]))
 
 	    #record strata number
 	    str_num <-c(str_num,unique_numbers[j])
-	    }
 	    
+	    #record year
+	   
+	    }
+	     yrs <- c(yrs,rep(seq(years_cut+1,sim_init[["idx"]][["ny"]]), each = nsamps/(sim_init[["idx"]][["ny"]]-years_cut)))
 #	    print(length(coords))   #LENGTH OF COORDS IS NOT ALWAYS THE SAME WHICH MEANS IT CANT ALWAYS FIND MY_SAMPLE VALUES IN STRATA_INDEX_LIST 
 	  }
 	  
@@ -211,7 +222,7 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 	##########################
 	
 	#create the station days
-	station_days <- rep(sim_init[["brk.idx"]][["day.seq"]][which(sim_init[["brk.idx"]][["day.seq"]] == start_day, arr.ind = T):c(which(sim_init[["brk.idx"]][["day.seq"]] == start_day, arr.ind = T) + round(n_stations / stations_per_day, 0) - 1)], each = stations_per_day)[seq_len(n_stations)]
+#	station_days <- rep(sim_init[["brk.idx"]][["day.seq"]][which(sim_init[["brk.idx"]][["day.seq"]] == start_day, arr.ind = T):c(which(sim_init[["brk.idx"]][["day.seq"]] == start_day, arr.ind = T) + round(n_stations / stations_per_day, 0) - 1)], each = stations_per_day)[seq_len(n_stations)]
 	
 	
 	log.mat 	       <- matrix(NA, nrow = length(x), 
@@ -229,14 +240,14 @@ BENS_init_survey <- function (sim_init = NULL, design = 'fixed_station', n_stati
 	log.mat[,'x']          <- x  #different than fixed station section
 	log.mat[,'y']          <- y  #different than fixed station section
 	log.mat[,'strata']     <- str_num #new
-	log.mat[,'day']        <- rep(station_days, times = sim_init[["idx"]][["ny"]]-years_cut)
-	log.mat[,'tow']        <- rep(seq_len(n_stations), sim_init[["idx"]][["ny"]]-years_cut) 
-	log.mat[,'year']       <- rep(rep(seq(years_cut+1,sim_init[["idx"]][["ny"]]), each = n_stations/n_strata), n_strata)
+#	log.mat[,'day']        <- rep(station_days, times = sim_init[["idx"]][["ny"]]-years_cut)
+#	log.mat[,'tow']        <- rep(seq_len(n_stations), sim_init[["idx"]][["ny"]]-years_cut) 
+	log.mat[,'year']       <- yrs
 	
 	
 	return(list(survey_settings = c("design" = design, "n_stations" =
 	                                  n_stations, "days_fished" = round(n_stations / stations_per_day, 0),
-	                                "Qs" = Qs), log.mat = log.mat))
+	                                "Qs" = Qs), log.mat = log.mat, "cells_per_strata" = index))
 	
 	#check for duplicate stations
 	

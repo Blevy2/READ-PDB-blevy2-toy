@@ -98,7 +98,7 @@ multiplier of attractiveness to the spawning area during spawning periods
 If plot.dist = TRUE, it returns the plots to a file.
 
 ```{r habitat}
-source("R/BENS_create_hab.R")
+
 
 source("R/BENS_plot_habitat.R")
 
@@ -118,6 +118,7 @@ spp.ctrl = list(
 )
 
 
+#DEFINING UNIFORM NXN GRID
 #defining strata coordinates
 #number of rows and columns to define (assume want n equal sized strata)
 nrows <- 4
@@ -141,6 +142,48 @@ stratas <- list()
 }
 
 
+#DEFINING RANDOM NXN GRID
+#size of our domain
+totalrows <- 100
+totalcols <- 100
+
+#desired dimentions of strata
+nrows <- 5
+ncols <- 6
+
+#of the form  c(x1, x2, y1, y2) THESE ARE BOUNDARIES OF STRATA VALUES
+# xs are rows ys columns
+strata_num <- 1
+stratas <- list()
+
+#generate randow sequence of rows
+rowind <- sort(sample(seq(totalrows),nrows-1,replace=FALSE))
+rowind <- c(1,rowind,totalrows)
+
+row_idx <- 0
+ for(r in seq(length(rowind)-1)){
+row_idx <- row_idx+1
+
+   #generate random sequence of columns
+    colind <- sort(sample(seq(totalcols),ncols-1,replace=FALSE))
+    colind <- c(1,colind,totalcols)
+    
+    col_idx <- 0
+    
+   for(c in seq((length(colind)-1))){
+     
+     col_idx <- col_idx+1
+  
+   stratas[[paste("strata",strata_num,sep="")]] = c( rowind[row_idx] , rowind[row_idx+1] , colind[col_idx] , colind[col_idx+1]) 
+  
+    strata_num <- strata_num +1  
+    
+  }
+  
+}
+
+
+source("R/BENS_create_hab.R")
 
 hab <- BENS_create_hab(sim_init = sim, 
                        spp.ctrl = spp.ctrl,
@@ -163,6 +206,10 @@ hab <- BENS_create_hab(sim_init = sim,
                       strata = stratas
 
                        )
+
+#plot strata
+par(mar=c(1,1,1,1))
+fields::image.plot(hab$stratas)
 
 
 #print(hab)
