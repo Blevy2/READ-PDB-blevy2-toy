@@ -143,3 +143,31 @@ gg_spp2_scen +
 
 
 
+
+
+#setup groups by scenario
+gg_spp1_scen <- ggplot(data=all_data_spp1,aes(x=year,y=mean.yr.absolute,group=Scenario, color=Scenario))
+gg_spp2_scen <- ggplot(data=all_data_spp2,aes(x=year,y=mean.yr.absolute,group=Scenario,color=Scenario))
+
+
+#plot scenario groups by season
+#spp1
+gg_spp1_scen +
+  #calculating 95% confidence intervals with geom_errorbar. N_samples_strat could be fixed at 10. Added it to calculation after
+  geom_errorbar(aes(ymin=mean.yr.absolute-(1.96*sd.mean.yr.absolute), ymax=mean.yr.absolute+(1.96*sd.mean.yr.absolute)),width=.3) +
+  geom_point()+
+  geom_line(aes(color=Scenario))+
+  labs(x="year",y="mean.yr.absolute", title = "Spp1") +
+  facet_wrap( c("season","ScenarioA"), scales = "free_y")
+
+# spp2
+gg_spp2_scen +
+  #calculating 95% confidence intervals with geom_errorbar. N_samples_strat could be fixed at 10. Added it to calculation after
+  geom_errorbar(aes(ymin=mean.yr.absolute-(1.96*sd.mean.yr.absolute), ymax=mean.yr.absolute+(1.96*sd.mean.yr.absolute)),width=.3) +
+  geom_point()+
+  geom_line(aes(color=Scenario))+
+  labs(x="year",y="mean.yr.absolute", title = "Spp2") +
+  facet_wrap(c("season","ScenarioA"), scales = "free_y")
+
+
+

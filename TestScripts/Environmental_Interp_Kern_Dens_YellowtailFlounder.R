@@ -202,7 +202,7 @@ library(rgdal)
 strata.areas <- readOGR(paste(strata.dir,"Survey_strata", sep="")) #readShapePoly is deprecated; use rgdal::readOGR or sf::st_read 
 
 #define georges bank
-GB_strata_num <- c("01130","01140","01150","01160","01170","01180","01190","01200","01210","01220","01230","01240","01250")
+GB_strata_num <- c("01130","01140","01150","01160","01170","01180","01190","01200","01210")
 #pull out indices corresponding to GB strata
 GB_strata_idx <- match(GB_strata_num,strata.areas@data[["STRATUMA"]])
 #plot them
@@ -257,66 +257,70 @@ plot(Sediment_poly)
 
 #Median sediment size (from Robyns USGS link)
 #extrapolated from points using natural neighbor interpolation method
-median_sed_thick_NN <-  raster('C:\\Users\\benjamin.levy\\Desktop\\NOAA\\GIS_Stuff\\NOAA_Maps\\Median_Sediment_Size_(ecstdb2014)\\med_sdsze_NaturalNeighbor\\Med_SdSze_NN')
-plot(median_sed_thick_NN)
-#extrapolated from points using IDW interpolation method
-median_sed_thick_IDW <-  raster('C:\\Users\\benjamin.levy\\Desktop\\NOAA\\GIS_Stuff\\NOAA_Maps\\Median_Sediment_Size_(ecstdb2014)\\med_sdsze_IDW_Method\\Med_SdSze_IDW')
-plot(median_sed_thick_IDW)
+# median_sed_thick_NN <-  raster('C:\\Users\\benjamin.levy\\Desktop\\NOAA\\GIS_Stuff\\NOAA_Maps\\Median_Sediment_Size_(ecstdb2014)\\med_sdsze_NaturalNeighbor\\Med_SdSze_NN')
+# plot(median_sed_thick_NN)
+# #extrapolated from points using IDW interpolation method
+# median_sed_thick_IDW <-  raster('C:\\Users\\benjamin.levy\\Desktop\\NOAA\\GIS_Stuff\\NOAA_Maps\\Median_Sediment_Size_(ecstdb2014)\\med_sdsze_IDW_Method\\Med_SdSze_IDW')
+# plot(median_sed_thick_IDW)
 
 #DEPTH FROM FVCOM DATA
 depth_GB_ras <- readRDS(file="TestScripts/FVCOM_GB/depth_GB.RDS")
 plot(depth_GB_ras)
 
+#LOADING SEDIMENT MAP CREATED BELOW
+median_sed_thick_IDW <- readRDS(file="TestScripts/Habitat_plots/med_sed_idw_ras.RDS")
+plot(median_sed_thick_IDW)
+
 
 #TRYING TO INTERPOLATE SEDIMENT DATA HERE
 #following form https://www.youtube.com/watch?v=93_JSqQ3aG4&t=363s
 #download sediment point data
-library(gstat)
-sed_pts <- readOGR("C:\\Users\\benjamin.levy\\Desktop\\NOAA\\GIS_Stuff\\NOAA_Maps\\ecstdb2014")
-
-#subset data using bbox of GB_strata
-lon_min<-GB_strata_singlePoly@bbox[1]
-lon_max<-GB_strata_singlePoly@bbox[3]
-lat_min<-GB_strata_singlePoly@bbox[2]
-lat_max<-GB_strata_singlePoly@bbox[4]
-
-sed_pts <- sed_pts[(sed_pts$LONGITUDE>=lon_min) & (sed_pts$LONGITUDE<=lon_max) & (sed_pts$LATITUDE>=lat_min) & (sed_pts$LATITUDE<=lat_max),]
-
-#replace -9999 values with NA
-#sed_pts$MEDIAN[sed_pts$MEDIAN==-9999] <- NA
-
-#delete rows with -9999 entries
-sed_pts <- sed_pts[(sed_pts$MEDIAN!=-9999),]
-
-sed_ptsdf <- as.data.frame(sed_pts)
-
-#setup raster to use
-grid <- as(depth_GB_ras,"SpatialPixels")
-proj4string(grid) = proj4string(sed_pts)
-
-crs(grid)<-crs(sed_pts) #need to have same CRS
-
-idw = gstat::idw(formula=MEDIAN~1, locations = sed_pts, newdata= grid)
-
-idwdf <- as.data.frame(idw)
-
-
-
-#plot results with points
-ggplot()+
-  geom_tile(data = idwdf, aes(x = x, y = y, fill = var1.pred))+
-  geom_point(data = sed_ptsdf, aes(x = coords.x1, y = coords.x2, color = MEDIAN),
-             shape = 4)+
-  scale_fill_gradientn(colors = terrain.colors(10))+
-  theme_bw()
-
-#plot results without points
-ggplot()+
-  geom_tile(data = idwdf, aes(x = x, y = y, fill = var1.pred))+
-  scale_fill_gradientn(colors = terrain.colors(10))+
-  theme_bw()
-
-median_sed_thick_IDW <- raster(idw)
+# library(gstat)
+# sed_pts <- readOGR("C:\\Users\\benjamin.levy\\Desktop\\NOAA\\GIS_Stuff\\NOAA_Maps\\ecstdb2014")
+# 
+# #subset data using bbox of GB_strata
+# lon_min<-GB_strata_singlePoly@bbox[1]
+# lon_max<-GB_strata_singlePoly@bbox[3]
+# lat_min<-GB_strata_singlePoly@bbox[2]
+# lat_max<-GB_strata_singlePoly@bbox[4]
+# 
+# sed_pts <- sed_pts[(sed_pts$LONGITUDE>=lon_min) & (sed_pts$LONGITUDE<=lon_max) & (sed_pts$LATITUDE>=lat_min) & (sed_pts$LATITUDE<=lat_max),]
+# 
+# #replace -9999 values with NA
+# #sed_pts$MEDIAN[sed_pts$MEDIAN==-9999] <- NA
+# 
+# #delete rows with -9999 entries
+# sed_pts <- sed_pts[(sed_pts$MEDIAN!=-9999),]
+# 
+# sed_ptsdf <- as.data.frame(sed_pts)
+# 
+# #setup raster to use
+# grid <- as(depth_GB_ras,"SpatialPixels")
+# proj4string(grid) = proj4string(sed_pts)
+# 
+# crs(grid)<-crs(sed_pts) #need to have same CRS
+# 
+# idw = gstat::idw(formula=MEDIAN~1, locations = sed_pts, newdata= grid)
+# 
+# idwdf <- as.data.frame(idw)
+# 
+# 
+# 
+# #plot results with points
+# ggplot()+
+#   geom_tile(data = idwdf, aes(x = x, y = y, fill = var1.pred))+
+#   geom_point(data = sed_ptsdf, aes(x = coords.x1, y = coords.x2, color = MEDIAN),
+#              shape = 4)+
+#   scale_fill_gradientn(colors = terrain.colors(10))+
+#   theme_bw()
+# 
+# #plot results without points
+# ggplot()+
+#   geom_tile(data = idwdf, aes(x = x, y = y, fill = var1.pred))+
+#   scale_fill_gradientn(colors = terrain.colors(10))+
+#   theme_bw()
+# 
+# median_sed_thick_IDW <- raster(idw)
 
 #saveRDS(median_sed_thick_IDW,file="")
 
@@ -353,9 +357,9 @@ median_sed_thick_IDW <- raster(idw)
 # 
 # plot(sediment_thick_ras)
 # plot(GB_strata,add=T)
-
-plot(median_sed_thick_NN)
-plot(GB_strata,add=T)
+# 
+# plot(median_sed_thick_NN)
+# plot(GB_strata,add=T)
 
 plot(median_sed_thick_IDW)
 plot(GB_strata,add=T)
@@ -614,8 +618,8 @@ start_time <- Sys.time() # record start time
 fish_lrren <- lrren(obs_locs = obs_locs,
                     predict_locs = predict_locs,
                     predict = TRUE,
-                    cv = TRUE,
-                   adapt=T
+                    cv = TRUE
+                   #adapt=T
                     #balance = TRUE)
                     #conserve = TRUE #Logical. If TRUE (the default), the ecological niche will be estimated within a concave hull around the locations in obs_locs. If FALSE, the ecological niche will be estimated within a concave hull around the locations in predict_locs.
 )
@@ -821,7 +825,17 @@ length(final_matrix[,1])*length(final_matrix[1,]) #total cells including NAs
 
 
 #save
-saveRDS(final_matrix,file="TestScripts/Habitat_plots/YellowtailFlounder_Unweighted_AdaptTrue")
+saveRDS(final_matrix,file="TestScripts/Habitat_plots/Weighted_AdaptFalse_MATRIX.RDS")
+
+saveRDS(final_ras,file="TestScripts/Habitat_plots/YellowtailFlounder_Weighted_AdaptFalse_RASTER.RDS")
 
 
 
+#adjust number of zeros
+
+final_matrix <- readRDS(file="TestScripts/Habitat_plots/YellowtailFlounder/YellowtailFlounder_Weighted_AdaptFalse")
+
+
+
+test <- final_matrix/sum(final_matrix,na.rm=T)
+fields::image.plot(rotate(test))
