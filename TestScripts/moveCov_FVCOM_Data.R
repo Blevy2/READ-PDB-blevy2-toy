@@ -157,7 +157,7 @@ Good_moveCov <- all_moveCov  #to be used below
 
 #moveCov <- list()
 steps <- 52*20 #total months
-inc <- 1.045 #percent increase each year
+inc <- 1.021 #percent increase each year
 new_moveCov <- list()
 
 
@@ -290,110 +290,110 @@ min(yr_meantemp)
 max(yr_meantemp)
 
 max(yr_meantemp)-min(yr_meantemp)
-mo
 
-
-##################################################################
-# PLOTTING THE ABOVE BY QUADRANT
-##################################################################
-
-#first break into strata
-Strata1 <- list()  #matrix(0,nrow=50,ncol=100)
-Strata2 <- list() #matrix(0,nrow=50,ncol=100)
-Strata3 <- list()  #matrix(0,nrow=50,ncol=100)
-Strata4 <- list()
-
-for(i in seq(52*20)){
-  
-#Strata1
-Strata1[[i]]<-moveCov$cov.matrix[[i]][1:50,1:50]
-#Strata2
-Strata2[[i]]<-moveCov$cov.matrix[[i]][1:50,51:100]
-#Strata3
-Strata3[[i]]<-moveCov$cov.matrix[[i]][51:100,1:50]
-#Strata4
-Strata4[[i]]<-moveCov$cov.matrix[[i]][51:100,51:100]
-
-}
-
-#copied above for each strata
-wk_meantemps1 <- vector()
-yr_meantemps1 <- vector()
-wk_mintemps1 <- vector()
-wk_maxtemps1 <- vector()
-
-wk_meantemps2 <- vector()
-yr_meantemps2 <- vector()
-wk_mintemps2 <- vector()
-wk_maxtemps2 <- vector()
-
-wk_meantemps3 <- vector()
-yr_meantemps3 <- vector()
-wk_mintemps3 <- vector()
-wk_maxtemps3 <- vector()
-
-wk_meantemps4 <- vector()
-yr_meantemps4 <- vector()
-wk_mintemps4 <- vector()
-wk_maxtemps4 <- vector()
-
-for(i in seq(steps)){
-  wk_meantemps1 <- c(wk_meantemps1,mean(as.vector(as.matrix(Strata1[[i]]))))
-  wk_mintemps1 <- c(wk_mintemps1,min(as.vector(as.matrix(Strata1[[i]]))))
-  wk_maxtemps1 <- c(wk_maxtemps1,max(as.vector(as.matrix(Strata1[[i]]))))
-  
-  wk_meantemps2 <- c(wk_meantemps2,mean(as.vector(as.matrix(Strata2[[i]]))))
-  wk_mintemps2 <- c(wk_mintemps2,min(as.vector(as.matrix(Strata2[[i]]))))
-  wk_maxtemps2 <- c(wk_maxtemps2,max(as.vector(as.matrix(Strata2[[i]]))))
-  
-  wk_meantemps3 <- c(wk_meantemps3,mean(as.vector(as.matrix(Strata3[[i]]))))
-  wk_mintemps3 <- c(wk_mintemps3,min(as.vector(as.matrix(Strata3[[i]]))))
-  wk_maxtemps3 <- c(wk_maxtemps3,max(as.vector(as.matrix(Strata3[[i]]))))
-  
-  wk_meantemps4 <- c(wk_meantemps4,mean(as.vector(as.matrix(Strata4[[i]]))))
-  wk_mintemps4 <- c(wk_mintemps4,min(as.vector(as.matrix(Strata4[[i]]))))
-  wk_maxtemps4 <- c(wk_maxtemps4,max(as.vector(as.matrix(Strata4[[i]]))))
-  
-  #record yearly temp
-  if(i %% 52 == 0){    
-    p <- i - 51
-    yr_meantemps1 <- c(yr_meantemps1,mean(as.vector(wk_meantemps1[p:i])))
-    yr_meantemps2 <- c(yr_meantemps2,mean(as.vector(wk_meantemps2[p:i])))
-    yr_meantemps3 <- c(yr_meantemps3,mean(as.vector(wk_meantemps3[p:i])))
-    yr_meantemps4 <- c(yr_meantemps4,mean(as.vector(wk_meantemps4[p:i])))
-  }
-  
-}
-
-par(mfrow = c(2,2),mar = c(4, 4, 4, 4))
-plot(wk_meantemps1)
-plot(wk_mintemps1)
-plot(wk_maxtemps1)
-plot(yr_meantemps1)
-mtext("Strata 1- NW", side = 3, line = -1, outer = TRUE)
-
-par(mfrow = c(2,2),mar = c(4,4,4,4))
-plot(wk_meantemps2)
-plot(wk_mintemps2)
-plot(wk_maxtemps2)
-plot(yr_meantemps2)
-mtext("Strata 2- NE", side = 3, line = -1, outer = TRUE)
-
-par(mfrow = c(2,2),mar = c(4,4,4,4))
-plot(wk_meantemps3)
-plot(wk_mintemps3)
-plot(wk_maxtemps3)
-plot(yr_meantemps3)
-mtext("Strata 3- SW", side = 3, line = -1, outer = TRUE)
-
-par(mfrow = c(2,2),mar = c(4,4,4,4))
-plot(wk_meantemps4)
-plot(wk_mintemps4)
-plot(wk_maxtemps4)
-plot(yr_meantemps4)
-mtext("Strata 4- SE", side = 3, line = -1, outer = TRUE)
-
-
+# 
+# 
+# ##################################################################
+# # PLOTTING THE ABOVE BY QUADRANT
+# ##################################################################
+# 
+# #first break into strata
+# Strata1 <- list()  #matrix(0,nrow=50,ncol=100)
+# Strata2 <- list() #matrix(0,nrow=50,ncol=100)
+# Strata3 <- list()  #matrix(0,nrow=50,ncol=100)
+# Strata4 <- list()
+# 
+# for(i in seq(52*20)){
+#   
+# #Strata1
+# Strata1[[i]]<-moveCov$cov.matrix[[i]][1:50,1:50]
+# #Strata2
+# Strata2[[i]]<-moveCov$cov.matrix[[i]][1:50,51:100]
+# #Strata3
+# Strata3[[i]]<-moveCov$cov.matrix[[i]][51:100,1:50]
+# #Strata4
+# Strata4[[i]]<-moveCov$cov.matrix[[i]][51:100,51:100]
+# 
+# }
+# 
+# #copied above for each strata
+# wk_meantemps1 <- vector()
+# yr_meantemps1 <- vector()
+# wk_mintemps1 <- vector()
+# wk_maxtemps1 <- vector()
+# 
+# wk_meantemps2 <- vector()
+# yr_meantemps2 <- vector()
+# wk_mintemps2 <- vector()
+# wk_maxtemps2 <- vector()
+# 
+# wk_meantemps3 <- vector()
+# yr_meantemps3 <- vector()
+# wk_mintemps3 <- vector()
+# wk_maxtemps3 <- vector()
+# 
+# wk_meantemps4 <- vector()
+# yr_meantemps4 <- vector()
+# wk_mintemps4 <- vector()
+# wk_maxtemps4 <- vector()
+# 
+# for(i in seq(steps)){
+#   wk_meantemps1 <- c(wk_meantemps1,mean(as.vector(as.matrix(Strata1[[i]]))))
+#   wk_mintemps1 <- c(wk_mintemps1,min(as.vector(as.matrix(Strata1[[i]]))))
+#   wk_maxtemps1 <- c(wk_maxtemps1,max(as.vector(as.matrix(Strata1[[i]]))))
+#   
+#   wk_meantemps2 <- c(wk_meantemps2,mean(as.vector(as.matrix(Strata2[[i]]))))
+#   wk_mintemps2 <- c(wk_mintemps2,min(as.vector(as.matrix(Strata2[[i]]))))
+#   wk_maxtemps2 <- c(wk_maxtemps2,max(as.vector(as.matrix(Strata2[[i]]))))
+#   
+#   wk_meantemps3 <- c(wk_meantemps3,mean(as.vector(as.matrix(Strata3[[i]]))))
+#   wk_mintemps3 <- c(wk_mintemps3,min(as.vector(as.matrix(Strata3[[i]]))))
+#   wk_maxtemps3 <- c(wk_maxtemps3,max(as.vector(as.matrix(Strata3[[i]]))))
+#   
+#   wk_meantemps4 <- c(wk_meantemps4,mean(as.vector(as.matrix(Strata4[[i]]))))
+#   wk_mintemps4 <- c(wk_mintemps4,min(as.vector(as.matrix(Strata4[[i]]))))
+#   wk_maxtemps4 <- c(wk_maxtemps4,max(as.vector(as.matrix(Strata4[[i]]))))
+#   
+#   #record yearly temp
+#   if(i %% 52 == 0){    
+#     p <- i - 51
+#     yr_meantemps1 <- c(yr_meantemps1,mean(as.vector(wk_meantemps1[p:i])))
+#     yr_meantemps2 <- c(yr_meantemps2,mean(as.vector(wk_meantemps2[p:i])))
+#     yr_meantemps3 <- c(yr_meantemps3,mean(as.vector(wk_meantemps3[p:i])))
+#     yr_meantemps4 <- c(yr_meantemps4,mean(as.vector(wk_meantemps4[p:i])))
+#   }
+#   
+# }
+# 
+# par(mfrow = c(2,2),mar = c(4, 4, 4, 4))
+# plot(wk_meantemps1)
+# plot(wk_mintemps1)
+# plot(wk_maxtemps1)
+# plot(yr_meantemps1)
+# mtext("Strata 1- NW", side = 3, line = -1, outer = TRUE)
+# 
+# par(mfrow = c(2,2),mar = c(4,4,4,4))
+# plot(wk_meantemps2)
+# plot(wk_mintemps2)
+# plot(wk_maxtemps2)
+# plot(yr_meantemps2)
+# mtext("Strata 2- NE", side = 3, line = -1, outer = TRUE)
+# 
+# par(mfrow = c(2,2),mar = c(4,4,4,4))
+# plot(wk_meantemps3)
+# plot(wk_mintemps3)
+# plot(wk_maxtemps3)
+# plot(yr_meantemps3)
+# mtext("Strata 3- SW", side = 3, line = -1, outer = TRUE)
+# 
+# par(mfrow = c(2,2),mar = c(4,4,4,4))
+# plot(wk_meantemps4)
+# plot(wk_mintemps4)
+# plot(wk_maxtemps4)
+# plot(yr_meantemps4)
+# mtext("Strata 4- SE", side = 3, line = -1, outer = TRUE)
+# 
+# 
 
 
 
