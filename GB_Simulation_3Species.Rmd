@@ -20,7 +20,7 @@ If plot.dist = TRUE, it returns the plots to a file.
 ```{r habitat}
 
 
-\library(MixFishSim)
+library(MixFishSim)
          
 
 
