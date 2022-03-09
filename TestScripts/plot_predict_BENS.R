@@ -23,6 +23,22 @@ plot_predict_BENS <- function (input, plot_cols = c("#8B3A3A", "#CCCCCC", "#0000
                                                  crs = sp::CRS(SRS_string = cref1), method = "ngb", 
                                                  legacy = TRUE)
   }
+  
+  #first try (ended up not aligning with temp raster, even after removing rows/cols)
+  # #adjust resolution
+  # predict_risk_raster <- raster::projectRaster(predict_risk_raster, predict_risk_raster, 
+  #                                                     res=.02)
+  
+  
+  #second try
+  #reproject and resample
+  #following from https://gis.stackexchange.com/questions/339797/downsampling-projecting-and-aligning-a-raster-to-fit-another-one-in-r-aggregat
+  # test <- projectRaster(from = predict_risk_raster, crs = crs(median_sed_thick_IDW))
+  # test <- resample(x=test, y=median_sed_thick_IDW, method="bilinear")
+  # 
+  
+                                               
+  
   naband$v <- ifelse(is.na(naband$v), 9999, naband$v)
   sp::coordinates(naband) <- ~x + y
   sp::gridded(naband) <- TRUE

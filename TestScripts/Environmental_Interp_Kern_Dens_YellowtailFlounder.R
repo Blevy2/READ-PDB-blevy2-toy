@@ -645,7 +645,7 @@ plot_obs(fish_lrren,
 
 
 
-plot_predict(fish_lrren, cref0 = "EPSG:32632", cref1 = "EPSG:4326",
+plot_predict(fish_lrren, cref0 =  "EPSG:4326", cref1 = "EPSG:4326",
              lower_lrr = -1,
              upper_lrr = 1)
 
@@ -680,13 +680,26 @@ environment(plot_predict_BENS) <- asNamespace('envi')
 
 
 
-p<-plot_predict_BENS(fish_lrren, cref0 = "EPSG:32632", cref1 = "EPSG:4326",
+p<-plot_predict_BENS(fish_lrren, cref0 =  "EPSG:4326", cref1 = "EPSG:4326",
              lower_lrr = -1, #used to be -1 to 1
              upper_lrr = 1)
 
 
 #alter extent of output to match correct extent
 extent(p$out$v)<-extent(p$PR)
+
+#change resolution to match depth (& ultimately temp)
+#factor <- res(depth_GB_ras)[[1]] / res(p$out$v) #how much the smaller cells need to be increased
+#test <- raster::aggregate(p$out$v, fact = factor)
+
+#reproject and resample (to match temperature and other rasters again)
+#following from https://gis.stackexchange.com/questions/339797/downsampling-projecting-and-aligning-a-raster-to-fit-another-one-in-r-aggregat
+#test <- projectRaster(from = p$out$v, crs = crs(median_sed_thick_IDW))
+#p$out$v <- resample(x=p$out$v, y=median_sed_thick_IDW, method="bilinear") #bilinear averages cells which reduces number of zeros
+p$out$v <- resample(x=p$out$v, y=median_sed_thick_IDW, method="ngb")
+
+
+
 
 #taken from plot_predict
 #p$out = rrp
@@ -780,7 +793,7 @@ final_ras <- raster::mask(p$out$v,GB_strata_singlePoly)
 #Function to replace the focal value with the mean of a 3x3 window if NA. If the window size increases the index value [i] needs to change as well (eg., for a 5x5 window the index would be 13).
 fill.na <- function(x, i=13) {    #for 3x3 us i= 5 and matrix(1,3,3)
   if( is.na(x)[i] ) {             #for 5x5 use i=13 and matrix(1,5,5)
-    return( round(mean(x, na.rm=TRUE),0) )
+    return( mean(x, na.rm=TRUE) )
   } else {
     return( x[i] )#should never enter this part but if it does this ensures nothing will happen
   }
@@ -792,7 +805,7 @@ r2 <- raster::focal(final_ras, w = matrix(1,5,5), fun = fill.na,
 
 #then apply function to new raster additional times as needed to fill in strata
 r2 <- raster::focal(r2, w = matrix(1,5,5), fun = fill.na, 
-                    pad = F, NAonly =TRUE )
+                    pad = T, NAonly =TRUE )
 
 plot(r2)
 plot(GB_strata,add=T)
