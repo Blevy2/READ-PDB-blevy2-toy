@@ -517,3 +517,54 @@ moveCov[["cov.matrix"]] <- new_moveCov[["cov.matrix"]]
 
 
 
+
+
+
+
+
+#plot increasing temp gradient over time similar to how 
+#plot_spatiotemp_hab_justtemp works, but without species-specific 
+#influences
+
+
+yearscut <- 2
+
+#function to rotate image before plotting because image.plot rotates it
+ rotate <- function(x) t(apply(x, 2, rev))
+
+pdf(file=paste0('testfolder/Monthly_temp_plots','.pdf'))
+
+#figure out max/min temp to set color limits below
+zmax <- max(unlist(lapply(moveCov$cov.matrix,FUN=max, na.rm=T)))
+zmin <- min(unlist(lapply(moveCov$cov.matrix,FUN=min, na.rm=T)))
+
+      
+      for(k in seq(12)){
+        
+        par(mfrow = c(5,4),mar = c(1, 1, 1, 1))
+        
+        
+        for(i in seq(52*yearscut+1,length(moveCov$cov.matrix),52)){
+          
+          month_shift <- 4*(k-1)
+          
+
+          temp_rotate <- rotate(moveCov$cov.matrix[[i+month_shift]])
+
+          fields::image.plot(temp_rotate, zlim = c(zmin,zmax))
+          
+          #	  axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
+          #	  axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
+          text(0.5, 0.98, labels = paste('Week', (i+month_shift)%%52,'Year', ceiling((i+month_shift)/52)), cex = 1)
+          
+          
+        }
+        
+        
+      }
+    
+    
+    dev.off()
+    
+ 
+  
