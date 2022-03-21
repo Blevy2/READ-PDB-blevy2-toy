@@ -1,5 +1,10 @@
 #will create the "hab" object for mixfish sim using previously created habiats for each species
 
+#for working in just R
+setwd("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/")
+
+
+
 
 loadedPackages <- c("rgdal", "data.table", "maptools","envi", "raster", "RStoolbox", "spatstat.data", "spatstat.geom", "spatstat.core")
 invisible(lapply(loadedPackages, library, character.only = TRUE))
@@ -263,7 +268,7 @@ for(k in seq(12)){
     
     #	  axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
     #	  axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
-    text(0.5, 0.98, labels = paste('Week', (i+month_shift)%%52,'Year', ceiling((i+month_shift)/52)), cex = 1)
+    text(0.5, 0.98, labels = paste( month_nm[floor(i/(13/3))+1] ,'Week', (i+month_shift)%%52,'Year', ceiling((i+month_shift)/52)), cex = 1)
     
     
   }
@@ -280,6 +285,20 @@ dev.off()
 
 
 
+spp_names <- c("Haddock","Cod","Yellowtail Flounder")
+
+spp_names_short <- c("HAD","COD","YTF")
+
+month_nm <- c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")
+
+
+#order: Haddock, Cod, Yellowtail
+tol_list <- list("spp1" = list("mu" = 9, "va" = 3),  #Haddock
+     "spp2" = list("mu" = 8.75, "va" = 3),  #Cod
+     "spp3" = list("mu" = 9, "va" = 3.5) )    #Yellowtail
+
+
+
 ################################################################################
 
 #2A) PLOTTING SPECIES-SPECIFIC TEMPERATURE OVER TIME CONSTANT TEMP
@@ -293,19 +312,12 @@ moveCov <- readRDS(file="20 year moveCov matrices/GeorgesBank/GB_22yr_ConstTemp_
 
 #add temp tolerances order: had, cod, yellow
 moveCov[["spp_tol"]] <- list() #just in case
-moveCov[["spp_tol"]] <- list("spp1" = list("mu" = 8.5, "va" = 3.08), 
-                             "spp2" = list("mu" = 8.75, "va" = 3.33), 
-                             "spp3" = list("mu" = 5.5, "va" = 2.5) )
-
-
+moveCov[["spp_tol"]] <- tol_list
 
 
 library(MixFishSim)
 
 yearscut <- 2
-
-spp_names <- c("Haddock","Cod","Yellowtail Flounder")
-
 
 #function to rotate image before plotting because image.plot rotates it
 rotate <- function(x) t(apply(x, 2, rev))
@@ -330,7 +342,7 @@ mintemp <- vector()
 
 
 #obtain zlim bounds from maxtemp
-zmax <- c(.23,.22,.26)
+zmax <- c(.25,.25,.26)
 zmin <- c(0,0,0)
 
 #PLOT EACH SPECIES in groups
@@ -339,7 +351,7 @@ for(s in seq_len(length(hab[["hab"]]))) {
   
   
   
-  par(mfrow = c(13,4), mar = c(1, 1, 1, 1))
+  par(mfrow = c(5,4), mar = c(1, 1, 1, 1))
   
   
   for(i in seq(1,52)){
@@ -364,7 +376,7 @@ for(s in seq_len(length(hab[["hab"]]))) {
     }
     #	  axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
     #	  axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
-    text(0.5, 0.98, labels = paste('Week', (i)%%52, spp_names[s]), cex = 1)
+    text(0.5, 0.98, labels = paste(spp_names_short[s],  month_nm[floor(i/(13/3))+1] , 'Week', (i)%%52), cex = 1)
     
     
     
@@ -403,7 +415,7 @@ for(s in seq_len(length(hab[["hab"]]))) {
       }
       #	  axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
       #	  axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
-      text(0.5, 0.98, labels = paste('Week', (i)%%52, spp_names[s]), cex = 1)
+      text(0.5, 0.98, labels = paste(spp_names[s], month_nm[floor(i/(13/3))+1] , 'Week', (i)%%52), cex = 1)
       
       maxtemp1[i]<- max(temp_rotate,na.rm=T)
       mintemp1[i]<- min(temp_rotate,na.rm=T)
@@ -435,9 +447,7 @@ moveCov <- readRDS(file="20 year moveCov matrices/GeorgesBank/GB_22yr_IncrTemp_H
 
 #add temp tolerances order: had, cod, yellow
 moveCov[["spp_tol"]] <- list() #just in case
-moveCov[["spp_tol"]] <- list("spp1" = list("mu" = 8.5, "va" = 3.08), 
-                             "spp2" = list("mu" = 8.75, "va" = 3.33), 
-                             "spp3" = list("mu" = 5.5, "va" = 2.5) )
+moveCov[["spp_tol"]] <- tol_list
 
 
 
@@ -449,7 +459,7 @@ yearscut <- 2
 rotate <- function(x) t(apply(x, 2, rev))
 
 #trying same zlim as above, max values may need to be extended
-zmax <- c(.23,.22,.26)
+zmax <- c(.25,.25,.26)
 zmin <- c(0,0,0)
 
 pdf(file=paste0('testfolder/Monthly_species_temp_plots_IncrTemp','.pdf'))
@@ -496,7 +506,7 @@ for(s in seq_len(length(hab[["hab"]]))) {
       }
       #	  axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
       #	  axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
-      text(0.5, 0.98, labels = paste(spp_names[s],'Week', (i+month_shift)%%52,'Year', ceiling((i+month_shift)/52)), cex = 1)
+      text(0.5, 0.98, labels = paste(spp_names_short[s], month_nm[floor(i/(13/3))+1] , 'Week', (i+month_shift)%%52,'Year', ceiling((i+month_shift)/52)), cex = 1)
       
       
       
@@ -531,9 +541,7 @@ moveCov <- readRDS(file="20 year moveCov matrices/GeorgesBank/GB_22yr_ConstTemp_
 
 #add temp tolerances order: had, cod, yellow
 moveCov[["spp_tol"]] <- list() #just in case
-moveCov[["spp_tol"]] <- list("spp1" = list("mu" = 8.5, "va" = 3.08), 
-                             "spp2" = list("mu" = 8.75, "va" = 3.33), 
-                             "spp3" = list("mu" = 5.5, "va" = 2.5) )
+moveCov[["spp_tol"]] <- tol_list
 
 
 
@@ -568,7 +576,7 @@ for(s in seq_len(length(hab[["hab"]]))) {
   
   
   
-  par(mfrow = c(13,4), mar = c(1, 1, 1, 1))
+  par(mfrow = c(5,4), mar = c(1, 1, 1, 1))
   
   
   for(i in seq(1,52)){
@@ -584,17 +592,23 @@ for(s in seq_len(length(hab[["hab"]]))) {
                                      va = moveCov[["spp_tol"]][[s]][["va"]]))
     #col = grey(seq(1,0,l = 51)), 
     if(!i %in% spwn_wk[[s]]) {
-      temp_rotate <- rotate(hab[["hab"]][[paste0('spp',s)]] * move_cov_wk_spp)
+      temp_rotate <- rotate(hab[["hab"]][[paste0('spp',s)]]^2 * move_cov_wk_spp)
+      temp_rotate <- temp_rotate/sum(temp_rotate,na.rm=T)
+      #print(sum(temp_rotate,na.rm=T))
+      
       fields::image.plot(temp_rotate, cex.axis = 1.5, cex.main = 2, axes = F )
     }
     # col = grey(seq(1,0,l = 51)),
     if(i %in% spwn_wk[[s]]) {
-      temp_rotate <- rotate(hab[["spwn_hab"]][[paste0('spp',s)]] * move_cov_wk_spp)
+      temp_rotate <- rotate(hab[["spwn_hab"]][[paste0('spp',s)]]^2 * move_cov_wk_spp)
+      temp_rotate <- temp_rotate/sum(temp_rotate,na.rm=T)
+      #print(sum(temp_rotate))
+      
       fields::image.plot(temp_rotate, cex.axis = 1.5, cex.main = 1, axes = F )
     }
     #	  axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
     #	  axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
-    text(0.5, 0.98, labels = paste(spp_names[s],'Week', (i)%%52), cex = 1)
+    text(0.5, 0.98, labels = paste(spp_names_short[s], month_nm[floor(i/(13/3))+1] , 'Week', (i)%%52), cex = 1)
     
     
     
@@ -624,17 +638,17 @@ for(s in seq_len(length(hab[["hab"]]))) {
                                      va = moveCov[["spp_tol"]][[s]][["va"]]))
     #col = grey(seq(1,0,l = 51)), 
     if(!i %in% spwn_wk[[s]]) {
-      temp_rotate <- rotate(hab[["hab"]][[paste0('spp',s)]] *move_cov_wk_spp)
-      fields::image.plot(temp_rotate, cex.axis = 1.5, cex.main = 2, axes = F)
+      temp_rotate <- rotate(hab[["hab"]][[paste0('spp',s)]]^2 *move_cov_wk_spp)
+      fields::image.plot(temp_rotate/sum(temp_rotate,na.rm=T), cex.axis = 1.5, cex.main = 2, axes = F)
     }
     # col = grey(seq(1,0,l = 51)),
     if(i %in% spwn_wk[[s]]) {
-      temp_rotate <- rotate(hab[["hab"]][[paste0('spp',s)]] * move_cov_wk_spp)
-      fields::image.plot(temp_rotate, cex.axis = 1.5, cex.main = 1, axes = F )
+      temp_rotate <- rotate(hab[["hab"]][[paste0('spp',s)]]^2 * move_cov_wk_spp)
+      fields::image.plot(temp_rotate/sum(temp_rotate,na.rm=T), cex.axis = 1.5, cex.main = 1, axes = F )
     }
     #	  axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
     #	  axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
-    text(0.5, 0.98, labels = paste('Week', (i)%%52, spp_names[s]), cex = 1)
+    text(0.5, 0.98, labels = paste(spp_names[s],  month_nm[floor(i/(13/3))+1] , 'Week', (i)%%52), cex = 1)
     
     maxtemp1[i]<- max(temp_rotate,na.rm=T)
     mintemp1[i]<- min(temp_rotate,na.rm=T)
@@ -685,10 +699,7 @@ moveCov <- readRDS(file="20 year moveCov matrices/GeorgesBank/GB_22yr_IncrTemp_H
 
 #add temp tolerances order: had, cod, yellow
 moveCov[["spp_tol"]] <- list() #just in case
-moveCov[["spp_tol"]] <- list("spp1" = list("mu" = 8.5, "va" = 3.08), 
-                             "spp2" = list("mu" = 8.75, "va" = 3.33), 
-                             "spp3" = list("mu" = 5.5, "va" = 2.5) )
-
+moveCov[["spp_tol"]] <- tol_list
 
 
 
@@ -736,17 +747,17 @@ for(s in seq_len(length(hab[["hab"]]))) {
                                        va = moveCov[["spp_tol"]][[s]][["va"]]))
       #col = grey(seq(1,0,l = 51)), 
       if(!i %in% spwn_wk[[s]]) {
-        temp_rotate <- rotate(hab[["hab"]][[paste0('spp',s)]] * move_cov_wk_spp)
-        fields::image.plot(temp_rotate, cex.axis = 1.5, cex.main = 2, axes = F )
+        temp_rotate <- rotate(hab[["hab"]][[paste0('spp',s)]]^2 * move_cov_wk_spp)
+        fields::image.plot(temp_rotate/sum(temp_rotate,na.rm=T), cex.axis = 1.5, cex.main = 2, axes = F )
       }
       # col = grey(seq(1,0,l = 51)),
       if(i %in% spwn_wk[[s]]) {
-        temp_rotate <- rotate(hab[["spwn_hab"]][[paste0('spp',s)]] * move_cov_wk_spp)
-        fields::image.plot(temp_rotate, cex.axis = 1.5, cex.main = 1, axes = F )
+        temp_rotate <- rotate(hab[["spwn_hab"]][[paste0('spp',s)]]^2 * move_cov_wk_spp)
+        fields::image.plot(temp_rotate/sum(temp_rotate,na.rm=T), cex.axis = 1.5, cex.main = 1, axes = F )
       }
       #	  axis(1, at = seq(0, 1, by = 0.2), labels = seq(0, nrows, by = nrows/5))
       #	  axis(2, at = seq(0, 1, by = 0.2), labels = seq(0, ncols, by = ncols/5))
-      text(0.5, 0.98, labels = paste(spp_names[s],'Week', (i+month_shift)%%52,'Year', ceiling((i+month_shift)/52)), cex = 1)
+      text(0.5, 0.98, labels = paste(spp_names_short[s], month_nm[floor(i/(13/3))+1] , 'Week', (i+month_shift)%%52,'Year', ceiling((i+month_shift)/52)), cex = 1)
       
       
       

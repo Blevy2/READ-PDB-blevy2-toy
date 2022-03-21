@@ -3,31 +3,44 @@
 
 library(MixFishSim)
 
-source("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/R/init_sim_Bens_nofish.R")
+source("R/init_sim_Bens_nofish.R")
 
-sim <- init_sim_Bens_nofish(nrows = 100, ncols = 100, n_years = 1, n_tows_day = 1,
+sim <- init_sim_Bens_nofish(nrows = 100, ncols = 100, n_years = 22, n_tows_day = 1,
                             n_days_wk_fished = 1, n_fleets = 1, n_vessels = 1, n_species = 2,
                             move_freq = 1)
 
 
 
-hab <- readRDS(file="C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/Results/hab_16strata")
+hab <- readRDS(file="Results/hab_16strata")
 
 
 
+#rebuild package
+devtools::build()
 
-#read in new move_population file
 
-Rcpp::sourceCpp("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/src/Movement.cpp") #my edited version 
+#load rcpp exports
+Rcpp::sourceCpp(file= "src/Movement.cpp")
+Rcpp::sourceCpp(file= "src/RcppExports.cpp")
+Rcpp::compileAttributes() #this updates RcppExports.R file, which contains function definitions
 
-source("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/R/RcppExports.R")
-#to source a new move_population where I edited to skips most things:
-#1: load file
+#source(file= "R/RcppExports.R")
 
-#2: allow the function to call other hidden functions from mixfishsim 
-environment(move_population_Bens) <- asNamespace('MixFishSim')
-#3: replace move_population with move_population_Bens in the MixFishSim package
-assignInNamespace("move_population", move_population, ns = "MixFishSim")
+
+# 
+# 
+# #read in new move_population file
+# 
+# Rcpp::sourceCpp("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/src/Movement.cpp") #my edited version 
+# 
+# source("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/R/RcppExports.R")
+# #to source a new move_population where I edited to skips most things:
+# #1: load file
+# 
+# #2: allow the function to call other hidden functions from mixfishsim 
+# environment(move_population_Bens) <- asNamespace('MixFishSim')
+# #3: replace move_population with move_population_Bens in the MixFishSim package
+# assignInNamespace("move_population", move_population, ns = "MixFishSim")
 
 
 
@@ -37,15 +50,41 @@ assignInNamespace("move_population", move_population, ns = "MixFishSim")
 #CALULATE INDICES OF NONZERO VALUES IN HAB TO PASS TO MOVE_POPULAITON DURING MOVEMENT
 nonzero_idx <- lapply(paste0("spp", seq_len(sim$idx[["n.spp"]])), function(s) {
   
-  which(hab[["hab"]][[s]] !=0 , arr.ind=T)
+  which(hab[["hab"]][[s]] >0 , arr.ind=T)
   
 })
 
 names(nonzero_idx) <- paste("spp",seq_len(sim$idx[["n.spp"]]), sep ="")
 
 
+# require(Rcpp)
+# require(inline)
+# 
+# fx <- cxxfunction( signature( x_ = "matrix" ), '
+#     NumericMatrix x(x_) ;
+#     int nr = x.nrow(), nc = x.ncol() ;
+#     std::vector< std::vector<double> > vec( nc ) ;
+#     for( int i=0; i<nc; i++){
+#         NumericMatrix::Column col = x(_,i) ;
+#         vec[i].assign( col.begin() , col.end() ) ;
+#     }
+#     // now do whatever with it
+#     // for show here is how Rcpp::wrap can wrap vector<vector<> >
+#     // back to R as a list of numeric vectors
+#     return wrap( vec ) ;
+# ', plugin = "Rcpp" )
+# 
+# 
+# 
 
-source("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/R/init_pop_Bens.R")
+
+
+# #add column of zeros for some reason
+# nonzero_idx[[1]]<-cbind(0,nonzero_idx[[1]])
+# nonzero_idx[[2]]<-cbind(0,nonzero_idx[[2]])
+
+source("R/init_pop_Bens.R")
+
 
 
 #decreasing population settings
@@ -59,10 +98,17 @@ Pop <- init_pop_Bens(sim_init = sim, Bio = c("spp1" = 4e5, "spp2" = 10e5), #thes
                      spwn_wk = list("spp1" = 15:18, "spp2" = 15:18),
                      M = c("spp1" = 0.275, "spp2" = 0.225), 
                      K = c("spp1" = 0.3, "spp2" = 0.3),
-                      nz = nonzero_idx) #all the same for now
+                     nz = nonzero_idx) #all the same for now
 
 
-load("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/20 year moveCov matrices/Final/Final Bens Method/Constant_temp_22yr.RData")
+#check if move_population inside init_pop worked
+fields::image.plot(Pop$Start_pop[[1]])
+fields::image.plot(Pop$Start_pop[[2]])
+
+#View(Pop$Start_pop[[1]])
+#View(Pop$Start_pop[[2]])
+
+load("Constant_temp_22yr.RData")
 
 moveCov[["spp_tol"]] <- list() #just in case
 moveCov[["spp_tol"]] <- list("spp1" = list("mu" = 7.98, "va" = 3),  #8.13 IF TEMP INCREASES   7.98 if temp constant
@@ -82,12 +128,12 @@ fleets <- MixFishSim::init_fleet(sim_init = sim, VPT = list("spp1" = 0, "spp2" =
 )
 
 
-source("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/R/run_sim.R")
+source("R/run_sim.R")
 
 
 #to source a new go_fish where I edited to skips most things:
 #1: load file
-source("C:/Users/benjamin.levy/Desktop/Github/READ-PDB-blevy2-toy/R/go_fish_Bens.R") #my edited version that skips most things
+source("R/go_fish_Bens.R") #my edited version that skips most things
 #2: allow the function to call other hidden functions from mixfishsim 
 environment(go_fish_Bens) <- asNamespace('MixFishSim')
 #3: replace go_fish with go_fish_Bens in the MixFishSim package
@@ -95,8 +141,7 @@ assignInNamespace("go_fish", go_fish_Bens, ns = "MixFishSim")
 
 
 
-
-
+start_time <- Sys.time() # record start time
 
 
 res<- run_sim(sim_init = sim,
@@ -106,10 +151,13 @@ res<- run_sim(sim_init = sim,
               hab_init = hab,
               save_pop_bio = TRUE,
               survey = NULL, 
-              closure = NULL)
+              closure = NULL,
+              nz = nonzero_idx)
 
 
 
+end_time <- Sys.time() # record end time
+tot_time <- end_time - start_time # calculate duration of lrren() example
 
 
 

@@ -2,7 +2,7 @@
 # cod = 164712
 # haddock = 164744 
  
-fishIDX <- 164744 
+fishIDX <- 164712 
 #read in point data and convert to ppp
 gis.name <- paste("C:\\Users\\benjamin.levy\\Desktop\\NOAA\\GIS_Stuff\\Plot_survey\\ADIOS_SV_",fishIDX,"_GBK_NONE_survey_dist_map_fixed.csv",sep="")
 
@@ -132,20 +132,25 @@ multimode::modetest(all_tows$BOT_TEMP)
 
 #with ggplot
 library(ggplot2)
+
+mn <- 9
+std <- 3
+
 ggplot(data=all_tows,aes(BOT_TEMP)) +
   geom_histogram(aes(x = BOT_TEMP, ..density..)) +
-  stat_function(fun = dnorm, args = list(mean = 5.5, sd = 2.5),colour="red")
+  stat_function(fun = dnorm, args = list(mean = mn, sd = std),colour="red") +
+  xlim(-5,25)
 
 
-#using norm_fun from mixfishsim
-plot(norm_fun(x = seq(0,25,.1), mu = 5.5, va = 2.5)/max(norm_fun(0:25, 5.5, 2.5)),
+#using norm_fun from mixfishsim #THIS ONE IS USING VARIANCE NOT STD DEV
+plot(norm_fun(x = seq(-4,25,.1), mu = mn, va = std^2)/max(norm_fun(-4:25, mn, std^2)),
      type = "l", xlab = "Temperature", ylab = "Tolerance", lwd = 2,xaxt="n")
-axis(side = 1, at = seq(length(seq(0,25,.1))),labels = seq(0,25,.1))
+axis(side = 1, at = seq(length(seq(-4,25,.1))),labels = seq(-4,25,.1))
 
-norm_fun(0,6,3)
+#test specific value
+norm_fun(x=17,mu=mn,va=std^2)
 
-
-
+max(all_tows$BOT_TEMP)
 
 
 
@@ -158,16 +163,20 @@ norm_fun(0,6,3)
 
 
 #with ggplot
-library(ggplot2)
-ggplot(data=all_tows,aes(BOT_TEMP)) +
-  geom_histogram(aes(x = BOT_TEMP, ..density..)) +
-  stat_function(fun = dnorm, args = list(mean = 4, sd = 3.896),colour="red")
-
-
-#using norm_fun from mixfishsim
-plot(norm_fun(x = seq(-4,25,.1), mu = 4, va = 3.896)/max(norm_fun(-4:25, 4, 3.896)),
-     type = "l", xlab = "Temperature", ylab = "Tolerance", lwd = 2,xaxt="n")
-axis(side = 1, at = seq(length(seq(-4,25,.1))),labels = seq(-4,25,.1))
+# library(ggplot2)
+# 
+# mn <- 
+# std <- 
+# 
+# ggplot(data=all_tows,aes(BOT_TEMP)) +
+#   geom_histogram(aes(x = BOT_TEMP, ..density..)) +
+#   stat_function(fun = dnorm, args = list(mean = mn, sd = std),colour="red")
+# 
+# 
+# #using norm_fun from mixfishsim
+# plot(norm_fun(x = seq(-4,25,.1), mu = mn, va = std^2)/max(norm_fun(-4:25, mn, std^2)),
+#      type = "l", xlab = "Temperature", ylab = "Tolerance", lwd = 2,xaxt="n")
+# axis(side = 1, at = seq(length(seq(-4,25,.1))),labels = seq(-4,25,.1))
 
 
 
@@ -179,16 +188,25 @@ axis(side = 1, at = seq(length(seq(-4,25,.1))),labels = seq(-4,25,.1))
 
 #with ggplot
 library(ggplot2)
+
+mn <- 9
+std <- 3.5
+
 ggplot(data=all_tows,aes(BOT_TEMP)) +
   geom_histogram(aes(x = BOT_TEMP, ..density..)) +
-  stat_function(fun = dnorm, args = list(mean = 8.5, sd = 3.08),colour="red")
+  stat_function(fun = dnorm, args = list(mean = mn, sd = std),colour="red") +
+  xlim(-5,25)
 
 
 #using norm_fun from mixfishsim
-plot(norm_fun(x = seq(-4,25,.1), mu = 8.5, va = 3.08)/max(norm_fun(-4:25, 8.5, 3.08)),
+plot(norm_fun(x = seq(-4,25,.1), mu = mn, va = std^2)/max(norm_fun(-4:25, mn, std^2)),
      type = "l", xlab = "Temperature", ylab = "Tolerance", lwd = 2,xaxt="n")
 axis(side = 1, at = seq(length(seq(-4,25,.1))),labels = seq(-4,25,.1))
 
+#test specific value
+norm_fun(x=20,mu=mn,va=std^2)
+
+max(all_tows$BOT_TEMP)
 
 
 
@@ -202,16 +220,28 @@ axis(side = 1, at = seq(length(seq(-4,25,.1))),labels = seq(-4,25,.1))
 
 #with ggplot
 library(ggplot2)
+
+mn <- 8.75
+std <- 3
+
 ggplot(data=all_tows,aes(BOT_TEMP)) +
   geom_histogram(aes(x = BOT_TEMP, ..density..)) +
-  stat_function(fun = dnorm, args = list(mean = 8.75, sd = 3.3),colour="red")
+  stat_function(fun = dnorm, args = list(mean = mn, sd = std),colour="red") +
+  xlim(-5,25)
 
 
 #using norm_fun from mixfishsim
-plot(norm_fun(x = seq(-4,25,.1), mu = 8.75, va = 3.33)/max(norm_fun(-4:25, 8.75, 3.33)),
+plot(norm_fun(x = seq(-4,25,.1), mu = mn, va = std^2)/max(norm_fun(-4:25, mn, std^2)),
      type = "l", xlab = "Temperature", ylab = "Tolerance", lwd = 2,xaxt="n")
 axis(side = 1, at = seq(length(seq(-4,25,.1))),labels = seq(-4,25,.1))
 
 
+#test specific value
+norm_fun(x=-1.5,mu=mn,va=std^2)
+#test specific value
+norm_fun(x=19,mu=mn,va=std^2)
+
+
+max(all_tows$BOT_TEMP)
 
 
