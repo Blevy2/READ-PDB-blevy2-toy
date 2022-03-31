@@ -193,23 +193,59 @@ hab[["stratas"]] <- had_stratas #just use haddock because it contains others
 
 ###########################################################################
 # NEED TO DEFINE SPAWNING GROUNDS
-# IN THE MEANTIME USE REGULAR HABITAT AS SPAWNING TO GET THINGS GOING
 
-hab[["spwn_hab"]] <- hab$hab  #CHANGE THIS
+source("R/create_spawn_hab_Bens.R")
+source("R/define_spawn_Bens.R")
 
-
-
-###########################################################################
-# NEED TO DEFINE SPAWNING WEEKS
-# IN THE MEANTIME USE RANDOM ONES
-
-hab[["spwn_hab"]] <- hab$hab  #CHANGE THIS
+#yellowtail in May (weeks 9, 10, 11, 12)
 
 
+max(hab$hab$spp3,na.rm=T)  #max is 0.00028102
+
+YT_spwn_ind <-which(hab$hab$spp3 >= 0 , arr.ind=T) #10,141 total non NA cells
+YT_spwn_ind <-which(hab$hab$spp3 > 0 , arr.ind=T)  #7,436 are >0
+YT_spwn_ind <-which(hab$hab$spp3 >= .0002 , arr.ind=T) #2,490 are above .0002
+
+#will use southwest red area and northeast red area for spawning
+#northeast between rows 40-80 and columns 155-196 
+#use .0002 in NE corner 
+YT_spwn_ind <-which(hab$hab$spp3 >= .0002 , arr.ind=T) #2,490 are above .0002
+YT_spwn_NE <- YT_spwn_ind[(YT_spwn_ind[,1]>=40) & (YT_spwn_ind[,1]<=80) & (YT_spwn_ind[,2]>=155) & (YT_spwn_ind[,2]<=196), ]
+
+
+#will use southwest red area and northeast red area for spawning
+#SW between rows 96 to 127 and columns 50 to 82 
+#use .0001 in SW corner 
+YT_spwn_ind <-which(hab$hab$spp3 >= .0001 , arr.ind=T) #3,833 are above .0001
+YT_spwn_SW <- YT_spwn_ind[(YT_spwn_ind[,1]>=96) & (YT_spwn_ind[,1]<=127) & (YT_spwn_ind[,2]>=50) & (YT_spwn_ind[,2]<=82), ]
+
+YT_spwn <- rbind(YT_spwn_NE,YT_spwn_SW)
+
+spwn_mult <- 10
+YT_spwn_hab <- create_spawn_hab_Bens(hab = hab$hab$spp3, spwnareas = YT_spwn, mult = spwn_mult)
+fields::image.plot(YT_spwn_hab)
 
 
 
 
+hab[["spwn_hab"]] <- list()
+hab[["spwn_hab"]][["spp1"]] <- YT_spwn_hab #CHANGE THIS
+hab[["spwn_hab"]][["spp2"]] <- YT_spwn_hab #CHANGE THIS
+hab[["spwn_hab"]][["spp3"]] <- YT_spwn_hab  
+
+
+# 
+# 
+# #CREATE HABITAT WITH FEWER SPECIES FOR TEST
+# temp <- hab
+# hab <- list()
+# hab[["hab"]][["spp1"]] <- temp$hab$spp3
+# hab$strata <- temp$strata
+# hab$stratas <- temp$stratas
+# hab$spwn_hab[["spp1"]] <- temp$spwn_hab$spp3
+# saveRDS(hab, file="hab_justYT.RDS")
+# 
+# 
 
 
 
@@ -223,9 +259,9 @@ moveCov <- readRDS(file="20 year moveCov matrices/GeorgesBank/GB_22yr_ConstTemp_
 
 #add temp tolerances order: had, cod, yellow
 moveCov[["spp_tol"]] <- list() #just in case
-moveCov[["spp_tol"]] <- list("spp1" = list("mu" = 8.5, "va" = 3.08), 
-                             "spp2" = list("mu" = 8.75, "va" = 3.33), 
-                             "spp3" = list("mu" = 5.5, "va" = 2.5) )
+moveCov[["spp_tol"]] <- list("spp1" = list("mu" = 9, "va" = 4), 
+                             "spp2" = list("mu" = 8.75, "va" = 4.25), 
+                             "spp3" = list("mu" = 9, "va" = 4) )
 
 
 
@@ -293,9 +329,9 @@ month_nm <- c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov",
 
 
 #order: Haddock, Cod, Yellowtail
-tol_list <- list("spp1" = list("mu" = 9, "va" = 3),  #Haddock
-     "spp2" = list("mu" = 8.75, "va" = 3),  #Cod
-     "spp3" = list("mu" = 9, "va" = 3.5) )    #Yellowtail
+tol_list <- list("spp1" = list("mu" = 9, "va" = 4),  #Haddock
+     "spp2" = list("mu" = 8.75, "va" = 4.25),  #Cod
+     "spp3" = list("mu" = 9, "va" = 4) )    #Yellowtail
 
 
 

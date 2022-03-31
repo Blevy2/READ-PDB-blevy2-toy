@@ -2,7 +2,7 @@
 # cod = 164712
 # haddock = 164744 
  
-fishIDX <- 164712 
+fishIDX <- 164744 
 #read in point data and convert to ppp
 gis.name <- paste("C:\\Users\\benjamin.levy\\Desktop\\NOAA\\GIS_Stuff\\Plot_survey\\ADIOS_SV_",fishIDX,"_GBK_NONE_survey_dist_map_fixed.csv",sep="")
 
@@ -134,7 +134,7 @@ multimode::modetest(all_tows$BOT_TEMP)
 library(ggplot2)
 
 mn <- 9
-std <- 3
+std <- 4.25
 
 ggplot(data=all_tows,aes(BOT_TEMP)) +
   geom_histogram(aes(x = BOT_TEMP, ..density..)) +
@@ -190,7 +190,7 @@ max(all_tows$BOT_TEMP)
 library(ggplot2)
 
 mn <- 9
-std <- 3.5
+std <- 4
 
 ggplot(data=all_tows,aes(BOT_TEMP)) +
   geom_histogram(aes(x = BOT_TEMP, ..density..)) +
@@ -222,7 +222,7 @@ max(all_tows$BOT_TEMP)
 library(ggplot2)
 
 mn <- 8.75
-std <- 3
+std <- 4.25
 
 ggplot(data=all_tows,aes(BOT_TEMP)) +
   geom_histogram(aes(x = BOT_TEMP, ..density..)) +
@@ -237,7 +237,7 @@ axis(side = 1, at = seq(length(seq(-4,25,.1))),labels = seq(-4,25,.1))
 
 
 #test specific value
-norm_fun(x=-1.5,mu=mn,va=std^2)
+norm_fun(x=-3,mu=mn,va=std^2)
 #test specific value
 norm_fun(x=19,mu=mn,va=std^2)
 

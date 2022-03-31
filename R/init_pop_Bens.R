@@ -50,31 +50,66 @@ brk.idx <- sim_init[["brk.idx"]]
 max.day <- max(brk.idx[["day.seq"]])
 
 
+
+# require(Rcpp)
+# require(inline)
+# 
+# fx <- cxxfunction( signature( x_ = "matrix" ), '
+#     NumericMatrix x(x_) ;
+#     int nr = x.nrow(), nc = x.ncol() ;
+#     std::vector< std::vector<double> > vec( nc ) ;
+#     for( int i=0; i<nc; i++){
+#         NumericMatrix::Column col = x(_,i) ;
+#         vec[i].assign( col.begin() , col.end() ) ;
+#     }
+#     // now do whatever with it
+#     // for show here is how Rcpp::wrap can wrap vector<vector<> >
+#     // back to R as a list of numeric vectors
+#     return wrap( vec ) ;
+# ', plugin = "Rcpp" )
+# 
+
+
+
 # set up population matrices
 	# Apply over all populations, returning a list
 Pop <- lapply(names(Bio), function(x) {
+  
+          #use function to make index matrix appealing to C++
+          #fx takes matrix and breaks it into columns
+       #   CP_mat <- fx(nz[[x]])
 
 		      ## Initial distribution
 		      PopIn <- matrix(nc = ncol(hab[[x]]), nr = nrow(hab[[x]]), 0)
 		      PopIn[start_cell[1], start_cell[2]] <- Bio[[x]] 
-
+	      #1b. pull out nonzero indices
+		      NZi <- nz[[x]]
 		      # Move the population around a bit
 		      # 1. Move probabilities
 
-		      MoveProp <- move_prob_Lst(lambda = lambda[[x]], hab = hab[[x]])
+		      MoveProp <- move_prob_Lst(lambda = lambda[[x]], hab = hab[[x]], Nzero_vals = NZi)
           
-		      #1b. pull out nonzero indices
-		      NZi <- nz[[x]]
+		  #    View(MoveProp[[1]])
+		   #   View(MoveProp)
+		      
+	
 		     # View(nz)
-		      View(NZi)
+		    #  View(NZi)
+		      
+		   #   print(class(NZi))
+		    #        print(class(PopIn))
 		      # 2. Apply move n times
+		      
 
 		      for (i in seq(init_move_steps)) {
 		     # PopIn <- move_population(moveProp = MoveProp, StartPop = PopIn,       
 		      #                         Nzero_vals = NZi)
-		        PopIn <- move_population(moveProp = MoveProp, StartPop = PopIn)  
+		       # print(i)
+		        PopIn <- move_population(moveProp = MoveProp, StartPop = PopIn, Nzero_vals = NZi )  
 		        
 		      PopIn <- Reduce("+", PopIn)
+		     # print(class(PopIn))
+		     # View(PopIn)
 		      }
 
 		      # Return the starting population

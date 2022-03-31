@@ -21,7 +21,7 @@
 #'
 #' @export
 
-run_sim <- function(MoveProb = NULL, MoveProb_spwn = NULL, sim_init = NULL, pop_init = NULL, move_cov = NULL, fleets_init = NULL, hab_init = NULL, save_pop_bio = FALSE, survey = NULL, closure = NULL,...) {
+run_sim <- function(nz = NULL, MoveProb = NULL, MoveProb_spwn = NULL, sim_init = NULL, pop_init = NULL, move_cov = NULL, fleets_init = NULL, hab_init = NULL, save_pop_bio = FALSE, survey = NULL, closure = NULL,...) {
   # Overarching function for running the simulations
   
   start.time <- Sys.time() # for printing runtime
@@ -91,10 +91,10 @@ run_sim <- function(MoveProb = NULL, MoveProb_spwn = NULL, sim_init = NULL, pop_
   # ###################################
   print("Calculating movement probabilities")
   
-  MoveProb  <- lapply(paste0("spp", seq_len(n_spp)), function(s) { move_prob_Lst(lambda = pop_init[["dem_params"]][[s]][["lambda"]], hab = hab_init[["hab"]][[s]])})
+  MoveProb  <- lapply(paste0("spp", seq_len(n_spp)), function(s) { move_prob_Lst(lambda = pop_init[["dem_params"]][[s]][["lambda"]], hab = hab_init[["hab"]][[s]], Nzero_vals = nz[[s]])})
   
   
-  MoveProb_spwn <- lapply(paste0("spp", seq_len(n_spp)), function(s) { move_prob_Lst(lambda = pop_init[["dem_params"]][[s]][["lambda"]], hab = hab_init[["spwn_hab"]][[s]])})
+  MoveProb_spwn <- lapply(paste0("spp", seq_len(n_spp)), function(s) { move_prob_Lst(lambda = pop_init[["dem_params"]][[s]][["lambda"]], hab = hab_init[["spwn_hab"]][[s]], Nzero_vals = nz[[s]])})
   
   #View(MoveProb)
   # print(range(MoveProb[[1]]))
@@ -543,13 +543,13 @@ run_sim <- function(MoveProb = NULL, MoveProb_spwn = NULL, sim_init = NULL, pop_
             #                           Nzero_row = as.vector(nonzero_idx[[s]][,1]),
             #                           Nzero_col = as.vector(nonzero_idx[[s]][,2])) 
             newPop <- move_population(moveProp = lapply(lapply(MoveProb[[s]], function(x) x * move_cov_wk_spp), function(x1) x1/sum(x1)),
-                                      StartPop = Bp1[[s]]) 
+                                      StartPop = Bp1[[s]], Nzero_vals = nz[[s]]) 
           }
           
           if(week.breaks[t] %in% pop_init[["dem_params"]][[s]][["spwn_wk"]]) {
             #	  print("spawning movement")
             newPop <- move_population(moveProp = lapply(lapply(MoveProb_spwn[[s]], function(x) x * move_cov_wk_spp), function(x1) x1/sum(x1)),
-                                      StartPop = Bp1[[s]])
+                                      StartPop = Bp1[[s]], Nzero_vals = nz[[s]])
           }
           
           Reduce("+", newPop)
@@ -570,12 +570,12 @@ run_sim <- function(MoveProb = NULL, MoveProb_spwn = NULL, sim_init = NULL, pop_
           ## If in a non-spawning week or spawning week
           if(!week.breaks[t] %in% pop_init[["dem_params"]][[s]][["spwn_wk"]]) {
             newPop <- move_population(lapply(lapply(MoveProb[[s]], function(x) x * move_cov_wk_spp), function(x1) x1/sum(x1)),
-                                      StartPop = Bm1[[s]])
+                                      StartPop = Bm1[[s]], Nzero_vals = nz[[s]])
           }
           
           if(week.breaks[t] %in% pop_init[["dem_params"]][[s]][["spwn_wk"]]) {
             newPop <- move_population(lapply(lapply(MoveProb_spwn[[s]], function(x) x * move_cov_wk_spp), function(x1) x1/sum(x1)),
-                                      StartPop = Bm1[[s]])
+                                      StartPop = Bm1[[s]], Nzero_vals = nz[[s]])
           }
           
           Reduce("+", newPop)
@@ -593,11 +593,11 @@ run_sim <- function(MoveProb = NULL, MoveProb_spwn = NULL, sim_init = NULL, pop_
           
           ## If in a non-spawning week or spawning week
           if(!week.breaks[t] %in% pop_init[["dem_params"]][[s]][["spwn_wk"]]) {
-            newPop <- move_population(moveProp = MoveProb[[s]], StartPop = Bp1[[s]]) 
+            newPop <- move_population(moveProp = MoveProb[[s]], StartPop = Bp1[[s]], Nzero_vals = nz[[s]]) 
           }
           
           if(week.breaks[t] %in% pop_init[["dem_params"]][[s]][["spwn_wk"]]) {
-            newPop <- move_population(moveProp = MoveProb_spwn[[s]], StartPop = Bp1[[s]])
+            newPop <- move_population(moveProp = MoveProb_spwn[[s]], StartPop = Bp1[[s]], Nzero_vals = nz[[s]])
           }
           
           Reduce("+", newPop)
@@ -611,11 +611,11 @@ run_sim <- function(MoveProb = NULL, MoveProb_spwn = NULL, sim_init = NULL, pop_
           
           ## If in a non-spawning week or spawning week
           if(!week.breaks[t] %in% pop_init[["dem_params"]][[s]][["spwn_wk"]]) {
-            newPop <- move_population(moveProp = MoveProb[[s]], StartPop = Bm1[[s]])
+            newPop <- move_population(moveProp = MoveProb[[s]], StartPop = Bm1[[s]], Nzero_vals = nz[[s]])
           }
           
           if(week.breaks[t] %in% pop_init[["dem_params"]][[s]][["spwn_wk"]]) {
-            newPop <- move_population(moveProp = MoveProb_spwn[[s]], StartPop = Bm1[[s]])
+            newPop <- move_population(moveProp = MoveProb_spwn[[s]], StartPop = Bm1[[s]], Nzero_vals = nz[[s]])
           }
           
           Reduce("+", newPop)
