@@ -362,7 +362,7 @@ for(iter in seq(length(list_all))){ #go down each iteration
 #1- exclude northeast 4 corner strata (#3, 4, 6, 7)
 exclude <- c(3,4,7,8)
 
-
+exclude <- c(0)
 
 
 #NOW WE NEED TO CREATE A STRATIFIED MEAN FROM EACH OF THESE SAMPLES
@@ -547,8 +547,8 @@ for(s in seq(length(sum_survey_iter))){ #2 species
 }
 
 #write csvs
-write.csv(sum_survey_iter_final[[1]], file="spp1_SRS_16Randomstrata_No3478_IncPop_IncTemp.csv", row.names=F)
-write.csv(sum_survey_iter_final[[2]], file="spp2_SRS_16Randomstrata_No3478_IncPop_IncTemp.csv", row.names=F)
+write.csv(sum_survey_iter_final[[1]], file="spp1_SRS_no3478_ConsPop_ConsTemp.csv", row.names=F)
+write.csv(sum_survey_iter_final[[2]], file="spp2_SRS_no3478_ConsPop_ConsTemp.csv", row.names=F)
 
 
 
@@ -1113,6 +1113,7 @@ results_df <- do.call(rbind, res_df)
 
 View(results_df)
 
+library(tidyverse)
 #bio and bio.sd
 results_df_an1 <- results_df %>% filter(metric == "Bio.mat", day == 1) %>% 
   group_by(pop, metric, year) %>% summarise(data = sum(data))
